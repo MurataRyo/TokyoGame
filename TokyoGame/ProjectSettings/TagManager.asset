@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Mirror
   - Launch
+  - Stage
   layers:
   - Default
   - TransparentFX
