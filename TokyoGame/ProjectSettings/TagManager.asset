@@ -8,6 +8,7 @@ TagManager:
   - Launch
   - Stage
   - LaunchBase
+  - Tasks
   layers:
   - Default
   - TransparentFX
