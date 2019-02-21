@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class GoalTask : MonoBehaviour
 {
-    [HideInInspector]public List<Vector2[]> rayVartex;  //レイの頂点
+    [HideInInspector]public List<Vec2Class[]> rayVartex;  //レイの頂点
     // Start is called before the first frame update
     void Start()
     {
-        rayVartex = new List<Vector2[]>();
+        rayVartex = new List<Vec2Class[]>();
     }
 
     // Update is called once per frame
@@ -18,13 +18,13 @@ public class GoalTask : MonoBehaviour
     }
 
     //レイの追加
-    public void AddRayVartex(ref Vector2[] vertex)
+    public void AddRayVartex(Vec2Class[] vertex)
     {
         rayVartex.Add(vertex);
     }
 
     //レイの削除
-    public void RemoveRayVartex(ref Vector2[] vertex)
+    public void RemoveRayVartex(Vec2Class[] vertex)
     {
         rayVartex.Remove(vertex);
     }
