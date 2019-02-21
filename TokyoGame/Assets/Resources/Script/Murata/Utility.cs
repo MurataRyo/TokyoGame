@@ -6,16 +6,21 @@ public class Utility : MonoBehaviour
 {
     public static GameObject GetTask()
     {
-        return GameObject.FindGameObjectWithTag("Tasks");
-    }
-
-    Vec2Class vec2 = new Vec2Class();
-
-    private void OnAnimatorIK(int layerIndex)
-    {
-        vec2 = new Vec2Class(1,3);
+        return GameObject.FindGameObjectWithTag(GetTag.Tasks);
     }
 }
+
+public struct GetTag
+{
+    public const string Block = "Block";
+    public const string LightSource = "LightSource";
+    public const string Mirror = "Mirror";
+    public const string Mirror_Back = "MirrorBack";
+    public const string Glass = "Glass";
+    public const string Player = "Player";
+    public const string Tasks = "Tasks";
+}
+
 
 public class Vec2Class
 {

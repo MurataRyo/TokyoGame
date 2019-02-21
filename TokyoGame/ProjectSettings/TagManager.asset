@@ -9,6 +9,9 @@ TagManager:
   - Stage
   - LaunchBase
   - Tasks
+  - MirrorBack
+  - Block
+  - Glass
   layers:
   - Default
   - TransparentFX

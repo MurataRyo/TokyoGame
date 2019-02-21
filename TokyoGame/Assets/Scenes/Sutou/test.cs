@@ -5,7 +5,7 @@ using UnityEngine;
 
 public class test : MonoBehaviour
 {
-    [HideInInspector] private float maxStep = 200;
+    [HideInInspector] private float maxStep = 100;
     [HideInInspector] public List<Vec2Class> originate;
     GameObject taskObject;
     GoalTask goalTask;
@@ -16,12 +16,14 @@ public class test : MonoBehaviour
     //[HideInInspector] GameObject startobj; //スタートオブジェクト
     //[HideInInspector] GameObject goalobj; //目標オブジェクト
     //[HideInInspector] float drawSpeed = 6f; //出る速さ
+    #endregion
 
     void Start()
     {
         taskObject =
             Utility.GetTask();
         goalTask = taskObject.GetComponent<GoalTask>();
+        #region
         //foreach (Transform chiild in transform)
         //{
         //    if (chiild.gameObject.tag == "Launch")
@@ -37,12 +39,13 @@ public class test : MonoBehaviour
 
         //// 距離
         //dist = Vector3.Distance(startobj.transform.position, goalobj.transform.position);
-
+        #endregion
         originate = new List<Vec2Class>();
     }
 
     void Update()
     {
+        #region
         ////カウントが距離よりも小さいとき
         //if (counter < dist)
         //{
@@ -61,8 +64,8 @@ public class test : MonoBehaviour
 
         //    line.SetPosition(1, pointLine);
         //}
+        #endregion
     }
-    #endregion
 
     void OnDrawGizmos()
     {
@@ -78,13 +81,22 @@ public class test : MonoBehaviour
         Vector2 startPos = position;
 
         RaycastHit2D hit = Physics2D.Raycast(position + direction * 0.5f, direction);
-        if (hit.collider != null && hit.collider.tag == "Mirror")
+        if (IsRefrect(hit))
         {
             direction = Vector2.Reflect(direction, hit.normal);
+            Debug.Log(hit.normal);
             position = hit.point;
             originate.Add(new Vec2Class(position));
             Debug.Log("鏡に当たった");
             DrawReflect(position, direction);
+        }
+        else if (NotRefrect(hit))
+        {
+            direction = Vector2.Reflect(direction, hit.normal);
+            position = hit.point;
+            originate.Add(new Vec2Class(position));
+
+            Debug.Log("反射しません");
         }
         else
         {
@@ -94,4 +106,34 @@ public class test : MonoBehaviour
 
         Gizmos.DrawLine(startPos, position);
     }
+
+    //反射可能かどうかの検索
+    bool IsRefrect(RaycastHit2D hit)
+    {
+        if (hit.collider == null)
+            return false;
+
+        if (hit.collider.tag != GetTag.Mirror)
+            return false;
+
+        return true;
+    }
+
+    bool NotRefrect(RaycastHit2D hit)
+    {
+        if (hit.collider == null)
+            return false;
+
+        if (hit.collider.tag == GetTag.Mirror)
+            return false;
+
+        if (hit.collider.tag == GetTag.Player)
+            return false;
+
+        if (hit.collider.tag == GetTag.Glass)
+            return false;
+
+        return true;
+    }
+
 }
