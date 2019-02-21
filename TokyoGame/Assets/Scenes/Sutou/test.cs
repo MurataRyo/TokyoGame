@@ -5,9 +5,10 @@ using UnityEngine;
 
 public class test : MonoBehaviour
 {
-    public int reflectCount = 5;
-    public float maxStep = 200;
+    [HideInInspector] private float maxStep = 200;
+    [HideInInspector] public Vector2[] originate;
 
+    #region
     //[HideInInspector] LineRenderer line; //線
     //[HideInInspector] float counter; // 伸びるカウント
     //[HideInInspector] float dist; //距離
@@ -17,6 +18,14 @@ public class test : MonoBehaviour
 
     void Start()
     {
+        //foreach (Transform chiild in transform)
+        //{
+        //    if (chiild.gameObject.tag == "Launch")
+        //    {
+        //        startobj = chiild.gameObject;
+        //        break;
+        //    }
+        //}
         //startobj = GameObject.FindGameObjectWithTag("Launch");
         //goalobj = GameObject.FindGameObjectWithTag("Mirror");
         //line = GetComponent<LineRenderer>();
@@ -46,40 +55,32 @@ public class test : MonoBehaviour
 
         //    line.SetPosition(1, pointLine);
         //}
+
     }
+    #endregion
 
     void OnDrawGizmos()
     {
-        DrawReflect(transform.position + transform.right * 0.75f, transform.right, reflectCount);
+        DrawReflect(transform.position + transform.right * 0.75f, transform.right);
     }
 
-    void DrawReflect(Vector3 position, Vector3 direction, int reflections)
+    void DrawReflect(Vector2 position, Vector2 direction)
     {
-        if (reflections == 0)
-        {
-            return;
-        }
-        Vector3 startPos = position;
+        Vector2 startPos = position;
 
-        Ray2D ray = new Ray2D(position, direction);
-        RaycastHit2D hit = Physics2D.Raycast(position,direction);
-        if(hit.collider != null)
+        RaycastHit2D hit = Physics2D.Raycast(position + direction * 0.5f, direction);
+        if (hit.collider != null && hit.collider.tag == "Mirror")
         {
-            direction = Vector3.Reflect(direction, hit.normal);
+            direction = Vector2.Reflect(direction, hit.normal);
             position = hit.point;
-            if(hit.collider.tag == "Mirror")
-            {
-                Debug.Log("鏡に当たった");
-            }
+            Debug.Log("鏡に当たった");
+            DrawReflect(position, direction);
         }
         else
         {
             position += direction * maxStep;
         }
 
-        Gizmos.color = Color.yellow;
         Gizmos.DrawLine(startPos, position);
-
-        DrawReflect(position, direction, reflections - 1);
     }
 }
