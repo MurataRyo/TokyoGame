@@ -36,17 +36,30 @@ public class PlayerMove : MonoBehaviour
         rigidbody = GetComponent<Rigidbody2D>();
         collider2D = GetComponent<BoxCollider2D>();
     }
-    
+
     void Update()
     {
+        Collider2D[] playerHit = Physics2D.OverlapBoxAll(transform.position, collider2D.size, 0f);  // 自機の当たり判定の取得
+
+        lightFlag = false;
+
+        // 侵入判定
+        for (int i = 0; i < playerHit.Length; i++)
+        {
+            if (playerHit[i].tag == "Launch")
+            {
+                lightFlag = true;
+            }
+        }
+
         // 光の中を出入りする
-        if(lightFlag)
+        if (lightFlag)
         {
             if (Input.GetKeyDown(KeyCode.LeftControl) && playerState != PlayerState.Light)
             {
                 playerState = PlayerState.Light;
             }
-            else if(Input.GetKeyUp(KeyCode.LeftControl) && playerState != PlayerState.Normal)
+            else if (Input.GetKeyUp(KeyCode.LeftControl) && playerState != PlayerState.Normal)
             {
                 playerState = PlayerState.Normal;
             }
@@ -148,15 +161,15 @@ public class PlayerMove : MonoBehaviour
 
         for (int i = 0; i < collision.contacts.Length; i++)
         {
-            if(collision.contacts[i].normal.y > 0.5f)
+            if (collision.contacts[i].normal.y > 0.5f)
             {
                 isGround = true;
             }
-            if(collision.contacts[i].normal.x > 0.5f)
+            if (collision.contacts[i].normal.x > 0.5f)
             {
                 isLeftWall = true;
             }
-            if(collision.contacts[i].normal.x < -0.5f)
+            if (collision.contacts[i].normal.x < -0.5f)
             {
                 isRightWall = true;
             }
@@ -169,25 +182,5 @@ public class PlayerMove : MonoBehaviour
     private void OnCollisionExit2D(Collision2D collision)
     {
         OnCollisionEnter2D(collision);
-    }
-
-    // 侵入判定
-    private void OnTriggerEnter2D(Collider2D collision)
-    {
-        if (collision.gameObject.tag == "Launch")
-        {
-            lightFlag = true;
-        }
-    }
-    private void OnTriggerStay2D(Collider2D collision)
-    {
-        OnTriggerEnter2D(collision);
-    }
-    private void OnTriggerExit2D(Collider2D collision)
-    {
-        if (collision.gameObject.tag == "Launch")
-        {
-            lightFlag = false;
-        }
     }
 }
