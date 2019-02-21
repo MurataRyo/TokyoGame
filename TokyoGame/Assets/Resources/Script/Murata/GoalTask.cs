@@ -4,11 +4,11 @@ using UnityEngine;
 
 public class GoalTask : MonoBehaviour
 {
-    [HideInInspector]public List<BoxCollider2D> rayColliders;
+    [HideInInspector]public List<Vector2[]> rayVartex;  //レイの頂点
     // Start is called before the first frame update
     void Start()
     {
-        rayColliders = new List<BoxCollider2D>();
+        rayVartex = new List<Vector2[]>();
     }
 
     // Update is called once per frame
@@ -18,14 +18,14 @@ public class GoalTask : MonoBehaviour
     }
 
     //レイの追加
-    public void AddRayColider(BoxCollider2D col)
+    public void AddRayVartex(ref Vector2[] vertex)
     {
-        rayColliders.Add(col);
+        rayVartex.Add(vertex);
     }
 
     //レイの削除
-    public void RemoveRayColider(BoxCollider2D col)
+    public void RemoveRayVartex(ref Vector2[] vertex)
     {
-        rayColliders.Remove(col);
+        rayVartex.Remove(vertex);
     }
 }
