@@ -6,8 +6,9 @@ using UnityEngine;
 public class test : MonoBehaviour
 {
     [HideInInspector] private float maxStep = 200;
-    [HideInInspector] public Vector2[] originate;
-
+    [HideInInspector] public List<Vec2Class> originate;
+    GameObject taskObject;
+    GoalTask goalTask;
     #region
     //[HideInInspector] LineRenderer line; //線
     //[HideInInspector] float counter; // 伸びるカウント
@@ -18,6 +19,9 @@ public class test : MonoBehaviour
 
     void Start()
     {
+        taskObject =
+            Utility.GetTask();
+        goalTask = taskObject.GetComponent<GoalTask>();
         //foreach (Transform chiild in transform)
         //{
         //    if (chiild.gameObject.tag == "Launch")
@@ -33,6 +37,8 @@ public class test : MonoBehaviour
 
         //// 距離
         //dist = Vector3.Distance(startobj.transform.position, goalobj.transform.position);
+
+        originate = new List<Vec2Class>();
     }
 
     void Update()
@@ -55,13 +61,16 @@ public class test : MonoBehaviour
 
         //    line.SetPosition(1, pointLine);
         //}
-
     }
     #endregion
 
     void OnDrawGizmos()
     {
+        goalTask.RemoveRayVartex(originate);
+        originate = new List<Vec2Class>();
+        originate.Add(new Vec2Class(transform.position));
         DrawReflect(transform.position + transform.right * 0.75f, transform.right);
+        goalTask.AddRayVartex(originate);
     }
 
     void DrawReflect(Vector2 position, Vector2 direction)
@@ -73,12 +82,14 @@ public class test : MonoBehaviour
         {
             direction = Vector2.Reflect(direction, hit.normal);
             position = hit.point;
+            originate.Add(new Vec2Class(position));
             Debug.Log("鏡に当たった");
             DrawReflect(position, direction);
         }
         else
         {
             position += direction * maxStep;
+            originate.Add(new Vec2Class(position));
         }
 
         Gizmos.DrawLine(startPos, position);
