@@ -19,6 +19,7 @@ public struct GetTag
     public const string Glass = "Glass";
     public const string Player = "Player";
     public const string Tasks = "Tasks";
+    public const string Col = "Col";
 }
 
 

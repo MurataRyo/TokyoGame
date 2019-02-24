@@ -14,12 +14,7 @@ public class GoalTask : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Return))
-        {
-            Debug.Log(rayVartex[0].Count);
 
-            Debug.Log(rayVartex.Count);
-        }
     }
 
     //レイの追加

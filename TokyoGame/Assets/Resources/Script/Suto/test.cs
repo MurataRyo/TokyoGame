@@ -5,10 +5,13 @@ using UnityEngine;
 
 public class test : MonoBehaviour
 {
-    [HideInInspector] private float maxStep = 100;
-    [HideInInspector] public List<Vec2Class> originate;
-    GameObject taskObject;
+    [HideInInspector] private float maxStep = 100; //伸びる距離
+    [HideInInspector] public List<Vec2Class> originate; //反射した座標を保存
+    [HideInInspector] public float boxRange; //コライダーの長さ
+    GameObject colBox; //コライダーを入れる箱
+    GameObject taskObject; 
     GoalTask goalTask;
+
     #region
     //[HideInInspector] LineRenderer line; //線
     //[HideInInspector] float counter; // 伸びるカウント
@@ -20,6 +23,15 @@ public class test : MonoBehaviour
 
     void Start()
     {
+        //　コライダーを入れる子オブジェクト
+        foreach (Transform chiild in transform)
+        {
+            if (chiild.gameObject.tag == GetTag.Col)
+            {
+                colBox = chiild.gameObject;
+                break;
+            }
+        }
         taskObject =
             Utility.GetTask();
         goalTask = taskObject.GetComponent<GoalTask>();
@@ -45,6 +57,12 @@ public class test : MonoBehaviour
 
     void Update()
     {
+
+        //foreach(RaycastHit2D hits in Physics2D.RaycastAll(transform.position, transform.right))
+        //{
+        //    Debug.Log(hits.collider.gameObject.name);
+        //}
+
         #region
         ////カウントが距離よりも小さいとき
         //if (counter < dist)
@@ -67,6 +85,7 @@ public class test : MonoBehaviour
         #endregion
     }
 
+    //レイをシーンで見えるようにする
     void OnDrawGizmos()
     {
         goalTask.RemoveRayVartex(originate);
@@ -76,33 +95,41 @@ public class test : MonoBehaviour
         goalTask.AddRayVartex(originate);
     }
 
+    //レイを反射させる
     void DrawReflect(Vector2 position, Vector2 direction)
     {
-        Vector2 startPos = position;
+        Vector2 startPos = new Vector2(position.x, position.y); //初期位置
 
-        RaycastHit2D hit = Physics2D.Raycast(position + direction * 0.5f, direction);
-        if (IsRefrect(hit))
+        // 反射地点を変えてその座標からレイを伸ばす
+        foreach (RaycastHit2D hit in Physics2D.RaycastAll(position + direction * 0.5f, direction))
         {
-            direction = Vector2.Reflect(direction, hit.normal);
-            Debug.Log(hit.normal);
-            position = hit.point;
-            originate.Add(new Vec2Class(position));
-            Debug.Log("鏡に当たった");
-            DrawReflect(position, direction);
-        }
-        else if (NotRefrect(hit))
-        {
-            direction = Vector2.Reflect(direction, hit.normal);
-            position = hit.point;
-            originate.Add(new Vec2Class(position));
+            BoxCol2D(hit.point);
+            if (IsRefrect(hit)) //鏡に当たった時
+            {
+                direction = Vector2.Reflect(direction, hit.normal);
+                position = hit.point;
 
-            Debug.Log("反射しません");
+                originate.Add(new Vec2Class(position));
+                Debug.Log("鏡に当たった");
+                DrawReflect(position, direction);
+            }
+            else if (NotRefrect(hit)) //当たらないものと鏡以外に当たった時
+            {
+                direction = Vector2.Reflect(direction, hit.normal);
+                position = hit.point;
+                originate.Add(new Vec2Class(position));
+                Debug.Log("反射しません");
+                break;
+            }
+            else //それ以外
+            {
+                position += direction * maxStep;
+                originate.Add(new Vec2Class(position));
+            }
+
+
         }
-        else
-        {
-            position += direction * maxStep;
-            originate.Add(new Vec2Class(position));
-        }
+
 
         Gizmos.DrawLine(startPos, position);
     }
@@ -133,7 +160,25 @@ public class test : MonoBehaviour
         if (hit.collider.tag == GetTag.Glass)
             return false;
 
+        if (hit.collider.tag == GetTag.Col)
+            return false;
+
         return true;
     }
 
+    // コライダー
+    void BoxCol2D(Vector2 direction)
+    {
+        Vector2 colBoxPos = new Vector2(colBox.transform.position.x, colBox.transform.position.y);
+
+        boxRange = (colBoxPos - direction).magnitude;
+        BoxCollider2D bX2D = colBox.GetComponent<BoxCollider2D>();
+        bX2D.offset = new Vector2(BoxRangeMath(colBoxPos, direction), 0);
+        bX2D.size = new Vector2(boxRange, 0.25f);
+    }
+
+    float BoxRangeMath(Vector2 colBoxPos, Vector2 direction)
+    {
+        return boxRange - boxRange / 2;
+    }
 }
