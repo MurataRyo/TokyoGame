@@ -12,8 +12,6 @@ TagManager:
   - MirrorBack
   - Block
   - Glass
-  - LightSource
-  - Col
   layers:
   - Default
   - TransparentFX
@@ -25,12 +23,12 @@ TagManager:
   - 
   - PostProcessing
   - Player
-  - Glass
-  - Col
-  - LightSource
-  - Block
-  - Mirror
-  - MirrorBack
+  - 
+  - 
+  - 
+  - 
+  - 
+  - 
   - 
   - 
   - 
