@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 public class GoalTask : MonoBehaviour
 {
@@ -14,18 +15,10 @@ public class GoalTask : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        
         if (Input.GetKeyDown(KeyCode.Return))
         {
-            foreach (List<Vec2Class> vec2a in rayVartex)
-            {
-                foreach (Vec2Class vec2b in vec2a)
-                {
-                    Debug.Log(vec2b.vec2);
-                }
-            }
-            //LineToTriangle(rayVartexToLines(rayVartex));
+            Line[] lines = rayVartexToLines(rayVartex);
+            OverlapToTriangle(LineToOverlap(lines), lines);
         }
     }
 
@@ -41,15 +34,80 @@ public class GoalTask : MonoBehaviour
         rayVartex.Remove(vertex);
     }
 
-    //線情報から三角形情報を取得
-    private Triangle[] LineToTriangle(Line[] lines)
+    //線情報と頂点情報から三角形情報を取得
+    private Triangle[] OverlapToTriangle(Overlap[] overlaps, Line[] lines)
     {
         List<Triangle> triangles = new List<Triangle>();
-        Overlap[] overlaps = LineToOverlap(lines);
 
+        //三角形を探す
+
+        //線の中身を検索
+        foreach (Line line in lines)
+        {
+            //線の頂点が2未満なら絶対に三角形は作れないのから
+            if (line.overlaps.Count < 2)
+                continue;
+
+            //線の2つの頂点を比べる
+            foreach (Overlap overlapA in line.overlaps)
+            {
+                foreach (Overlap overlapB in line.overlaps)
+                {
+                    if (overlapA == overlapB)
+                        continue;
+
+                    //頂点の線を調べる
+                    foreach (Line linea in overlapA.lines)
+                    {
+                        foreach (Line lineb in overlapB.lines)
+                        {
+                            //線が同じなら3角形ではない
+                            if (linea == lineb)
+                                continue;
+
+                            //線の頂点を調べる
+                            foreach (Overlap overlapC in linea.overlaps)
+                            {
+                                foreach (Overlap overlapD in lineb.overlaps)
+                                {
+                                    //２つの線が同じ頂点を持っていたら3角形ができる
+                                    if (overlapC != overlapD ||
+                                        overlapA == overlapC ||
+                                        overlapB == overlapC)
+                                        continue;
+
+                                    Triangle newTriangle = new Triangle(overlapA, overlapB, overlapC);
+
+                                    if (!CreateIfTriangle(triangles, newTriangle))
+                                        continue;
+
+                                    triangles.Add(newTriangle);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
         return triangles.ToArray();
     }
 
+    private bool CreateIfTriangle(List<Triangle> triangles, Triangle newTriangle)
+    {
+
+        foreach (Triangle triangle in triangles)
+        {
+            if (triangle.overlaps[0] == newTriangle.overlaps[0] &&
+                triangle.overlaps[1] == newTriangle.overlaps[1] &&
+                triangle.overlaps[2] == newTriangle.overlaps[2])
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    //線から重なってる点へ変換
     private Overlap[] LineToOverlap(Line[] lines)
     {
         List<Overlap> overlaps = new List<Overlap>();
@@ -69,7 +127,6 @@ public class GoalTask : MonoBehaviour
                 {
                     overlaps.Add(overlapClass);
                 }
-
             }
         }
 
@@ -93,7 +150,7 @@ public class GoalTask : MonoBehaviour
             }
         }
 
-        Debug.Log(newOverlap.pos + " " + newOverlap.lines[0].vartex[0] + " " + newOverlap.lines[0].vartex[1] + " " + newOverlap.lines[1].vartex[0] + " " + newOverlap.lines[1].vartex[1]);
+        newOverlap.LineAddOverlap();
         return true;
     }
 
@@ -148,9 +205,11 @@ public class GoalTask : MonoBehaviour
 //線の情報を保持するクラス※値型だと同じものか判断できないためクラス
 public class Line
 {
+    public List<Overlap> overlaps;
     public Vector2[] vartex;
     public Line(Vector2 vec2a, Vector2 vec2b)
     {
+        overlaps = new List<Overlap>();
         vartex = new Vector2[2];
         vartex[0] = vec2a;
         vartex[1] = vec2b;
@@ -158,7 +217,7 @@ public class Line
 }
 
 //交わっている点の情報を保持するクラス
-public class Overlap
+public class Overlap : IComparable
 {
     public Line[] lines;
     public Vector2 pos;
@@ -169,25 +228,51 @@ public class Overlap
         lines[1] = lineb;
         this.pos = pos;
     }
-}
 
+    //バグの原因の可能性あり
+    public int CompareTo(object obj)
+    {
+        Overlap lap = (Overlap)obj;
+
+        if (pos.x > lap.pos.x)
+        {
+            return -1;
+        }
+        else if (pos.x < lap.pos.x)
+        {
+            return 1;
+        }
+        else if(pos.y > lap.pos.y)
+        {
+            return -1;
+        }
+        else if(pos.y < lap.pos.y)
+        {
+            return 1;
+        }
+
+        return 0;
+    }
+
+    public void LineAddOverlap()
+    {
+        lines[0].overlaps.Add(this);
+        lines[1].overlaps.Add(this);
+    }
+}
 
 //頂点と線の情報を保持するクラス
 public class Triangle
 {
-    public Vector2[] vartex;
-    public Line[] lines;
-    public Triangle(Vector2 vec2a, Vector2 vec2b, Vector2 vec2c, Line linea, Line lineb, Line linec)
+    public Overlap[] overlaps;
+    public Triangle(Overlap overlapsa, Overlap overlapsb, Overlap overlapsc)
     {
-        vartex = new Vector2[3];
-        vartex[0] = vec2a;
-        vartex[1] = vec2b;
-        vartex[2] = vec2c;
+        overlaps = new Overlap[3];
+        overlaps[0] = overlapsa;
+        overlaps[1] = overlapsb;
+        overlaps[2] = overlapsc;
 
-        lines = new Line[3];
-        lines[0] = linea;
-        lines[1] = lineb;
-        lines[2] = linec;
+        Array.Sort(overlaps);
     }
 }
 
