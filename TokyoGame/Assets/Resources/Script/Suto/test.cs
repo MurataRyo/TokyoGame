@@ -103,7 +103,7 @@ public class test : MonoBehaviour
         // 反射地点を変えてその座標からレイを伸ばす
         foreach (RaycastHit2D hit in Physics2D.RaycastAll(position + direction * 0.5f, direction))
         {
-            BoxCol2D(hit.point);
+            //BoxCol2D(hit.point);
             if (IsRefrect(hit)) //鏡に当たった時
             {
                 direction = Vector2.Reflect(direction, hit.normal);
@@ -113,7 +113,7 @@ public class test : MonoBehaviour
                 Debug.Log("鏡に当たった");
                 DrawReflect(position, direction);
             }
-            else if (NotRefrect(hit)) //当たらないものと鏡以外に当たった時
+            else if (NotRefrect(hit)) //光を終了させるもの
             {
                 direction = Vector2.Reflect(direction, hit.normal);
                 position = hit.point;
@@ -121,10 +121,11 @@ public class test : MonoBehaviour
                 Debug.Log("反射しません");
                 break;
             }
-            else //それ以外
+            else //光を貫通するもの
             {
-                position += direction * maxStep;
-                originate.Add(new Vec2Class(position));
+                continue;
+                //position += direction * maxStep;
+                //originate.Add(new Vec2Class(position));
             }
 
 

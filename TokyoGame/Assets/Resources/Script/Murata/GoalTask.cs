@@ -14,9 +14,18 @@ public class GoalTask : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(Input.GetKeyDown(KeyCode.Return))
+
+        
+        if (Input.GetKeyDown(KeyCode.Return))
         {
-            LineToTriangle(rayVartexToLines(rayVartex));
+            foreach (List<Vec2Class> vec2a in rayVartex)
+            {
+                foreach (Vec2Class vec2b in vec2a)
+                {
+                    Debug.Log(vec2b.vec2);
+                }
+            }
+            //LineToTriangle(rayVartexToLines(rayVartex));
         }
     }
 
@@ -36,25 +45,61 @@ public class GoalTask : MonoBehaviour
     private Triangle[] LineToTriangle(Line[] lines)
     {
         List<Triangle> triangles = new List<Triangle>();
-        foreach(Line line in lines)
+        Overlap[] overlaps = LineToOverlap(lines);
+
+        return triangles.ToArray();
+    }
+
+    private Overlap[] LineToOverlap(Line[] lines)
+    {
+        List<Overlap> overlaps = new List<Overlap>();
+        foreach (Line line in lines)
         {
-            for(int i = 0; i < lines.Length;i++)
+            for (int i = 0; i < lines.Length; i++)
             {
                 if (line == lines[i])
                     continue;
 
                 Vector2 overlap;
-                if(LineIfOverlap(line,lines[i],out overlap))
+                if (!LineIfOverlap(line, lines[i], out overlap))
+                    continue;
+
+                Overlap overlapClass = new Overlap(line, lines[i], overlap);
+                if (IsCreateOverlap(overlapClass, overlaps.ToArray()))
                 {
-                    Debug.Log(overlap);
+                    overlaps.Add(overlapClass);
                 }
+
             }
         }
-        return triangles.ToArray();
+
+        return overlaps.ToArray();
+    }
+
+    //頂点を生成できるかどうか
+    private bool IsCreateOverlap(Overlap newOverlap, Overlap[] nowOverlap)
+    {
+        foreach (Overlap overlap in nowOverlap)
+        {
+            //そもそも点の座補が違ったら生成可能なので入れる
+            if (newOverlap.pos != overlap.pos)
+                continue;
+
+            //同じ線を利用していたら生成できない
+            if (newOverlap.lines[0] == overlap.lines[0] && newOverlap.lines[1] == overlap.lines[1] ||
+                newOverlap.lines[1] == overlap.lines[0] && newOverlap.lines[0] == overlap.lines[1])
+            {
+                return false;
+            }
+        }
+
+        Debug.Log(newOverlap.pos + " " + newOverlap.lines[0].vartex[0] + " " + newOverlap.lines[0].vartex[1] + " " + newOverlap.lines[1].vartex[0] + " " + newOverlap.lines[1].vartex[1]);
+        return true;
     }
 
     //線が重なっているかを調べ点を返す
-    private bool LineIfOverlap(Line linea,Line lineb,out Vector2 overlap)
+    //今後数学的に調べる場所
+    private bool LineIfOverlap(Line linea, Line lineb, out Vector2 overlap)
     {
         overlap = Vector2.zero;
         Vector2 p1 = linea.vartex[0];
@@ -112,12 +157,27 @@ public class Line
     }
 }
 
+//交わっている点の情報を保持するクラス
+public class Overlap
+{
+    public Line[] lines;
+    public Vector2 pos;
+    public Overlap(Line linea, Line lineb, Vector2 pos)
+    {
+        lines = new Line[2];
+        lines[0] = linea;
+        lines[1] = lineb;
+        this.pos = pos;
+    }
+}
+
+
 //頂点と線の情報を保持するクラス
 public class Triangle
 {
     public Vector2[] vartex;
     public Line[] lines;
-    public Triangle(Vector2 vec2a, Vector2 vec2b, Vector2 vec2c,Line linea, Line lineb, Line linec)
+    public Triangle(Vector2 vec2a, Vector2 vec2b, Vector2 vec2c, Line linea, Line lineb, Line linec)
     {
         vartex = new Vector2[3];
         vartex[0] = vec2a;
