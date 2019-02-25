@@ -3,7 +3,9 @@ guid: 5c778b1e94fa2a34dacd58c77922fb1f
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences: []
+  defaultReferences:
+  - NormalSprite: {instanceID: 0}
+  - LightSprite: {instanceID: 0}
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 
