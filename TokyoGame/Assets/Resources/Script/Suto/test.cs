@@ -9,7 +9,7 @@ public class test : MonoBehaviour
     [HideInInspector] public List<Vec2Class> originate; //反射した座標を保存
     [HideInInspector] public float boxRange; //コライダーの長さ
     GameObject colBox; //コライダーを入れる箱
-    GameObject taskObject; 
+    GameObject taskObject;
     GoalTask goalTask;
 
     #region
@@ -103,7 +103,7 @@ public class test : MonoBehaviour
         // 反射地点を変えてその座標からレイを伸ばす
         foreach (RaycastHit2D hit in Physics2D.RaycastAll(position + direction * 0.5f, direction))
         {
-            //BoxCol2D(hit.point);
+            BoxCol2D(hit.point);
             if (IsRefrect(hit)) //鏡に当たった時
             {
                 direction = Vector2.Reflect(direction, hit.normal);
@@ -113,7 +113,7 @@ public class test : MonoBehaviour
                 Debug.Log("鏡に当たった");
                 DrawReflect(position, direction);
             }
-            else if (NotRefrect(hit)) //光を終了させるもの
+            else if (NotRefrect(hit)) //当たらないものと鏡以外に当たった時
             {
                 direction = Vector2.Reflect(direction, hit.normal);
                 position = hit.point;
@@ -121,11 +121,10 @@ public class test : MonoBehaviour
                 Debug.Log("反射しません");
                 break;
             }
-            else //光を貫通するもの
+            else //それ以外
             {
-                continue;
-                //position += direction * maxStep;
-                //originate.Add(new Vec2Class(position));
+                position += direction * maxStep;
+                originate.Add(new Vec2Class(position));
             }
 
 
