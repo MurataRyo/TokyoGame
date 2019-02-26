@@ -22,7 +22,6 @@ public struct GetTag
     public const string Col = "Col";
 }
 
-
 public class Vec2Class
 {
     public Vector2 vec2 { get; set; }
