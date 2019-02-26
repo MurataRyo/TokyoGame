@@ -1,16 +1,17 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
 public class test : MonoBehaviour
 {
-    [HideInInspector] private float maxStep = 100; //伸びる距離
-    [HideInInspector] public List<Vec2Class> originate; //反射した座標を保存
-    [HideInInspector] public float boxRange; //コライダーの長さ
-    GameObject colBox; //コライダーを入れる箱
-    GameObject taskObject;
-    GoalTask goalTask;
+    private float maxStep = 100; //伸びる距離
+    [HideInInspector] public List<Vec2Class> originate; //座標を保存
+    private GameObject colGo;
+    private EdgeCollider2D edge2D;
+    private GameObject taskObject;
+    private GoalTask goalTask;
 
     void Start()
     {
@@ -19,12 +20,13 @@ public class test : MonoBehaviour
         {
             if (chiild.gameObject.tag == GetTag.Col)
             {
-                colBox = chiild.gameObject;
+                colGo = chiild.gameObject;
                 break;
             }
         }
-        taskObject =
-            Utility.GetTask();
+        edge2D = colGo.GetComponent<EdgeCollider2D>();
+        edge2D.edgeRadius = 0.45f;
+        taskObject = Utility.GetTask();
         goalTask = taskObject.GetComponent<GoalTask>();
         originate = new List<Vec2Class>();
     }
@@ -47,35 +49,22 @@ public class test : MonoBehaviour
         // 反射地点を変えてその座標からレイを伸ばす
         foreach (RaycastHit2D hit in Physics2D.RaycastAll(position + direction * 0.5f, direction))
         {
-            BoxCol2D(hit.point);
             if (IsRefrect(hit)) //光が反射
             {
-                direction = Vector2.Reflect(direction, hit.normal);
-                position = hit.point;
-
-                originate.Add(new Vec2Class(position));
+                RefrectRay(hit, ref position, ref direction);
                 Debug.Log("鏡に当たった");
                 DrawReflect(position, direction);
                 break;
             }
             else if (NotRefrect(hit)) //光が終了
             {
-                direction = Vector2.Reflect(direction, hit.normal);
-                position = hit.point;
-                originate.Add(new Vec2Class(position));
+                RefrectRay(hit, ref position, ref direction);
                 Debug.Log("反射しません");
                 break;
             }
-            else //光が貫通
-            {
-                continue;
-            }
-
-
         }
-
-
         Gizmos.DrawLine(startPos, position);
+
     }
 
     //反射可能かどうかの検索
@@ -110,19 +99,11 @@ public class test : MonoBehaviour
         return true;
     }
 
-    // コライダー
-    void BoxCol2D(Vector2 direction)
+    void RefrectRay(RaycastHit2D hit, ref Vector2 position, ref Vector2 direction)
     {
-        Vector2 colBoxPos = new Vector2(colBox.transform.position.x, colBox.transform.position.y);
-
-        boxRange = (colBoxPos - direction).magnitude;
-        BoxCollider2D bX2D = colBox.GetComponent<BoxCollider2D>();
-        bX2D.offset = new Vector2(BoxRangeMath(colBoxPos, direction), 0);
-        bX2D.size = new Vector2(boxRange, 0.25f);
-    }
-
-    float BoxRangeMath(Vector2 colBoxPos, Vector2 direction)
-    {
-        return boxRange - boxRange / 2;
+        direction = Vector2.Reflect(direction, hit.normal);
+        position = hit.point;
+        originate.Add(new Vec2Class(position));
+        edge2D.points = originate.Select(v => (Vector2)transform.InverseTransformPoint(v.vec2)).ToArray();
     }
 }
