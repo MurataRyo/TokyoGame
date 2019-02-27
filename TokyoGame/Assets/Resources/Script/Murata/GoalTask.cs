@@ -7,13 +7,13 @@ public class GoalTask : MonoBehaviour
 {
     [HideInInspector] public List<List<Vec2Class>> rayVartex;  //レイの頂点
     // Start is called before the first frame update
-    void Awake()
+    private void Awake()
     {
         rayVartex = new List<List<Vec2Class>>();
     }
 
-    // Update is called once per frame
-    void Update()
+
+    private void Update()
     {
         if (Input.GetKeyDown(KeyCode.Return))
         {
@@ -70,8 +70,9 @@ public class GoalTask : MonoBehaviour
                             {
                                 foreach (Overlap overlapD in lineb.overlaps)
                                 {
-                                    //２つの線が同じ頂点を持っていたら3角形ができる
+                                    //２つの線が同じ頂点を持っていなければ出来ない
                                     if (overlapC != overlapD ||
+                                    //同じ頂点で3角形は作れない
                                         overlapA == overlapC ||
                                         overlapB == overlapC)
                                         continue;
@@ -92,6 +93,7 @@ public class GoalTask : MonoBehaviour
         return triangles.ToArray();
     }
 
+    //三角形が生成できるかどうか
     private bool CreateIfTriangle(List<Triangle> triangles, Triangle newTriangle)
     {
 
