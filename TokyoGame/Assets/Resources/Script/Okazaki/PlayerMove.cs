@@ -12,14 +12,12 @@ public class PlayerMove : MonoBehaviour
     }
 
     [HideInInspector] public PlayerState playerState = PlayerState.Normal;
-
-    [SerializeField] Sprite NormalSprite;
-    [SerializeField] Sprite LightSprite;
+    
     float speed;                                // 移動速度
     float jumpPower;                            // ジャンプ力
     private const float WALK_SPEED = 3f;        // 歩行速度
     private const float RUN_SPEED = 4f;         // 走行速度
-    private const float JUMP_HEIGHT = 2.5f;     // ジャンプの頂点
+    private const float JUMP_HEIGHT = 3f;     // ジャンプの頂点
     private const float GRAVITY_SIZE = 9.81f;   // 重力の強さ
     bool runFlag = false;                       // 走るかどうか
     bool isGround = false;                      // 接地しているかどうか
@@ -59,18 +57,15 @@ public class PlayerMove : MonoBehaviour
         }
 
         // 光の中を出入りする
-        if (lightFlag)
+        if (lightFlag && Input.GetKeyDown(KeyCode.LeftControl) && playerState != PlayerState.Light)
         {
-            if (Input.GetKeyDown(KeyCode.LeftControl) && playerState != PlayerState.Light)
-            {
-                playerState = PlayerState.Light;
-                velocity = new Vector2(0f, 0f);
-            }
-            else if (!Input.GetKey(KeyCode.LeftControl) && playerState != PlayerState.Normal)
-            {
-                playerState = PlayerState.Normal;
-                velocity = new Vector2(0f, 0f);
-            }
+            playerState = PlayerState.Light;
+            velocity = new Vector2(0f, 0f);
+        }
+        else if (!Input.GetKey(KeyCode.LeftControl) && playerState != PlayerState.Normal)
+        {
+            playerState = PlayerState.Normal;
+            velocity = new Vector2(0f, 0f);
         }
 
         // 速度の変更
@@ -166,15 +161,11 @@ public class PlayerMove : MonoBehaviour
     {
         if(playerState == PlayerState.Normal)
         {
-            spriteRenderer.sprite = NormalSprite;
             transform.localScale = new Vector3(1f, 1f, 1f);
-            collider2D.size = new Vector2(0.22f, 0.76f);
         }
         else
         {
-            spriteRenderer.sprite = LightSprite;
-            transform.localScale = new Vector3(0.5f, 0.5f, 1f);
-            collider2D.size = new Vector2(0.35f, 0.35f);
+            transform.localScale = new Vector3(1f, 0.5f, 1f);
         }
     }
 
