@@ -12,6 +12,7 @@ public class GoalTask : MonoBehaviour
         rayVartex = new List<List<Vec2Class>>();
     }
 
+    //確認用
     private void CreateBlock(Star star)
     {
         GameObject go = new GameObject();
@@ -47,7 +48,7 @@ public class GoalTask : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Return))
+        if (Input.GetKey(KeyCode.Return))
         {
             Line[] lines = rayVartexToLines(rayVartex);
             Overlap[] overlaps = LineToOverlap(lines);
@@ -55,7 +56,7 @@ public class GoalTask : MonoBehaviour
 
             Star[] stars = TrianglesToStars(triangles);
 
-            Debug.Log(stars.Length);
+            Debug.Log(Time.deltaTime);
         }
     }
 
@@ -72,13 +73,13 @@ public class GoalTask : MonoBehaviour
     }
 
     //三角形から星形を取得
-    //ここが重たい原因
+    //ここのforが多いのが重たい原因
     public Star[] TrianglesToStars(Triangle[] triCandidate)
     {
         //三角形が5つ以上ないと星はできないので5未満なら計算しない
         if (triCandidate.Length < 5)
             return null;
-        Debug.Log(triCandidate.Length);
+        //Debug.Log(triCandidate.Length);
         List<Star> stars = new List<Star>();
         //全ての組み合わせを試す
         for (int i = 0; i < triCandidate.Length - 4; i++)
@@ -101,7 +102,7 @@ public class GoalTask : MonoBehaviour
                             {
                                 Star newStar = new Star(triangles);
 
-                                if (CreateIfStar(stars, newStar))
+                                //if (CreateIfStar(stars, newStar))
                                     stars.Add(newStar);
                             }
 
@@ -135,14 +136,13 @@ public class GoalTask : MonoBehaviour
     //星が作れるかどうか
     private bool IfStar(Triangle[] triangles)
     {
-        if (!LineCrossIf(triangles))
-            return false;
-
         Triangle[] trianglesA = TriangleToTriangleCandidate(triangles);
 
         if (trianglesA.Length != 5)
             return false;
 
+        if (!LineCrossIf(triangles))
+            return false;
 
         if (!IfPentagon(triangles))
             return false;
@@ -150,7 +150,7 @@ public class GoalTask : MonoBehaviour
         if (!LineFiveIf(triangles))
             return false;
 
-        Debug.Log("A");
+        Debug.Log("星の生成可能");
         return true;
     }
 
