@@ -12,6 +12,9 @@ public class test : MonoBehaviour
     private EdgeCollider2D edge2D;
     private GameObject taskObject;
     private GoalTask goalTask;
+    private LineRenderer line;
+    private GameObject lightBase;
+    //private ParticleSystem lightLine;
 
     void Start()
     {
@@ -24,7 +27,18 @@ public class test : MonoBehaviour
                 break;
             }
         }
+        foreach (Transform child2 in transform)
+        {
+
+            if (child2.transform.tag == GetTag.LightSource)
+            {
+                lightBase = child2.gameObject;
+                break;
+            }
+        }
         edge2D = colGo.GetComponent<EdgeCollider2D>();
+        line = lightBase.GetComponent<LineRenderer>();
+        //lightLine = lightBase.GetComponent<ParticleSystem>();
         edge2D.edgeRadius = 0.45f;
         taskObject = Utility.GetTask();
         goalTask = taskObject.GetComponent<GoalTask>();
@@ -49,9 +63,15 @@ public class test : MonoBehaviour
         // 反射地点を変えてその座標からレイを伸ばす
         foreach (RaycastHit2D hit in Physics2D.RaycastAll(position + direction * 0.5f, direction))
         {
+            //var main = lightLine.main;
+            //float pix = (position + hit.point).magnitude;
+            //Debug.Log(pix);
+            //main.startLifetimeMultiplier = 5.0f;
+
             if (IsRefrect(hit)) //光が反射
             {
                 RefrectRay(hit, ref position, ref direction);
+                //main.startSpeed = pix / main.startLifetimeMultiplier;
                 Debug.Log("鏡に当たった");
                 DrawReflect(position, direction);
                 break;
@@ -64,7 +84,6 @@ public class test : MonoBehaviour
             }
         }
         Gizmos.DrawLine(startPos, position);
-
     }
 
     //反射可能かどうかの検索
@@ -105,5 +124,11 @@ public class test : MonoBehaviour
         position = hit.point;
         originate.Add(new Vec2Class(position));
         edge2D.points = originate.Select(v => (Vector2)transform.InverseTransformPoint(v.vec2)).ToArray();
+        Vector3[] linePoints = new Vector3[line.positionCount];
+        for (int i = 0; i < line.positionCount; i++)
+        {
+            line.SetPosition(i, linePoints[i]);
+        }
+        
     }
 }
