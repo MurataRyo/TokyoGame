@@ -124,11 +124,14 @@ public class test : MonoBehaviour
         position = hit.point;
         originate.Add(new Vec2Class(position));
         edge2D.points = originate.Select(v => (Vector2)transform.InverseTransformPoint(v.vec2)).ToArray();
+        
         Vector3[] linePoints = new Vector3[line.positionCount];
+        Vector3[] points = new Vector3[line.positionCount];
         for (int i = 0; i < line.positionCount; i++)
         {
-            line.SetPosition(i, linePoints[i]);
+            points[i] = position;
+           
         }
-        
+         line.SetPositions(points);
     }
 }
