@@ -12,9 +12,9 @@ public class test : MonoBehaviour
     private EdgeCollider2D edge2D;
     private GameObject taskObject;
     private GoalTask goalTask;
-    private LineRenderer line;
     private GameObject lightBase;
-    //private ParticleSystem lightLine;
+    private ParticleSystem lightLine;
+    private float loads;
 
     void Start()
     {
@@ -36,9 +36,9 @@ public class test : MonoBehaviour
                 break;
             }
         }
+        lightLine = lightBase.GetComponent<ParticleSystem>();
+        loads = 0f;
         edge2D = colGo.GetComponent<EdgeCollider2D>();
-        line = lightBase.GetComponent<LineRenderer>();
-        //lightLine = lightBase.GetComponent<ParticleSystem>();
         edge2D.edgeRadius = 0.45f;
         taskObject = Utility.GetTask();
         goalTask = taskObject.GetComponent<GoalTask>();
@@ -63,15 +63,16 @@ public class test : MonoBehaviour
         // 反射地点を変えてその座標からレイを伸ばす
         foreach (RaycastHit2D hit in Physics2D.RaycastAll(position + direction * 0.5f, direction))
         {
-            //var main = lightLine.main;
-            //float pix = (position + hit.point).magnitude;
-            //Debug.Log(pix);
-            //main.startLifetimeMultiplier = 5.0f;
+            var main = lightLine.main;
+            loads = (startPos - hit.point).magnitude;
+            Debug.Log((startPos - hit.point).magnitude);
+            main.startLifetimeMultiplier = 0.1f;
+            main.startSpeed = loads / main.startLifetimeMultiplier;
 
             if (IsRefrect(hit)) //光が反射
             {
                 RefrectRay(hit, ref position, ref direction);
-                //main.startSpeed = pix / main.startLifetimeMultiplier;
+
                 Debug.Log("鏡に当たった");
                 DrawReflect(position, direction);
                 break;
@@ -123,8 +124,6 @@ public class test : MonoBehaviour
         direction = Vector2.Reflect(direction, hit.normal);
         position = hit.point;
         originate.Add(new Vec2Class(position));
-        line.positionCount = originate.Count;
-
         edge2D.points = originate.Select(v => (Vector2)transform.InverseTransformPoint(v.vec2)).ToArray();
 
     }
