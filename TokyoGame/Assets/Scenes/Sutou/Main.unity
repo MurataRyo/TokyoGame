@@ -439,7 +439,10 @@ PrefabInstance:
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7c123489fe515864fa26c0aeea27ff14, type: 3}
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> test
 --- !u!1 &491069833
 GameObject:
   m_ObjectHideFlags: 0
@@ -511,7 +514,12 @@ EdgeCollider2D:
   m_Points:
   - {x: -0.5, y: 0}
   - {x: 0.5, y: 0}
+<<<<<<< HEAD
 >>>>>>> origin/sutou
+=======
+=======
+>>>>>>> origin/okazaki
+>>>>>>> test
 --- !u!1 &534669902
 GameObject:
   m_ObjectHideFlags: 0
@@ -744,7 +752,10 @@ BoxCollider2D:
   m_Size: {x: 0.39941406, y: 0.78125}
   m_EdgeRadius: 0
 <<<<<<< HEAD
+<<<<<<< HEAD
 =======
+=======
+>>>>>>> test
 --- !u!1 &694225474
 GameObject:
   m_ObjectHideFlags: 0
@@ -852,7 +863,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: ead6b7dac7ac90b4bb2df1da73c695b1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+<<<<<<< HEAD
 >>>>>>> origin/sutou
+=======
+=======
+>>>>>>> origin/okazaki
+>>>>>>> test
 --- !u!1 &872572693
 GameObject:
   m_ObjectHideFlags: 0
