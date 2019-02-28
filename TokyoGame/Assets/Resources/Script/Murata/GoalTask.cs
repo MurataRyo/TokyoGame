@@ -56,7 +56,7 @@ public class GoalTask : MonoBehaviour
 
             Star[] stars = TrianglesToStars(triangles);
 
-            Debug.Log(Time.deltaTime);
+            Debug.Log("星は" + stars.Length + "個あります");
         }
     }
 
