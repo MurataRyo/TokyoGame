@@ -564,6 +564,7 @@ GameObject:
   - component: {fileID: 2104622217}
   - component: {fileID: 2104622216}
   - component: {fileID: 2104622215}
+  - component: {fileID: 4117273490591703797}
   m_Layer: 0
   m_Name: Glass
   m_TagString: Glass
@@ -659,3 +660,15 @@ CompositeCollider2D:
   m_CompositePaths:
     m_Paths: []
   m_VertexDistance: 0.0005
+--- !u!114 &4117273490591703797
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2104622214}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6561fdb88689864a9379e987d162103, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
