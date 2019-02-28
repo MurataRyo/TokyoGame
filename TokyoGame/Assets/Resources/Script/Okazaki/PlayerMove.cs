@@ -48,7 +48,7 @@ public class PlayerMove : MonoBehaviour
         // 侵入判定
         for (int i = 0; i < playerHit.Length; i++)
         {
-            if (playerHit[i].tag == "Launch")
+            if (playerHit[i].tag == "Col")
             {
                 lightFlag = true;
             }
