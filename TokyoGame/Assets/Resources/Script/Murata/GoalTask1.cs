@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 
-public class GoalTask : MonoBehaviour
+public class GoalTask1 : MonoBehaviour
 {
     [HideInInspector] public List<List<Vec2Class>> rayVartex;  //レイの頂点
     // Start is called before the first frame update
@@ -48,22 +48,19 @@ public class GoalTask : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKey(KeyCode.Return))
+        if (Input.GetKeyDown(KeyCode.Return))
         {
+            Debug.Log("線の数は" + rayVartex.Count + "本");
             Line[] lines = rayVartexToLines(rayVartex);
-            Overlap[] overlaps = LineToOverlap(lines);
-            Triangle[] triangles = OverlapToTriangle(overlaps, lines);
-            triangles = TriangleToTriangleCandidate(triangles);
-            Debug.Log(triangles.Length);
-            //Star[] stars = TrianglesToStars(triangles);
-            //if(stars != null)
-            //{
-            //    Debug.Log("星は" + stars.Length + "個あります");
-            //}
-            //else
-            //{
-            //    Debug.Log("星はありません");
-            //}
+            Star[] stars = LineToStar(lines);
+            if (stars != null)
+            {
+                Debug.Log("星は" + stars.Length + "個あります");
+            }
+            else
+            {
+                Debug.Log("星はありません");
+            }
         }
     }
 
@@ -77,6 +74,110 @@ public class GoalTask : MonoBehaviour
     public void RemoveRayVartex(List<Vec2Class> vertex)
     {
         rayVartex.Remove(vertex);
+    }
+
+    private Star[] LineToStar(Line[] lines)
+    {
+        int q = 0;
+        //線が５本未満なら星が作れないのでNullを返す
+        if (lines.Length < 5)
+            return null;
+
+        List<Star> starList = new List<Star>();
+        for (int i = 0; i < lines.Length - 4; i++)
+        {
+            for (int j = i + 1; j < lines.Length - 3; j++)
+            {
+                if (!LineIfOverlaps(lines[j], lines, new int[] { i }))
+                {
+                    q++;
+                    continue;
+                }
+
+                for (int k = j + 1; k < lines.Length - 2; k++)
+                {
+                    if (!LineIfOverlaps(lines[k], lines, new int[] { i, j }))
+                    {
+                        q++;
+                        continue;
+                    }
+                    for (int x = k + 1; x < lines.Length - 1; x++)
+                    {
+                        if (!LineIfOverlaps(lines[x], lines, new int[] { i, j, k }))
+                        {
+                            q++;
+                            continue;
+                        }
+                        for (int y = x + 1; y < lines.Length; y++)
+                        {
+                            if (!LineIfOverlaps(lines[y], lines, new int[] { i, j, k, x }))
+                            {
+                                q++;
+                                continue;
+                            }
+                            q++;
+                            //5本の線をリストアップする
+                            Line[] lineFive = new Line[] { lines[i], lines[j], lines[k], lines[x], lines[y] };
+                            Overlap[] overlaps = LineToOverlap(lineFive);
+                            Star star = null;
+                            if (OverlapsAndLinesToStar(overlaps, lineFive, out star))
+                                starList.Add(star);
+                        }
+                    }
+                }
+            }
+        }
+        Debug.Log("試行回数は" + q + "回");
+        return starList.ToArray();
+    }
+
+    private bool OverlapsAndLinesToStar(Overlap[] overlaps, Line[] lines, out Star star)
+    {
+        List<Overlap> inSideOverlap = new List<Overlap>();
+        List<Overlap> outSideOverlap = new List<Overlap>();
+        star = null;
+        foreach (Line line in lines)
+        {
+            float min = Mathf.Infinity;
+            Overlap minOverlap = null;
+            float max = -Mathf.Infinity;
+            Overlap maxOverlap = null;
+            foreach (Overlap overlap in line.overlaps)
+            {
+                if (min > overlap.pos.x)
+                {
+                    minOverlap = overlap;
+                    min = overlap.pos.x;
+                }
+
+                if (max < overlap.pos.x)
+                {
+                    maxOverlap = overlap;
+                    max = overlap.pos.x;
+                }
+            }
+            foreach (Overlap overlap in line.overlaps)
+            {
+                if (overlap == maxOverlap || overlap == minOverlap)
+                {
+                    if (outSideOverlap.Contains(overlap))
+                        return false;
+
+                    if (!inSideOverlap.Contains(overlap))
+                        inSideOverlap.Add(overlap);
+                }
+                else
+                {
+                    if (inSideOverlap.Contains(overlap))
+                        return false;
+
+                    if (!outSideOverlap.Contains(overlap))
+                        outSideOverlap.Add(overlap);
+                }
+            }
+        }
+        star = new Star(outSideOverlap.ToArray(), inSideOverlap.ToArray());
+        return true;
     }
 
     //三角形から星形を取得
@@ -118,26 +219,8 @@ public class GoalTask : MonoBehaviour
                 }
             }
         }
-        Debug.Log(q);
         return stars.ToArray();
     }
-
-    private bool InIfLine(Triangle triangleBase,Triangle[] triangles)
-    {
-        foreach(Triangle triangle in triangles)
-        {
-            foreach(Line lineBase in triangleBase.lines)
-            {
-                if(!InIfLine(lineBase,triangle.lines))
-                {
-                    Debug.Log("星候補から外します");
-                    return false;
-                }
-            }
-        }
-        return true;
-    }
-
     //星が作れるかどうか
     private bool IfStar(Triangle[] triangles)
     {
@@ -356,6 +439,61 @@ public class GoalTask : MonoBehaviour
         return false;
     }
 
+    //線から重なってる点へ変換
+    private Overlap[] LineToOverlap(Line[] lines)
+    {
+        List<Overlap> overlaps = new List<Overlap>();
+        for (int i = 0; i < lines.Length - 1; i++)
+        {
+            for (int j = i + 1; j < lines.Length; j++)
+            {
+                Vector2 overlap;
+                if (!LineIfOverlap(lines[i], lines[j], out overlap))
+                    continue;
+
+                Overlap overlapClass = new Overlap(lines[i], lines[j], overlap);
+                overlapClass.LineAddOverlap();
+                overlaps.Add(overlapClass);
+            }
+        }
+
+        return overlaps.ToArray();
+    }
+
+    //頂点を生成できるかどうか
+    private bool IsCreateOverlap(Overlap newOverlap, Overlap[] nowOverlap)
+    {
+        foreach (Overlap overlap in nowOverlap)
+        {
+            //そもそも点の座補が違ったら生成可能なので入れる
+            if (newOverlap.pos != overlap.pos)
+                continue;
+
+            //同じ線を利用していたら生成できない
+            if (newOverlap.lines[0] == overlap.lines[0] && newOverlap.lines[1] == overlap.lines[1] ||
+                newOverlap.lines[1] == overlap.lines[0] && newOverlap.lines[0] == overlap.lines[1])
+            {
+                return false;
+            }
+        }
+
+        newOverlap.LineAddOverlap();
+        return true;
+    }
+
+    private bool LineIfOverlaps(Line linea, Line[] lineb, int[] i)
+    {
+        for (int j = 0; j < i.Length; j++)
+        {
+            Vector2 vec2 = Vector2.zero;
+            if (!LineIfOverlap(linea, lineb[i[j]], out vec2))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
     //線情報と頂点情報から三角形情報を取得
     private Triangle[] OverlapToTriangle(Overlap[] overlaps, Line[] lines)
     {
@@ -431,53 +569,6 @@ public class GoalTask : MonoBehaviour
         return true;
     }
 
-    //線から重なってる点へ変換
-    private Overlap[] LineToOverlap(Line[] lines)
-    {
-        List<Overlap> overlaps = new List<Overlap>();
-        foreach (Line line in lines)
-        {
-            for (int i = 0; i < lines.Length; i++)
-            {
-                if (line == lines[i])
-                    continue;
-
-                Vector2 overlap;
-                if (!LineIfOverlap(line, lines[i], out overlap))
-                    continue;
-
-                Overlap overlapClass = new Overlap(line, lines[i], overlap);
-                if (IsCreateOverlap(overlapClass, overlaps.ToArray()))
-                {
-                    overlaps.Add(overlapClass);
-                }
-            }
-        }
-
-        return overlaps.ToArray();
-    }
-
-    //頂点を生成できるかどうか
-    private bool IsCreateOverlap(Overlap newOverlap, Overlap[] nowOverlap)
-    {
-        foreach (Overlap overlap in nowOverlap)
-        {
-            //そもそも点の座補が違ったら生成可能なので入れる
-            if (newOverlap.pos != overlap.pos)
-                continue;
-
-            //同じ線を利用していたら生成できない
-            if (newOverlap.lines[0] == overlap.lines[0] && newOverlap.lines[1] == overlap.lines[1] ||
-                newOverlap.lines[1] == overlap.lines[0] && newOverlap.lines[0] == overlap.lines[1])
-            {
-                return false;
-            }
-        }
-
-        newOverlap.LineAddOverlap();
-        return true;
-    }
-
     //線が重なっているかを調べ点を返す
     //今後数学的に調べる場所
     private bool LineIfOverlap(Line linea, Line lineb, out Vector2 overlap)
@@ -526,190 +617,3 @@ public class GoalTask : MonoBehaviour
     }
 }
 
-//線の情報を保持するクラス※値型だと同じものか判断できないためクラス
-public class Line
-{
-    public List<Overlap> overlaps;
-    public Vector2[] vartex;
-    public Line(Vector2 vec2a, Vector2 vec2b)
-    {
-        overlaps = new List<Overlap>();
-        vartex = new Vector2[2];
-        vartex[0] = vec2a;
-        vartex[1] = vec2b;
-    }
-
-    public void AddOverlaps(Overlap overlap)
-    {
-        if(overlaps != null && overlaps.Count != 0)
-        {
-            if (overlaps.Contains(overlap))
-                return;
-        }
-
-        overlaps.Add(overlap);
-    }
-}
-
-//交わっている点の情報を保持するクラス
-public class Overlap : IComparable
-{
-    public Line[] lines;
-    public Vector2 pos;
-    public Overlap(Line linea, Line lineb, Vector2 pos)
-    {
-        lines = new Line[2];
-        lines[0] = linea;
-        lines[1] = lineb;
-        this.pos = pos;
-    }
-
-    //バグの原因の可能性あり並び替え
-    public int CompareTo(object obj)
-    {
-        Overlap lap = (Overlap)obj;
-
-        if (pos.x > lap.pos.x)
-        {
-            return -1;
-        }
-        else if (pos.x < lap.pos.x)
-        {
-            return 1;
-        }
-        else if (pos.y > lap.pos.y)
-        {
-            return -1;
-        }
-        else if (pos.y < lap.pos.y)
-        {
-            return 1;
-        }
-
-        Debug.Log("a");
-        return 0;
-    }
-
-    public void LineAddOverlap()
-    {
-        lines[0].AddOverlaps(this);
-        lines[1].AddOverlaps(this);
-    }
-}
-
-//頂点と線の情報を保持するクラス
-public class Triangle
-{
-    public Overlap[] overlaps;
-    public Line[] lines;
-    public Triangle(Overlap overlapsA, Overlap overlapsB, Overlap overlapsC)
-    {
-        overlaps = new Overlap[3];
-        overlaps[0] = overlapsA;
-        overlaps[1] = overlapsB;
-        overlaps[2] = overlapsC;
-
-        Array.Sort(overlaps);
-    }
-
-    public void LineCreate()
-    {
-        List<Line> lineList = new List<Line>();
-        foreach (Overlap overlapA in overlaps)
-        {
-            foreach (Overlap overlapB in overlaps)
-            {
-                if (overlapA == overlapB)
-                    continue;
-
-                foreach (Line lineA in overlapA.lines)
-                {
-                    foreach (Line lineB in overlapB.lines)
-                    {
-                        //同じ線じゃないならやり直し
-                        if (lineA != lineB)
-                            continue;
-
-                        //元々リストに入っていたらやり直し
-                        if (IfInLine(lineList.ToArray(), lineA))
-                            continue;
-
-                        //頂点のもととなっている線をリストに入れる
-                        lineList.Add(lineA);
-                    }
-                }
-            }
-        }
-
-        lines = lineList.ToArray();
-    }
-
-    public bool IfInLine(Line[] lines, Line newLine)
-    {
-        foreach (Line line in lines)
-        {
-            if (newLine == line)
-                return true;
-        }
-        return false;
-    }
-}
-
-//星の情報
-public class Star
-{
-    public Triangle[] triangles;
-    public Line[] lines;
-
-    public Overlap[] outSideOverlaps;
-    public Overlap[] inSideOverlaps;
-    public Overlap[] overlaps;
-    public Star(Triangle[] triangles)
-    {
-        this.triangles = triangles;
-
-        List<Line> lines = new List<Line>();
-        foreach (Triangle triangle in triangles)
-        {
-            foreach (Line line in triangle.lines)
-            {
-                if (!InIfLine(line, lines.ToArray()))
-                    lines.Add(line);
-            }
-        }
-        this.lines = lines.ToArray();
-    }
-
-    public Star(Overlap[] outSideOverlaps,Overlap[] inSideOverlaps)
-    {
-        this.outSideOverlaps = outSideOverlaps;
-        this.inSideOverlaps = inSideOverlaps;
-
-        List<Overlap> overlaps = new List<Overlap>();
-        overlaps.AddRange(outSideOverlaps);
-        overlaps.AddRange(inSideOverlaps);
-        this.overlaps = overlaps.ToArray();
-
-        List<Line> lines = new List<Line>();
-        foreach (Overlap overlap in this.overlaps)
-        {
-            foreach (Line line in overlap.lines)
-            {
-                if (!InIfLine(line, lines.ToArray()))
-                    lines.Add(line);
-            }
-        }
-        this.lines = lines.ToArray();
-    }
-
-    //同じ線を持っているか
-    private bool InIfLine(Line lineBase, Line[] lines)
-    {
-        foreach (Line line in lines)
-        {
-            if (line == lineBase)
-                return true;
-        }
-        return false;
-    }
-}
