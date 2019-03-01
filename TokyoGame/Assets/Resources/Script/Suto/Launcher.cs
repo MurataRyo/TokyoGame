@@ -4,22 +4,24 @@ using UnityEngine;
 
 public class Launcher : MonoBehaviour
 {
-    [HideInInspector] public bool controlFlag = false;
-    GameObject Player;
-    PlayerMove playerMove;
+    //[HideInInspector] public GameObject Lunch; //発射口
 
-    void Start()
-    {
-        Player = GameObject.FindGameObjectWithTag("Player");
-        playerMove = Player.GetComponent<PlayerMove>();
-    }
+    //発射口を探す
+    //void Start()
+    //{
+    //    foreach (Transform chiild in transform)
+    //    {
+    //        if (chiild.gameObject.tag == "Lunch")
+    //        {
+    //            Lunch = chiild.gameObject;
+    //            break;
+    //        }
+    //    }
+    //}
 
     void Update()
     {
-        if (controlFlag && playerMove.launchControl)
-        {
-            RotateLaunch();
-        }
+        RotateLaunch();
     }
 
     // キーで向きを変える

@@ -12,8 +12,6 @@ public class PlayerMove : MonoBehaviour
     }
 
     [HideInInspector] public PlayerState playerState = PlayerState.Normal;
-    new GameObject light;
-    GameObject launchHit;
     
     float speed;                                // 移動速度
     float jumpPower;                            // ジャンプ力
@@ -27,8 +25,6 @@ public class PlayerMove : MonoBehaviour
     bool isLeftWall = false;                    // 左の壁に触れているかどうか
     bool lightFlag = false;                     // 光と重なっているかどうか
     bool jumpFlag = false;                      // ジャンプするかどうか
-    [HideInInspector]
-    public bool launchControl = false;          // 光源を操作するかどうか
 
     Vector2 position = Vector2.zero;
 
@@ -37,8 +33,6 @@ public class PlayerMove : MonoBehaviour
 
     void Start()
     {
-        light = GameObject.FindGameObjectWithTag("Col");
-        launchHit = GameObject.FindGameObjectWithTag("LaunchHit");
         jumpPower = Mathf.Pow(JUMP_HEIGHT * 2 * GRAVITY_SIZE, 0.5f); // ジャンプ力の計算
         rigidbody = GetComponent<Rigidbody2D>();
         collider2D = gameObject.GetComponent<BoxCollider2D>();
@@ -61,15 +55,15 @@ public class PlayerMove : MonoBehaviour
         }
 
         // 光の中を出入りする
-        if (lightFlag && Input.GetKey(KeyCode.LeftControl) && playerState != PlayerState.Light)
+        if (lightFlag && Input.GetKeyDown(KeyCode.LeftControl) && playerState != PlayerState.Light)
         {
             playerState = PlayerState.Light;
-            velocity = new Vector2(0f, 0f);     // 速度をリセット
+            velocity = new Vector2(0f, 0f);
         }
-        else if ((!lightFlag || !Input.GetKey(KeyCode.LeftControl)) && playerState != PlayerState.Normal)
+        else if (!Input.GetKey(KeyCode.LeftControl) && playerState != PlayerState.Normal)
         {
             playerState = PlayerState.Normal;
-            velocity = new Vector2(0f, 0f);     // 速度をリセット
+            velocity = new Vector2(0f, 0f);
         }
 
         // 速度の変更
@@ -91,67 +85,46 @@ public class PlayerMove : MonoBehaviour
         {
             runFlag = false;
         }
-        
+
         // 自機の移動
         if (playerState == PlayerState.Light) // 光の中に入っている時の移動
         {
             Vector2 vect2 = new Vector2(Input.GetAxisRaw(("Horizontal").ToString()), Input.GetAxisRaw(("Vertical").ToString())).normalized;
-            velocity = transform.right * vect2.x + transform.up * vect2.y;
-            velocity *= speed;
-            //transform.position = new Vector3(
-            //        Mathf.Clamp(transform.position.x, light.transform.position.x - (light.transform.localScale.x / 2), light.transform.position.x + (light.transform.localScale.x / 2)),
-            //        Mathf.Clamp(transform.position.y, light.transform.position.y - (light.transform.localScale.y / 2), light.transform.position.y + (light.transform.localScale.y / 2)),
-            //        0f);
-
             // 光の中から出ないようにする
-            //if (!lightFlag)
-            //{
-            //    transform.position = position;
-            //    velocity = new Vector2(0f, 0f);
-            //}
-            //else
-            //{
-            //    velocity = transform.right * vect2.x + transform.up * vect2.y;
-            //    velocity *= speed;
-            //}
+            if (!lightFlag)
+            {
+                transform.position = position;
+                velocity = new Vector2(0f, 0f);
+            }
+            else
+            {
+                velocity = transform.right * vect2.x + transform.up * vect2.y;
+                velocity *= speed;
+            }
             position = transform.position;
             rigidbody.velocity = new Vector2(velocity.x, velocity.y);
 
         }
         else // それ以外の時の移動
         {
-            if(launchControl)
+            velocity.x = Input.GetAxisRaw("Horizontal") * speed;
+
+            if ((isRightWall && velocity.x > 0f) || (isLeftWall && velocity.x < 0f))
             {
                 velocity.x = 0f;
             }
-            else
-            {
-                velocity.x = Input.GetAxisRaw("Horizontal") * speed;
-
-                if ((isRightWall && velocity.x > 0f) || (isLeftWall && velocity.x < 0f))
-                {
-                    velocity.x = 0f;
-                }
-            }
 
             // ジャンプする
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetKeyDown(KeyCode.Space) && isGround)
             {
-                if(launchControl)
-                {
-                    launchControl = false;
-                }
-                else if(isGround)
-                {
-                    jumpFlag = true;
-                }
+                jumpFlag = true;
             }
 
             if (jumpFlag && !isGround)
             {
                 jumpFlag = false;
             }
-            
+
             /*重力関係---------------------------------------------------*/
             if ((isGround && !jumpFlag) || playerState == PlayerState.Light)
             {
@@ -170,6 +143,7 @@ public class PlayerMove : MonoBehaviour
             rigidbody.velocity = new Vector2(velocity.x, velocity.y);
         }
         //ModeChange();
+        Debug.Log(lightFlag);
     }
 
     // 自機の状態変化
