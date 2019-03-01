@@ -65,7 +65,6 @@ public class test : MonoBehaviour
         {
             var main = lightLine.main;
             loads = (startPos - hit.point).magnitude;
-            Debug.Log((startPos - hit.point).magnitude);
             main.startLifetimeMultiplier = 0.1f;
             main.startSpeed = loads / main.startLifetimeMultiplier;
 

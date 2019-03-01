@@ -55,8 +55,14 @@ public class GoalTask : MonoBehaviour
             Triangle[] triangles = OverlapToTriangle(overlaps, lines);
 
             Star[] stars = TrianglesToStars(triangles);
-
-            Debug.Log("星は" + stars.Length + "個あります");
+            if(stars != null)
+            {
+                Debug.Log("星は" + stars.Length + "個あります");
+            }
+            else
+            {
+                Debug.Log("星はありません");
+            }
         }
     }
 
@@ -80,6 +86,7 @@ public class GoalTask : MonoBehaviour
         if (triCandidate.Length < 5)
             return null;
         //Debug.Log(triCandidate.Length);
+        int q = 0;
         List<Star> stars = new List<Star>();
         //全ての組み合わせを試す
         for (int i = 0; i < triCandidate.Length - 4; i++)
@@ -98,12 +105,12 @@ public class GoalTask : MonoBehaviour
                             triangles[2] = triCandidate[k];
                             triangles[3] = triCandidate[x];
                             triangles[4] = triCandidate[y];
+                            q++;
                             if (IfStar(triangles))
                             {
                                 Star newStar = new Star(triangles);
 
-                                //if (CreateIfStar(stars, newStar))
-                                    stars.Add(newStar);
+                                stars.Add(newStar);
                             }
 
                         }
@@ -111,26 +118,8 @@ public class GoalTask : MonoBehaviour
                 }
             }
         }
-
+        Debug.Log(q);
         return stars.ToArray();
-    }
-
-    //星が生成できるかどうか
-    private bool CreateIfStar(List<Star> stars, Star newStar)
-    {
-        foreach (Star star in stars)
-        {
-            int count = 5;
-            foreach (Triangle triangle in star.triangles)
-            {
-                if (InIfTriangle(triangle, newStar.triangles))
-                    count--;
-            }
-
-            if (count == 0)
-                return false;
-        }
-        return true;
     }
 
     //星が作れるかどうか
@@ -138,13 +127,10 @@ public class GoalTask : MonoBehaviour
     {
         Triangle[] trianglesA = TriangleToTriangleCandidate(triangles);
 
-        if (trianglesA.Length != 5)
+        if (trianglesA == null || trianglesA.Length != 5)
             return false;
 
         if (!LineCrossIf(triangles))
-            return false;
-
-        if (!IfPentagon(triangles))
             return false;
 
         if (!LineFiveIf(triangles))
@@ -179,22 +165,6 @@ public class GoalTask : MonoBehaviour
             }
         }
         return true;
-    }
-
-    //5角形を作れるかどうか
-    //要検討
-    private bool IfPentagon(Triangle[] triangles)
-    {
-        List<Triangle> endTriangle = new List<Triangle>();
-
-        Triangle triangleBase = triangles[0];
-        for (int i = 0; i < 4; i++)
-        {
-            if (!OverlapIf(ref triangleBase, endTriangle, triangles))
-                return false;
-        }
-
-        return InIfOverlap(triangleBase, endTriangle[0]);
     }
 
     //三角形の頂点と同じであるか※Listの三角形は無視をする
@@ -315,13 +285,13 @@ public class GoalTask : MonoBehaviour
         return false;
     }
 
-    //他の三角形と同じ頂点を2つ以上持っている三角形を返す
+    //他の三角形と同じ頂点を3つ以上持っている三角形を返す
     private Triangle[] OverlapInTriangle(Triangle[] triangles)
     {
         List<Triangle> triCandidate = new List<Triangle>();
         foreach (Triangle triangleA in triangles)
         {
-            //他の三角形と同じ頂点を2つ以上持っているかを調べている
+            //他の三角形と同じ頂点を3つ以上持っているかを調べている
             if (OverlapInTriangle(triangleA, triangles))
             {
                 triCandidate.Add(triangleA);
@@ -331,7 +301,7 @@ public class GoalTask : MonoBehaviour
         return triCandidate.ToArray();
     }
 
-    //他の三角形と同じ頂点を2つ以上持っているか※同じ三角形からは1つの頂点まで
+    //他の三角形と同じ頂点を3つ以上持っているか※同じ三角形からは1つの頂点まで
     private bool OverlapInTriangle(Triangle triangleBase, Triangle[] triangles)
     {
         int count = 2;
@@ -346,8 +316,8 @@ public class GoalTask : MonoBehaviour
                 {
                     count++;
 
-                    //2つ以上他の三角形と同じ頂点があるので追加
-                    if (count >= 2)
+                    //3つ以上他の三角形と同じ頂点があるので追加
+                    if (count >= 3)
                         return true;
 
                     break;
