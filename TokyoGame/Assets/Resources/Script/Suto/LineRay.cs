@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-public class test : MonoBehaviour
+public class LineRay : MonoBehaviour
 {
     private float maxStep = 100; //伸びる距離
     [HideInInspector] public List<Vec2Class> originate; //座標を保存
@@ -14,7 +14,6 @@ public class test : MonoBehaviour
     private GoalTask goalTask;
     private GameObject lightBase;
     private ParticleSystem lightLine;
-    private float loads;
 
     void Start()
     {
@@ -37,7 +36,6 @@ public class test : MonoBehaviour
             }
         }
         lightLine = lightBase.GetComponent<ParticleSystem>();
-        loads = 0f;
         edge2D = colGo.GetComponent<EdgeCollider2D>();
         edge2D.edgeRadius = 0.45f;
         taskObject = Utility.GetTask();
@@ -46,13 +44,24 @@ public class test : MonoBehaviour
     }
 
     //レイをシーンで見えるようにする
-    void OnDrawGizmos()
+    void Update()
     {
         goalTask.RemoveRayVartex(originate);
         originate = new List<Vec2Class>();
         originate.Add(new Vec2Class(transform.position));
         DrawReflect(transform.position + transform.right * 0.75f, transform.right);
         goalTask.AddRayVartex(originate);
+
+        for (int i = 0; i < originate.Count - 1; i++)
+        {
+            float range = (originate[i].vec2 - originate[i + 1].vec2).magnitude * 10;
+            for (int j = 0; j < range; j++)
+            {
+                ParticleSystem.EmitParams emit = new ParticleSystem.EmitParams();
+                emit.position = lightLine.transform.InverseTransformPoint(Vector2.Lerp(originate[i].vec2, originate[i + 1].vec2, j / range));
+                lightLine.Emit(emit, 1);
+            }
+        }
     }
 
     //レイを反射させる
@@ -63,17 +72,13 @@ public class test : MonoBehaviour
         // 反射地点を変えてその座標からレイを伸ばす
         foreach (RaycastHit2D hit in Physics2D.RaycastAll(position + direction * 0.5f, direction))
         {
-            var main = lightLine.main;
-            loads = (startPos - hit.point).magnitude;
-            main.startLifetimeMultiplier = 0.1f;
-            main.startSpeed = loads / main.startLifetimeMultiplier;
-
             if (IsRefrect(hit)) //光が反射
             {
                 RefrectRay(hit, ref position, ref direction);
 
                 Debug.Log("鏡に当たった");
                 DrawReflect(position, direction);
+
                 break;
             }
             else if (NotRefrect(hit)) //光が終了
@@ -83,7 +88,7 @@ public class test : MonoBehaviour
                 break;
             }
         }
-        Gizmos.DrawLine(startPos, position);
+        //Gizmos.DrawLine(startPos, position);
     }
 
     //反射可能かどうかの検索
@@ -124,6 +129,5 @@ public class test : MonoBehaviour
         position = hit.point;
         originate.Add(new Vec2Class(position));
         edge2D.points = originate.Select(v => (Vector2)transform.InverseTransformPoint(v.vec2)).ToArray();
-
     }
 }

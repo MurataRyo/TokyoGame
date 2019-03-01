@@ -270,6 +270,7 @@ GameObject:
   m_Component:
   - component: {fileID: 318545365}
   - component: {fileID: 318545364}
+  - component: {fileID: 318545366}
   m_Layer: 0
   m_Name: GameObject
   m_TagString: Tasks
@@ -303,6 +304,18 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 10
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &318545366
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 318545363}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7f826833381ee2d4dafb67f40aafcf1e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &580122180
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -717,6 +730,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1250094849000901649, guid: cef1aba6691c6eb46b96b955ead2ffb6,
+        type: 3}
+      propertyPath: m_BackGroundColor.r
+      value: 0.5943396
+      objectReference: {fileID: 0}
+    - target: {fileID: 1250094849000901649, guid: cef1aba6691c6eb46b96b955ead2ffb6,
+        type: 3}
+      propertyPath: m_BackGroundColor.g
+      value: 0.5943396
+      objectReference: {fileID: 0}
+    - target: {fileID: 1250094849000901649, guid: cef1aba6691c6eb46b96b955ead2ffb6,
+        type: 3}
+      propertyPath: m_BackGroundColor.b
+      value: 0.5943396
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: cef1aba6691c6eb46b96b955ead2ffb6, type: 3}
