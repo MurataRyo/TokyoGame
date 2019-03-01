@@ -174,7 +174,7 @@ EdgeCollider2D:
   m_UsedByEffector: 0
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
-  m_EdgeRadius: 0.45
+  m_EdgeRadius: 0
   m_Points:
   - {x: -0.5, y: 0}
   - {x: 0.5, y: 0}
@@ -190,15 +190,20 @@ PrefabInstance:
       propertyPath: m_Name
       value: ShineRay
       objectReference: {fileID: 0}
+    - target: {fileID: 1336685169640730478, guid: 7c05ba1e7e9000241853b881d8987d8a,
+        type: 3}
+      propertyPath: m_TagString
+      value: LightSource
+      objectReference: {fileID: 0}
     - target: {fileID: 1336685169640730477, guid: 7c05ba1e7e9000241853b881d8987d8a,
         type: 3}
       propertyPath: m_LocalPosition.x
-      value: 1.064
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1336685169640730477, guid: 7c05ba1e7e9000241853b881d8987d8a,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.017
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1336685169640730477, guid: 7c05ba1e7e9000241853b881d8987d8a,
         type: 3}
@@ -250,6 +255,21 @@ PrefabInstance:
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 10308, guid: 0000000000000000f000000000000000, type: 0}
+    - target: {fileID: 1336685169640730476, guid: 7c05ba1e7e9000241853b881d8987d8a,
+        type: 3}
+      propertyPath: InitialModule.startLifetime.scalar
+      value: 0.0001
+      objectReference: {fileID: 0}
+    - target: {fileID: 1336685169640730476, guid: 7c05ba1e7e9000241853b881d8987d8a,
+        type: 3}
+      propertyPath: InitialModule.startSpeed.scalar
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1336685169640730476, guid: 7c05ba1e7e9000241853b881d8987d8a,
+        type: 3}
+      propertyPath: EmissionModule.rateOverTime.scalar
+      value: 10000
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7c05ba1e7e9000241853b881d8987d8a, type: 3}
 --- !u!4 &2780023851785609934 stripped

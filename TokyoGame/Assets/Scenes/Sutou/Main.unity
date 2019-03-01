@@ -941,48 +941,7 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 6722962623914802574, guid: b3f345d7828568144b1ed64464046cb1,
-        type: 3}
-      propertyPath: m_EdgeRadius
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 6722962623914802574, guid: b3f345d7828568144b1ed64464046cb1,
-        type: 3}
-      propertyPath: m_IsTrigger
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 2780023851785609934, guid: b3f345d7828568144b1ed64464046cb1,
-        type: 3}
-      propertyPath: m_LocalPosition.x
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2780023851785609934, guid: b3f345d7828568144b1ed64464046cb1,
-        type: 3}
-      propertyPath: m_LocalPosition.y
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2780023851785609933, guid: b3f345d7828568144b1ed64464046cb1,
-        type: 3}
-      propertyPath: m_TagString
-      value: LightSource
-      objectReference: {fileID: 0}
-    - target: {fileID: 2780023851785609935, guid: b3f345d7828568144b1ed64464046cb1,
-        type: 3}
-      propertyPath: InitialModule.startLifetime.scalar
-      value: 0.0001
-      objectReference: {fileID: 0}
-    - target: {fileID: 2780023851785609935, guid: b3f345d7828568144b1ed64464046cb1,
-        type: 3}
-      propertyPath: InitialModule.startSpeed.scalar
-      value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 2780023851785609935, guid: b3f345d7828568144b1ed64464046cb1,
-        type: 3}
-      propertyPath: EmissionModule.rateOverTime.scalar
-      value: 10000
-      objectReference: {fileID: 0}
-    m_RemovedComponents:
-    - {fileID: 1288862889, guid: b3f345d7828568144b1ed64464046cb1, type: 3}
+    m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b3f345d7828568144b1ed64464046cb1, type: 3}
 --- !u!1001 &1905223277
 PrefabInstance:
