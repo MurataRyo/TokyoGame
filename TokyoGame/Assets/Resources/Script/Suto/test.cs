@@ -14,7 +14,6 @@ public class test : MonoBehaviour
     private GoalTask goalTask;
     private GameObject lightBase;
     private ParticleSystem lightLine;
-    private float loads;
 
     void Start()
     {
@@ -37,7 +36,6 @@ public class test : MonoBehaviour
             }
         }
         lightLine = lightBase.GetComponent<ParticleSystem>();
-        loads = 0f;
         edge2D = colGo.GetComponent<EdgeCollider2D>();
         edge2D.edgeRadius = 0.45f;
         taskObject = Utility.GetTask();
@@ -90,7 +88,7 @@ public class test : MonoBehaviour
                 break;
             }
         }
-        //Gizmos.DrawLine(startPos, position);
+        Gizmos.DrawLine(startPos, position);
     }
 
     //反射可能かどうかの検索
