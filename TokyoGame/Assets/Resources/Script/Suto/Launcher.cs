@@ -4,8 +4,6 @@ using UnityEngine;
 
 public class Launcher : MonoBehaviour
 {
-<<<<<<< HEAD
-=======
     [HideInInspector] public bool controlFlag = false;
     GameObject Player;
     PlayerMove playerMove;
@@ -15,8 +13,7 @@ public class Launcher : MonoBehaviour
         Player = GameObject.FindGameObjectWithTag("Player");
         playerMove = Player.GetComponent<PlayerMove>();
     }
-
->>>>>>> parent of a3963ff... Revert "一部不具合修正等"
+    
     void Update()
     {
         if (controlFlag && playerMove.launchControl)
