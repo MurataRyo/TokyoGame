@@ -4,9 +4,25 @@ using UnityEngine;
 
 public class Launcher : MonoBehaviour
 {
+<<<<<<< HEAD
+=======
+    [HideInInspector] public bool controlFlag = false;
+    GameObject Player;
+    PlayerMove playerMove;
+
+    void Start()
+    {
+        Player = GameObject.FindGameObjectWithTag("Player");
+        playerMove = Player.GetComponent<PlayerMove>();
+    }
+
+>>>>>>> parent of a3963ff... Revert "一部不具合修正等"
     void Update()
     {
-        RotateLaunch();
+        if (controlFlag && playerMove.launchControl)
+        {
+            RotateLaunch();
+        }
     }
 
     // キーで向きを変える
