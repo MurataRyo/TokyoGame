@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-public class test : MonoBehaviour
+public class LineRay : MonoBehaviour
 {
     private float maxStep = 100; //伸びる距離
     [HideInInspector] public List<Vec2Class> originate; //座標を保存
@@ -44,7 +44,7 @@ public class test : MonoBehaviour
     }
 
     //レイをシーンで見えるようにする
-    void OnDrawGizmos()
+    void Update()
     {
         goalTask.RemoveRayVartex(originate);
         originate = new List<Vec2Class>();
@@ -88,7 +88,7 @@ public class test : MonoBehaviour
                 break;
             }
         }
-        Gizmos.DrawLine(startPos, position);
+        //Gizmos.DrawLine(startPos, position);
     }
 
     //反射可能かどうかの検索

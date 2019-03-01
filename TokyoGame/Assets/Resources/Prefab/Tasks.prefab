@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 3848973659096291806}
-  - component: {fileID: 3848973659096291801}
+  - component: {fileID: 5173262046573327266}
   m_Layer: 0
   m_Name: Tasks
   m_TagString: Tasks
@@ -31,7 +31,7 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3848973659096291801
+--- !u!114 &5173262046573327266
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -40,6 +40,6 @@ MonoBehaviour:
   m_GameObject: {fileID: 3848973659096291807}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: a5a8c2976c6d2434c80a9733bf2810c0, type: 3}
+  m_Script: {fileID: 11500000, guid: 7f826833381ee2d4dafb67f40aafcf1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
