@@ -944,7 +944,12 @@ PrefabInstance:
     - target: {fileID: 3869983767365374334, guid: b3f345d7828568144b1ed64464046cb1,
         type: 3}
       propertyPath: m_TagString
-      value: Untagged
+      value: LaunchBase
+      objectReference: {fileID: 0}
+    - target: {fileID: 2780023851785609935, guid: b3f345d7828568144b1ed64464046cb1,
+        type: 3}
+      propertyPath: InitialModule.maxNumParticles
+      value: 2147483647
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: b3f345d7828568144b1ed64464046cb1, type: 3}
