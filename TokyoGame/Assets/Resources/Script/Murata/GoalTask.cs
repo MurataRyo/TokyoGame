@@ -6,11 +6,13 @@ using System;
 public class GoalTask : MonoBehaviour
 {
     [HideInInspector] public List<List<Vec2Class>> rayVartex;  //レイの頂点
+    [HideInInspector] public List<List<Vec2Class>> lines;  //貰う線の情報
 
     // Start is called before the first frame update
     private void Awake()
     {
         rayVartex = new List<List<Vec2Class>>();
+        lines = new List<List<Vec2Class>>();
     }
 
     //確認用
