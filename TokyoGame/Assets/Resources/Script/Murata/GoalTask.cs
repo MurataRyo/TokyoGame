@@ -6,11 +6,10 @@ using System;
 public class GoalTask : MonoBehaviour
 {
     [HideInInspector] public List<List<Vec2Class>> rayVartex;  //レイの頂点
-    [HideInInspector] public List<Line> GetLines;
+
     // Start is called before the first frame update
     private void Awake()
     {
-        GetLines = new List<Line>();
         rayVartex = new List<List<Vec2Class>>();
     }
 
@@ -50,14 +49,14 @@ public class GoalTask : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Return))
+        if (Input.GetKey(KeyCode.Return))
         {
             Debug.Log("線の数は" + rayVartex.Count + "本");
             Line[] lines = rayVartexToLines(rayVartex);
-            Star[] stars = LineToStar(lines);
+            Star stars = LineToStar(lines);
             if (stars != null)
             {
-                Debug.Log("星は" + stars.Length + "個あります");
+                Debug.Log("星はあります");
             }
             else
             {
@@ -78,7 +77,7 @@ public class GoalTask : MonoBehaviour
         rayVartex.Remove(vertex);
     }
 
-    private Star[] LineToStar(Line[] lines)
+    private Star LineToStar(Line[] lines)
     {
         int q = 0;
         //線が５本未満なら星が作れないのでNullを返す
@@ -123,14 +122,17 @@ public class GoalTask : MonoBehaviour
                             Overlap[] overlaps = LineToOverlap(lineFive);
                             Star star = null;
                             if (OverlapsAndLinesToStar(overlaps, lineFive, out star))
-                                starList.Add(star);
+                            {
+                                Debug.Log("試行回数は" + q + "回");
+                                return star;
+                            }
                         }
                     }
                 }
             }
         }
         Debug.Log("試行回数は" + q + "回");
-        return starList.ToArray();
+        return null; ;
     }
 
     private bool OverlapsAndLinesToStar(Overlap[] overlaps, Line[] lines, out Star star)
@@ -622,11 +624,13 @@ public class GoalTask : MonoBehaviour
 //線の情報を保持するクラス※値型だと同じものか判断できないためクラス
 public class Line
 {
+    public bool ChangeIf;
     public List<Overlap> overlaps;
     public Vector2[] vartex;
     public Vec2Class[] vec2Classes;
     public Line(Vector2 vec2a, Vector2 vec2b)
     {
+        ChangeIf = true;
         overlaps = new List<Overlap>();
         vartex = new Vector2[2];
         vartex[0] = vec2a;
@@ -635,6 +639,7 @@ public class Line
 
     public Line(Vec2Class vec2A,Vec2Class vec2B)
     {
+        ChangeIf = true;
         vec2Classes = new Vec2Class[2];
         vec2Classes[0] = vec2A;
         vec2Classes[1] = vec2B;
