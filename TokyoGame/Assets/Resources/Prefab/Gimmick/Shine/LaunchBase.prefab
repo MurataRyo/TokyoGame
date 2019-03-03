@@ -126,6 +126,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8eea1b4bc327164eb8e500545937526, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  controlFlag: 0
 --- !u!114 &6722962623040542276
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -289,7 +290,7 @@ PrefabInstance:
     - target: {fileID: 1336685169640730476, guid: 7c05ba1e7e9000241853b881d8987d8a,
         type: 3}
       propertyPath: InitialModule.startLifetime.scalar
-      value: 0.0001
+      value: 0.03
       objectReference: {fileID: 0}
     - target: {fileID: 1336685169640730476, guid: 7c05ba1e7e9000241853b881d8987d8a,
         type: 3}
