@@ -1,7 +1,5 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using UnityEditor;
 using UnityEngine;
 
 public class LineRay : MonoBehaviour
@@ -15,8 +13,13 @@ public class LineRay : MonoBehaviour
     private GameObject lightBase;
     private ParticleSystem lightLine;
 
+    private List<Line> lines;
+    private int linesLog;
     void Start()
     {
+        lines = new List<Line>();
+        linesLog = 0;
+        goalTask.GetLines.Add(lines);
         //　コライダーを入れる子オブジェクト
         foreach (Transform chiild in transform)
         {
@@ -41,16 +44,15 @@ public class LineRay : MonoBehaviour
         taskObject = Utility.GetTask();
         goalTask = taskObject.GetComponent<GoalTask>();
         originate = new List<Vec2Class>();
+        originate.Add(new Vec2Class(transform.position));
     }
 
     //レイをシーンで見えるようにする
     void Update()
     {
-        goalTask.RemoveRayVartex(originate);
-        originate = new List<Vec2Class>();
-        originate.Add(new Vec2Class(transform.position));
         DrawReflect(transform.position + transform.right * 0.75f, transform.right);
-        goalTask.AddRayVartex(originate);
+        LinesNumUpdate();
+        linesLog = originate.Count - 1;
 
         for (int i = 0; i < originate.Count - 1; i++)
         {
@@ -129,5 +131,46 @@ public class LineRay : MonoBehaviour
         position = hit.point;
         originate.Add(new Vec2Class(position));
         edge2D.points = originate.Select(v => (Vector2)transform.InverseTransformPoint(v.vec2)).ToArray();
+    }
+
+    private void LinesNumUpdate()
+    {
+        if (linesLog == lines.Count)
+            return;
+
+        if (linesLog < lines.Count)
+        {
+            int count = lines.Count;
+            for (int i = linesLog; i < count; i++)
+            {
+                CreateLine(i);
+            }
+        }
+        else
+        {
+            int count = lines.Count;
+            for (int i = linesLog; i > count; i++)
+            {
+                DeleteLine(i);
+            }
+        }
+    }
+
+    private void DeleteLine(int num)
+    {
+        if (num < 0)
+            return;
+
+        lines.RemoveAt(num);
+    }
+
+    private void CreateLine(int num)
+    {
+        lines.Add(new Line(originate[num], originate[num + 1]));
+    }
+
+    private void GoalUpdate()
+    {
+
     }
 }
