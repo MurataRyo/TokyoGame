@@ -6,8 +6,9 @@ using UnityEngine;
 
 public class LineRay : MonoBehaviour
 {
-    private float maxStep = 100; //伸びる距離
-    [HideInInspector] public List<Vec2Class> originate; //座標を保存
+    [HideInInspector] public List<Vec2Class> originate; //座標を保存（送る）
+    [HideInInspector] public List<Vector2> keepPoints; //座標を保存
+    [HideInInspector] public List<Line> keepLines; //座標を保存
     private GameObject colGo;
     private EdgeCollider2D edge2D;
     private GameObject taskObject;
@@ -17,7 +18,7 @@ public class LineRay : MonoBehaviour
 
     void Start()
     {
-        //　コライダーを入れる子オブジェクト
+        //　必要な子オブジェクト
         foreach (Transform chiild in transform)
         {
             if (chiild.gameObject.tag == GetTag.Col)
@@ -35,30 +36,35 @@ public class LineRay : MonoBehaviour
                 break;
             }
         }
+
         lightLine = lightBase.GetComponent<ParticleSystem>();
         edge2D = colGo.GetComponent<EdgeCollider2D>();
         edge2D.edgeRadius = 0.45f;
         taskObject = Utility.GetTask();
         goalTask = taskObject.GetComponent<GoalTask>();
         originate = new List<Vec2Class>();
+        keepPoints = new List<Vector2>();
     }
 
-    //レイをシーンで見えるようにする
+    //Particleの反射
     void Update()
     {
         goalTask.RemoveRayVartex(originate);
         originate = new List<Vec2Class>();
+        keepPoints = new List<Vector2>();
         originate.Add(new Vec2Class(transform.position));
+        keepPoints.Add(new Vector2(transform.position.x, transform.position.y));
         DrawReflect(transform.position + transform.right * 0.75f, transform.right);
         goalTask.AddRayVartex(originate);
 
-        for (int i = 0; i < originate.Count - 1; i++)
+        //線の始点と終点を調べその間にParticleを1個ずつ並べる
+        for (int i = 0; i < keepPoints.Count - 1; i++)
         {
-            float range = (originate[i].vec2 - originate[i + 1].vec2).magnitude * 10;
+            float range = (keepPoints[i] - keepPoints[i + 1]).magnitude * 10;
             for (int j = 0; j < range; j++)
             {
                 ParticleSystem.EmitParams emit = new ParticleSystem.EmitParams();
-                emit.position = lightLine.transform.InverseTransformPoint(Vector2.Lerp(originate[i].vec2, originate[i + 1].vec2, j / range));
+                emit.position = lightLine.transform.InverseTransformPoint(Vector2.Lerp(keepPoints[i], keepPoints[i + 1], j / range));
                 lightLine.Emit(emit, 1);
             }
         }
@@ -102,7 +108,6 @@ public class LineRay : MonoBehaviour
 
         return true;
     }
-
     bool NotRefrect(RaycastHit2D hit)
     {
         if (hit.collider == null)
@@ -128,6 +133,7 @@ public class LineRay : MonoBehaviour
         direction = Vector2.Reflect(direction, hit.normal);
         position = hit.point;
         originate.Add(new Vec2Class(position));
-        edge2D.points = originate.Select(v => (Vector2)transform.InverseTransformPoint(v.vec2)).ToArray();
+        keepPoints.Add(new Vector2(position.x, position.y));
+        edge2D.points = keepPoints.Select(v => (Vector2)transform.InverseTransformPoint(v)).ToArray(); //コライダーの反射
     }
 }
