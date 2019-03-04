@@ -125,6 +125,9 @@ public class LineRay : MonoBehaviour
         if (hit.collider.tag == GetTag.Col)
             return false;
 
+        if (hit.collider.tag == "LaunchHit")
+            return false;
+
         return true;
     }
 
