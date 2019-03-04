@@ -153,7 +153,7 @@ public class PlayerMove : MonoBehaviour
             }
             
             /*重力関係---------------------------------------------------*/
-            if ((isGround && !jumpFlag) || playerState == PlayerState.Light)
+            if (((isGround && !jumpFlag) || playerState == PlayerState.Light) && velocity.y <= 0f)
             {
                 velocity.y = 0f;
             }
@@ -169,6 +169,7 @@ public class PlayerMove : MonoBehaviour
 
             rigidbody.velocity = new Vector2(velocity.x, velocity.y);
         }
+        RayGround();
         //ModeChange();
     }
 
@@ -187,26 +188,43 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
+    void RayGround()
+    {
+        isGround = false;
+        Ray2D ray = new Ray2D(transform.position, Vector2.down);
+
+        RaycastHit2D[] hits = Physics2D.BoxCastAll(ray.origin, new Vector2(collider2D.size.x, collider2D.size.y), 0f, ray.direction, 0.1f);
+
+        foreach(RaycastHit2D hit in hits)
+        {
+            if(hit.normal.y > 0.5f && (hit.collider.tag == GetTag.Block || hit.collider.tag == GetTag.Glass))
+            {
+                isGround = true;
+            }
+        }
+    }
+
     // 接地・衝突判定
     private void OnCollisionEnter2D(Collision2D collision)
     {
-        isGround = false;
         isRightWall = false;
         isLeftWall = false;
 
         for (int i = 0; i < collision.contacts.Length; i++)
         {
-            if (collision.contacts[i].normal.y > 0.5f)
-            {
-                isGround = true;
-            }
+            //if (collision.contacts[i].normal.y > 0.5f)
+            //{
+            //    isGround = true;
+            //}
             if (collision.contacts[i].normal.x > 0.5f)
             {
                 isLeftWall = true;
+                return;
             }
             if (collision.contacts[i].normal.x < -0.5f)
             {
                 isRightWall = true;
+                return;
             }
         }
     }
