@@ -626,29 +626,14 @@ public class GoalTask : MonoBehaviour
 //線の情報を保持するクラス※値型だと同じものか判断できないためクラス
 public class Line
 {
-    public bool ChangeIf;
     public List<Overlap> overlaps;
     public Vector2[] vartex;
-    public Vec2Class[] vec2Classes;
     public Line(Vector2 vec2a, Vector2 vec2b)
     {
-        ChangeIf = true;
         overlaps = new List<Overlap>();
         vartex = new Vector2[2];
         vartex[0] = vec2a;
         vartex[1] = vec2b;
-    }
-
-    public Line(Vec2Class vec2A,Vec2Class vec2B)
-    {
-        ChangeIf = true;
-        vec2Classes = new Vec2Class[2];
-        vec2Classes[0] = vec2A;
-        vec2Classes[1] = vec2B;
-        
-        vartex = new Vector2[2];
-        vartex[0] = vec2Classes[0].vec2;
-        vartex[1] = vec2Classes[1].vec2;
     }
 
     public void AddOverlaps(Overlap overlap)
@@ -658,7 +643,6 @@ public class Line
             if (overlaps.Contains(overlap))
                 return;
         }
-
         overlaps.Add(overlap);
     }
 }
