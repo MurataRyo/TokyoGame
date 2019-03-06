@@ -40,7 +40,7 @@ public class LineRay : MonoBehaviour
         lightLine = lightBase.GetComponent<ParticleSystem>();
         edge2D = colGo.GetComponent<EdgeCollider2D>();
         edge2D.edgeRadius = 0.45f;
-        taskObject = Utility.GetTask();
+        taskObject = Utility.GetTaskObject();
         goalTask = taskObject.GetComponent<GoalTask>();
         originate = new List<Vec2Class>();
         keepPoints = new List<Vector2>();

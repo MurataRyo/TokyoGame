@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Utility : MonoBehaviour
 {
-    public static GameObject GetTask()
+    public static GameObject GetTaskObject()
     {
         return GameObject.FindGameObjectWithTag(GetTag.Tasks);
     }
