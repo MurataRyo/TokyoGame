@@ -62,8 +62,8 @@ public class LineRay : MonoBehaviour
                 ParticleSystem.EmitParams emit = new ParticleSystem.EmitParams();
                 emit.position = lightLine.transform.InverseTransformPoint(Vector2.Lerp(keepPoints[i], keepPoints[i + 1], j / range));
                 lightLine.Emit(emit, 1);
-                keepLines.Add(new Line(keepPoints[i], keepPoints[i + 1]));
             }
+            keepLines.Add(new Line(keepPoints[i], keepPoints[i + 1]));
         }
     }
 
