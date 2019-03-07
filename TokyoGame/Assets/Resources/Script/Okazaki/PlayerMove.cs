@@ -12,7 +12,6 @@ public class PlayerMove : MonoBehaviour
     }
 
     [HideInInspector] public PlayerState playerState = PlayerState.Normal;
-    new GameObject light;
     GameObject launchHit;
     
     float speed;                                // 移動速度
@@ -34,14 +33,15 @@ public class PlayerMove : MonoBehaviour
 
     new Rigidbody2D rigidbody;
     new BoxCollider2D collider2D;
+    XBox xbox;
 
     void Start()
     {
-        light = GameObject.FindGameObjectWithTag("Col");
         launchHit = GameObject.FindGameObjectWithTag("LaunchHit");
         jumpPower = Mathf.Pow(JUMP_HEIGHT * 2 * GRAVITY_SIZE, 0.5f); // ジャンプ力の計算
         rigidbody = GetComponent<Rigidbody2D>();
         collider2D = gameObject.GetComponent<BoxCollider2D>();
+        xbox = GetComponent<XBox>();
     }
 
     void Update()
@@ -61,12 +61,12 @@ public class PlayerMove : MonoBehaviour
         }
 
         // 光の中を出入りする
-        if (lightFlag && Input.GetKey(KeyCode.LeftControl) && playerState != PlayerState.Light)
+        if (lightFlag && Input.GetButton(XBox.Str.RB.ToString()) && playerState != PlayerState.Light)
         {
             playerState = PlayerState.Light;
             velocity = new Vector2(0f, 0f);     // 速度をリセット
         }
-        else if ((!lightFlag || !Input.GetKey(KeyCode.LeftControl)) && playerState != PlayerState.Normal)
+        else if ((!lightFlag || !Input.GetButton(XBox.Str.RB.ToString())) && playerState != PlayerState.Normal) 
         {
             playerState = PlayerState.Normal;
             velocity = new Vector2(0f, 0f);     // 速度をリセット
@@ -83,7 +83,7 @@ public class PlayerMove : MonoBehaviour
         }
 
         // 走るかどうか
-        if (Input.GetKey(KeyCode.LeftShift))
+        if (Input.GetButton(XBox.Str.X.ToString()))
         {
             runFlag = true;
         }
@@ -95,7 +95,7 @@ public class PlayerMove : MonoBehaviour
         // 自機の移動
         if (playerState == PlayerState.Light) // 光の中に入っている時の移動
         {
-            Vector2 vect2 = new Vector2(Input.GetAxisRaw(("Horizontal").ToString()), Input.GetAxisRaw(("Vertical").ToString())).normalized;
+            Vector2 vect2 = new Vector2(Input.GetAxisRaw((XBox.AxisStr.LeftJoyRight).ToString()), -Input.GetAxisRaw((XBox.AxisStr.LeftJoyUp).ToString())).normalized;
             velocity = transform.right * vect2.x + transform.up * vect2.y;
             velocity *= speed;
             //transform.position = new Vector3(
@@ -126,7 +126,7 @@ public class PlayerMove : MonoBehaviour
             }
             else
             {
-                velocity.x = Input.GetAxisRaw("Horizontal") * speed;
+                velocity.x = Input.GetAxisRaw((XBox.AxisStr.LeftJoyRight).ToString()) * speed;
 
                 if ((isRightWall && velocity.x > 0f) || (isLeftWall && velocity.x < 0f))
                 {
@@ -135,15 +135,15 @@ public class PlayerMove : MonoBehaviour
             }
 
             // ジャンプする
-            if (Input.GetKeyDown(KeyCode.Space))
+            if (Input.GetButtonDown(XBox.Str.A.ToString()))
             {
-                if(launchControl)
-                {
-                    launchControl = false;
-                }
-                else if(isGround)
+                if (isGround && !launchControl)
                 {
                     jumpFlag = true;
+                }
+                else if (launchControl)
+                {
+                    launchControl = false;
                 }
             }
 
@@ -188,6 +188,7 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
+    // 接地判定
     void RayGround()
     {
         isGround = false;
@@ -204,7 +205,7 @@ public class PlayerMove : MonoBehaviour
         }
     }
 
-    // 接地・衝突判定
+    // 衝突判定
     private void OnCollisionEnter2D(Collision2D collision)
     {
         isRightWall = false;
@@ -212,10 +213,6 @@ public class PlayerMove : MonoBehaviour
 
         for (int i = 0; i < collision.contacts.Length; i++)
         {
-            //if (collision.contacts[i].normal.y > 0.5f)
-            //{
-            //    isGround = true;
-            //}
             if (collision.contacts[i].normal.x > 0.5f)
             {
                 isLeftWall = true;

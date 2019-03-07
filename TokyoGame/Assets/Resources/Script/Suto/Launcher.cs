@@ -7,11 +7,13 @@ public class Launcher : MonoBehaviour
     [HideInInspector] public bool controlFlag = false;
     GameObject Player;
     PlayerMove playerMove;
+    XBox xbox;
 
     void Start()
     {
         Player = GameObject.FindGameObjectWithTag("Player");
         playerMove = Player.GetComponent<PlayerMove>();
+        xbox = GetComponent<XBox>();
     }
     
     void Update()
@@ -22,17 +24,18 @@ public class Launcher : MonoBehaviour
         }
     }
 
-    // キーで向きを変える
+    // 向きを変える
     void RotateLaunch()
     {
-        if (Input.GetKey(KeyCode.Z))
-        {
-            transform.Rotate(0f, 0f, 1f);
-        }
-        if (Input.GetKey(KeyCode.X))
-        {
-            transform.Rotate(0f, 0f, -1f);
-        }
+        transform.eulerAngles -= new Vector3(0f, 0f, Input.GetAxisRaw((XBox.AxisStr.RightJoyRight).ToString()) * 1f);
+        //if (Input.GetKey(KeyCode.X))
+        //{
+        //    transform.Rotate(0f, 0f, 1f);
+        //}
+        //if (Input.GetKey(KeyCode.X))
+        //{
+        //    transform.Rotate(0f, 0f, -1f);
+        //}
     }
 }
 

@@ -9,6 +9,7 @@ public class LaunchControl : MonoBehaviour
     PlayerMove playerMove;
     Launcher launcher;
     new CircleCollider2D collider2D;
+    XBox xbox;
 
     void Start()
     {
@@ -17,6 +18,7 @@ public class LaunchControl : MonoBehaviour
         playerMove = Player.GetComponent<PlayerMove>();
         launcher = launchBase.GetComponent<Launcher>();
         collider2D = gameObject.GetComponent<CircleCollider2D>();
+        xbox = GetComponent<XBox>();
     }
     
     void Update()
@@ -28,7 +30,7 @@ public class LaunchControl : MonoBehaviour
         {
             if (hit[i].tag == "LaunchHit")
             {
-                if (Input.GetKeyDown(KeyCode.E))
+                if (Input.GetButtonDown(XBox.Str.B.ToString()))
                 {
                     playerMove.launchControl = true;
                 }
