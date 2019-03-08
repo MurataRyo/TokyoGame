@@ -17,6 +17,7 @@ public class GoalTask : MonoBehaviour
     {
         colObject = new GameObject();
         colObject.tag = GetTag.Star;
+        colObject.AddComponent<StarTask>();
         rayVartex = new List<List<Vec2Class>>();
         lines = new List<List<Vec2Class>>();
         lineRays = new List<LineRay>();
@@ -41,7 +42,7 @@ public class GoalTask : MonoBehaviour
                 if (edge2D != null)
                     Destroy(edge2D);
             }
-            yield return new WaitForSeconds(0.1f);
+            yield return null;
         }
     }
 
