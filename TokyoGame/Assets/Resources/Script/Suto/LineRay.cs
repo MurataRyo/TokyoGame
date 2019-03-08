@@ -8,7 +8,7 @@ public class LineRay : MonoBehaviour
 {
     [HideInInspector] public List<Vector2> keepPoints; //座標を保存
     [HideInInspector] public List<Line> keepLines; //線を保存
-    [HideInInspector] public Vector2[] keepLinePrevious; //1つ前の線の始点を保存
+    [HideInInspector] public List<Vector2> keepLinePrevious; //1つ前の線の始点を保存
     [HideInInspector] public Vector2[] keepLinePreviousPlus; //1つ前の線の終点を保存
     private GameObject colGo;
     private EdgeCollider2D edge2D;
@@ -45,7 +45,7 @@ public class LineRay : MonoBehaviour
         goalTask = taskObject.GetComponent<GoalTask>();
         keepPoints = new List<Vector2>();
         keepLines = new List<Line>();
-        //keepLinePrevious[] = new keepLinePrevious
+        keepLinePrevious = new List<Vector2>();
     }
 
     //Particleの反射
@@ -54,7 +54,7 @@ public class LineRay : MonoBehaviour
         keepPoints = new List<Vector2>();
         keepPoints.Add(new Vector2(transform.position.x, transform.position.y));
 
-        keepLines = new List<Line>();
+ keepLines = new List<Line>();
 
         DrawReflect(transform.position + transform.right * 0.75f, transform.right);
 
@@ -69,6 +69,16 @@ public class LineRay : MonoBehaviour
                 lightLine.Emit(emit, 1);
             }
             keepLines.Add(new Line(keepPoints[i], keepPoints[i + 1]));
+            keepLinePrevious = keepPoints;
+
+
+
+            //if (keepLinePrevious[i].x != keepPoints[i].x && keepLinePrevious[i].y != keepPoints[i].y)
+            //{
+              
+            //    keepLinePrevious = new List<Vector2>();
+            //    Debug.Log("aaa");
+            //}
         }
     }
 
@@ -131,9 +141,6 @@ public class LineRay : MonoBehaviour
         if (hit.collider.tag == "LaunchHit")
             return false;
 
-        if (hit.collider.tag == "Launch")
-            return false;
-
         return true;
     }
 
@@ -143,6 +150,7 @@ public class LineRay : MonoBehaviour
         direction = Vector2.Reflect(direction, hit.normal);
         position = hit.point;
         keepPoints.Add(new Vector2(position.x, position.y));
+        ColInfo();
     }
 
     //レイの通りにコライダー描画
