@@ -567,7 +567,7 @@ GameObject:
   - component: {fileID: 4117273490591703797}
   m_Layer: 0
   m_Name: Glass
-  m_TagString: Glass
+  m_TagString: NotRefrect
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

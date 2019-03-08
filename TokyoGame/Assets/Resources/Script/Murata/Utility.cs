@@ -31,6 +31,8 @@ public struct GetTag
     public const string Tasks = "Tasks";
     public const string Col = "Col";
     public const string Star = "Star";
+    public const string Refrect = "Refrect";
+    public const string NotRefrect = "NotRefrect";
 }
 
 public class Vec2Class

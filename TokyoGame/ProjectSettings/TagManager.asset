@@ -16,6 +16,8 @@ TagManager:
   - Col
   - LaunchHit
   - Star
+  - Refrect
+  - NotRefrect
   layers:
   - Default
   - TransparentFX
