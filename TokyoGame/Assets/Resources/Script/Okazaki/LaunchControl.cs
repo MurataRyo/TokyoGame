@@ -10,7 +10,7 @@ public class LaunchControl : MonoBehaviour
     Launcher launcher;
     new CircleCollider2D collider2D;
     XBox xbox;
-    public bool hitFlag = false;
+    public bool selectFlag = false;
 
     void Start()
     {
@@ -31,7 +31,7 @@ public class LaunchControl : MonoBehaviour
         {
             if (hit[i].tag == "LaunchHit")
             {
-                if (Input.GetButtonDown(XBox.Str.B.ToString()))
+                if (selectFlag && Input.GetButtonDown(XBox.Str.B.ToString()))
                 {
                     playerMove.launchControl = true;
                 }
