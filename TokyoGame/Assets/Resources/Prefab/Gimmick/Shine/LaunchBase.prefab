@@ -92,7 +92,7 @@ GameObject:
   - component: {fileID: 1995247010521647376}
   m_Layer: 12
   m_Name: LaunchControl
-  m_TagString: Launch
+  m_TagString: LaunchHit
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -139,6 +139,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa3649f580cc03d4197ff866704bdf2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  hitFlag: 0
 --- !u!1 &6722962623040542272
 GameObject:
   m_ObjectHideFlags: 0
@@ -201,6 +202,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   keepPoints: []
+  keepLinePrevious: []
+  keepLinePreviousPlus: []
 --- !u!1 &6722962623914802571
 GameObject:
   m_ObjectHideFlags: 0
@@ -344,11 +347,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1336685169640730479, guid: 7c05ba1e7e9000241853b881d8987d8a,
-        type: 3}
-      propertyPath: m_Materials.Array.data[0]
-      value: 
-      objectReference: {fileID: 10308, guid: 0000000000000000f000000000000000, type: 0}
     - target: {fileID: 1336685169640730476, guid: 7c05ba1e7e9000241853b881d8987d8a,
         type: 3}
       propertyPath: InitialModule.startLifetime.scalar
@@ -364,6 +362,11 @@ PrefabInstance:
       propertyPath: EmissionModule.rateOverTime.scalar
       value: 10000
       objectReference: {fileID: 0}
+    - target: {fileID: 1336685169640730479, guid: 7c05ba1e7e9000241853b881d8987d8a,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 10308, guid: 0000000000000000f000000000000000, type: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7c05ba1e7e9000241853b881d8987d8a, type: 3}
 --- !u!4 &2780023851785609934 stripped
