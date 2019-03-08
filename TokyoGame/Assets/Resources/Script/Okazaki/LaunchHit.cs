@@ -43,7 +43,7 @@ public class LaunchHit : MonoBehaviour
         {
             return;
         }
-        m_hitObjects.Add(collision.gameObject);
+        m_hitObjects.Add(gameObject);
 
         for (int i = 0; i < m_hitObjects.Count; i++)
         {
@@ -58,6 +58,6 @@ public class LaunchHit : MonoBehaviour
         {
             return;
         }
-        m_hitObjects.Remove(collision.gameObject);
+        m_hitObjects.Remove(gameObject);
     }
 }
