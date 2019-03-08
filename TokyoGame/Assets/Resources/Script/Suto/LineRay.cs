@@ -8,8 +8,8 @@ public class LineRay : MonoBehaviour
 {
     [HideInInspector] public List<Vector2> keepPoints; //座標を保存
     [HideInInspector] public List<Line> keepLines; //線を保存
-    [HideInInspector] public List<Vector2> keepLinePrevious; //1つ前の線の始点を保存
-    [HideInInspector] public Vector2[] keepLinePreviousPlus; //1つ前の線の終点を保存
+    [HideInInspector] public List<Vector2> keepLinePrevious; //保存
+
     private GameObject colGo;
     private EdgeCollider2D edge2D;
     private GameObject taskObject;
@@ -45,32 +45,42 @@ public class LineRay : MonoBehaviour
         keepPoints = new List<Vector2>();
         keepPoints.Add(new Vector2(transform.position.x, transform.position.y));
 
-        keepLines = new List<Line>();
+
 
         DrawReflect(transform.position + transform.right * 0.75f, transform.right);
 
-        //線の始点と終点を調べその間にParticleを1個ずつ並べる
-        for (int i = 0; i < keepPoints.Count - 1; i++)
+        if (ChangeLight())
         {
-            float range = (keepPoints[i] - keepPoints[i + 1]).magnitude * 10;
-            for (int j = 0; j < range; j++)
+            keepLines = new List<Line>();
+            //線の始点と終点を調べその間にParticleを1個ずつ並べる
+            for (int i = 0; i < keepPoints.Count - 1; i++)
             {
-                ParticleSystem.EmitParams emit = new ParticleSystem.EmitParams();
-                emit.position = lightLine.transform.InverseTransformPoint(Vector2.Lerp(keepPoints[i], keepPoints[i + 1], j / range));
-                lightLine.Emit(emit, 1);
+                float range = (keepPoints[i] - keepPoints[i + 1]).magnitude * 10;
+                for (int j = 0; j < range; j++)
+                {
+                    ParticleSystem.EmitParams emit = new ParticleSystem.EmitParams();
+                    emit.position = lightLine.transform.InverseTransformPoint(Vector2.Lerp(keepPoints[i], keepPoints[i + 1], j / range));
+                    lightLine.Emit(emit, 1);
+                }
+                keepLines.Add(new Line(keepPoints[i], keepPoints[i + 1]));
             }
-            keepLines.Add(new Line(keepPoints[i], keepPoints[i + 1]));
-            //keepLinePrevious = keepPoints;
-
-
-
-            //if (keepLinePrevious[i].x != keepPoints[i].x && keepLinePrevious[i].y != keepPoints[i].y)
-            //{
-
-            //    keepLinePrevious = new List<Vector2>();
-            //    Debug.Log("aaa");
-            //}
         }
+        keepLinePrevious = keepPoints;
+    }
+
+    //光の情報が変更されたかどうか
+    private bool ChangeLight()
+    {
+        if (keepLinePrevious.Count != keepPoints.Count)
+            return true;
+
+        for (int i = 0; i < keepPoints.Count; i++)
+        {
+            if (keepLinePrevious[i] != keepPoints[i])
+                return true;
+        }
+
+        return false;
     }
 
     //レイを反射させる
