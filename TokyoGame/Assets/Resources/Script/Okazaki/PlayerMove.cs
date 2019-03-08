@@ -198,7 +198,7 @@ public class PlayerMove : MonoBehaviour
 
         foreach(RaycastHit2D hit in hits)
         {
-            if(hit.normal.y > 0.5f && (hit.collider.tag == GetTag.Block || hit.collider.tag == GetTag.Glass))
+            if(hit.normal.y > 0.5f && (hit.collider.isTrigger == false))
             {
                 isGround = true;
             }

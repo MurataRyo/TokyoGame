@@ -4,11 +4,21 @@ using UnityEngine;
 
 public class StarTask : MonoBehaviour
 {
+    GameObject player;
+    PlayerMove playerMove;
+
+    void Start()
+    {
+        player = GameObject.FindGameObjectWithTag("Player");
+        playerMove = player.GetComponent<PlayerMove>();
+    }
+
     private void OnTriggerStay2D(Collider2D collision)
     {
         if(collision.tag == GetTag.Player)
         {
-            Debug.Log("クリア");
+            if (playerMove.playerState == PlayerMove.PlayerState.Light)
+                Debug.Log("クリア");
         }
     }
 }

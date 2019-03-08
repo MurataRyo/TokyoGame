@@ -15,7 +15,7 @@ public class LaunchHit : MonoBehaviour
     
     void Update()
     {
-        //Debug.Log(m_hitObjects.Count);
+        Debug.Log(m_hitObjects.Count);
         if (Input.GetKeyDown(KeyCode.G))
         {
             select++;
@@ -34,7 +34,7 @@ public class LaunchHit : MonoBehaviour
             select = m_hitObjects.Count - 1;
         }
 
-        Debug.Log(select);
+        //Debug.Log(select);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
@@ -48,7 +48,7 @@ public class LaunchHit : MonoBehaviour
         for (int i = 0; i < m_hitObjects.Count; i++)
         {
             LaunchControl[] launchControl = collision.gameObject.GetComponents<LaunchControl>();
-            //launchControl[select].selectFlag = true;
+            launchControl[select].selectFlag = true;
         }
     }
 

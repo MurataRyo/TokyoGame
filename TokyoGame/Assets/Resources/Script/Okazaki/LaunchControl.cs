@@ -31,7 +31,7 @@ public class LaunchControl : MonoBehaviour
         {
             if (hit[i].tag == "LaunchHit")
             {
-                if (selectFlag && Input.GetButtonDown(XBox.Str.B.ToString()))
+                if (/*selectFlag && */Input.GetButtonDown(XBox.Str.B.ToString()))
                 {
                     playerMove.launchControl = true;
                 }
