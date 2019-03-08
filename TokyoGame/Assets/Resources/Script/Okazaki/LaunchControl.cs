@@ -10,6 +10,7 @@ public class LaunchControl : MonoBehaviour
     Launcher launcher;
     new CircleCollider2D collider2D;
     XBox xbox;
+    public bool hitFlag = false;
 
     void Start()
     {
@@ -37,5 +38,6 @@ public class LaunchControl : MonoBehaviour
                 launcher.controlFlag = true;
             }
         }
+        //Debug.Log(hitFlag);
     }
 }

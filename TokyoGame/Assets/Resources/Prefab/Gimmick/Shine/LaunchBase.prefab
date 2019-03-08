@@ -92,7 +92,7 @@ GameObject:
   - component: {fileID: 1995247010521647376}
   m_Layer: 12
   m_Name: LaunchControl
-  m_TagString: Col
+  m_TagString: Launch
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -279,6 +279,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6722962623040542279}
     m_Modifications:
+    - target: {fileID: 1336685169640730478, guid: 7c05ba1e7e9000241853b881d8987d8a,
+        type: 3}
+      propertyPath: m_Name
+      value: ShineRay
+      objectReference: {fileID: 0}
+    - target: {fileID: 1336685169640730478, guid: 7c05ba1e7e9000241853b881d8987d8a,
+        type: 3}
+      propertyPath: m_TagString
+      value: LightSource
+      objectReference: {fileID: 0}
     - target: {fileID: 1336685169640730477, guid: 7c05ba1e7e9000241853b881d8987d8a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -333,16 +343,6 @@ PrefabInstance:
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
-      objectReference: {fileID: 0}
-    - target: {fileID: 1336685169640730478, guid: 7c05ba1e7e9000241853b881d8987d8a,
-        type: 3}
-      propertyPath: m_Name
-      value: ShineRay
-      objectReference: {fileID: 0}
-    - target: {fileID: 1336685169640730478, guid: 7c05ba1e7e9000241853b881d8987d8a,
-        type: 3}
-      propertyPath: m_TagString
-      value: LightSource
       objectReference: {fileID: 0}
     - target: {fileID: 1336685169640730479, guid: 7c05ba1e7e9000241853b881d8987d8a,
         type: 3}

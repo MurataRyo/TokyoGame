@@ -84,7 +84,7 @@ public class LineRay : MonoBehaviour
             {
                 RefrectRay(hit, ref position, ref direction);
 
-                Debug.Log("鏡に当たった");
+                //Debug.Log("鏡に当たった");
                 DrawReflect(position, direction);
 
                 break;
@@ -92,7 +92,7 @@ public class LineRay : MonoBehaviour
             else if (NotRefrect(hit)) //光が終了
             {
                 RefrectRay(hit, ref position, ref direction);
-                Debug.Log("反射しません");
+                //Debug.Log("反射しません");
                 break;
             }
         }
@@ -129,6 +129,9 @@ public class LineRay : MonoBehaviour
             return false;
 
         if (hit.collider.tag == "LaunchHit")
+            return false;
+
+        if (hit.collider.tag == "Launch")
             return false;
 
         return true;
