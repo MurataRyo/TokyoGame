@@ -20,26 +20,17 @@ public class LineRay : MonoBehaviour
     void Start()
     {
         //　必要な子オブジェクト
-        foreach (Transform chiild in transform)
+        foreach (Transform child in transform)
         {
-            if (chiild.gameObject.tag == GetTag.Col)
+            if (child.gameObject.tag == GetTag.Col)
             {
-                colGo = chiild.gameObject;
-                break;
+                edge2D = child.gameObject.GetComponent<EdgeCollider2D>();
+            }
+            if (child.transform.tag == GetTag.LightSource)
+            {
+                lightLine = child.gameObject.GetComponent<ParticleSystem>();
             }
         }
-        foreach (Transform child2 in transform)
-        {
-
-            if (child2.transform.tag == GetTag.LightSource)
-            {
-                lightBase = child2.gameObject;
-                break;
-            }
-        }
-
-        lightLine = lightBase.GetComponent<ParticleSystem>();
-        edge2D = colGo.GetComponent<EdgeCollider2D>();
         edge2D.edgeRadius = 0.45f;
         taskObject = Utility.GetTaskObject();
         goalTask = taskObject.GetComponent<GoalTask>();
@@ -69,16 +60,16 @@ public class LineRay : MonoBehaviour
                 lightLine.Emit(emit, 1);
             }
             keepLines.Add(new Line(keepPoints[i], keepPoints[i + 1]));
-            keepLinePrevious = keepPoints;
+            //keepLinePrevious = keepPoints;
 
 
 
-            if (keepLinePrevious[i].x != keepPoints[i].x && keepLinePrevious[i].y != keepPoints[i].y)
-            {
+            //if (keepLinePrevious[i].x != keepPoints[i].x && keepLinePrevious[i].y != keepPoints[i].y)
+            //{
 
-                keepLinePrevious = new List<Vector2>();
-                Debug.Log("aaa");
-            }
+            //    keepLinePrevious = new List<Vector2>();
+            //    Debug.Log("aaa");
+            //}
         }
     }
 
@@ -99,7 +90,7 @@ public class LineRay : MonoBehaviour
 
                 break;
             }
-            else if (NotRefrect(hit)) //光が終了
+            else if (NotRefrect(hit)) //光の終了
             {
                 RefrectRay(hit, ref position, ref direction);
                 //Debug.Log("反射しません");
@@ -114,34 +105,25 @@ public class LineRay : MonoBehaviour
         if (hit.collider == null)
             return false;
 
-        if (hit.collider.tag != GetTag.Mirror)
-            return false;
+        if (hit.collider.tag == GetTag.Refrect)
+            return true;
 
-        return true;
+        return false;
     }
 
-    //反射不可能
+    //光が貫通するかどうか
     bool NotRefrect(RaycastHit2D hit)
     {
         if (hit.collider == null)
             return false;
 
-        if (hit.collider.tag == GetTag.Mirror)
-            return false;
+        if (hit.collider.tag == GetTag.Block)
+            return true;
 
-        if (hit.collider.tag == GetTag.Player)
-            return false;
+        if (hit.collider.tag == GetTag.Mirror_Back)
+            return true;
 
-        if (hit.collider.tag == GetTag.Glass)
-            return false;
-
-        if (hit.collider.tag == GetTag.Col)
-            return false;
-
-        if (hit.collider.tag == "LaunchHit")
-            return false;
-
-        return true;
+        return false;
     }
 
     //レイの始点と終点を調べる

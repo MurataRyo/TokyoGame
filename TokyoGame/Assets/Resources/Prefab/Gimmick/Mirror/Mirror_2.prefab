@@ -492,7 +492,7 @@ GameObject:
   - component: {fileID: 85793416066346211}
   m_Layer: 0
   m_Name: Mirror_2
-  m_TagString: Mirror
+  m_TagString: Refrect
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

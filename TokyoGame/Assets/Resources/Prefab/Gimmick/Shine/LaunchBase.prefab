@@ -92,7 +92,7 @@ GameObject:
   - component: {fileID: 1995247010521647376}
   m_Layer: 12
   m_Name: LaunchControl
-  m_TagString: LaunchHit
+  m_TagString: NotRefrect
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -290,7 +290,7 @@ PrefabInstance:
     - target: {fileID: 1336685169640730478, guid: 7c05ba1e7e9000241853b881d8987d8a,
         type: 3}
       propertyPath: m_TagString
-      value: LightSource
+      value: NotRefrect
       objectReference: {fileID: 0}
     - target: {fileID: 1336685169640730477, guid: 7c05ba1e7e9000241853b881d8987d8a,
         type: 3}
