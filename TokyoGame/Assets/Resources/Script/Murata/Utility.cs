@@ -4,6 +4,11 @@ using UnityEngine;
 
 public class Utility : MonoBehaviour
 {
+    public static XBox GetXBox()
+    {
+        return GetTaskObject().GetComponent<XBox>();
+    }
+
     public static GameObject GetTaskObject()
     {
         return GameObject.FindGameObjectWithTag(GetTag.Tasks);
@@ -25,6 +30,7 @@ public struct GetTag
     public const string Player = "Player";
     public const string Tasks = "Tasks";
     public const string Col = "Col";
+    public const string Star = "Star";
 }
 
 public class Vec2Class

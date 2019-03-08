@@ -15,6 +15,7 @@ TagManager:
   - LightSource
   - Col
   - LaunchHit
+  - Star
   layers:
   - Default
   - TransparentFX
