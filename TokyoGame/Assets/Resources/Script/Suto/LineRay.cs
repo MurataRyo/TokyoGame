@@ -8,6 +8,8 @@ public class LineRay : MonoBehaviour
 {
     [HideInInspector] public List<Vector2> keepPoints; //座標を保存
     [HideInInspector] public List<Line> keepLines; //線を保存
+    [HideInInspector] public Vector2[] keepLinePrevious; //1つ前の線の始点を保存
+    [HideInInspector] public Vector2[] keepLinePreviousPlus; //1つ前の線の終点を保存
     private GameObject colGo;
     private EdgeCollider2D edge2D;
     private GameObject taskObject;
@@ -43,14 +45,17 @@ public class LineRay : MonoBehaviour
         goalTask = taskObject.GetComponent<GoalTask>();
         keepPoints = new List<Vector2>();
         keepLines = new List<Line>();
+        //keepLinePrevious[] = new keepLinePrevious
     }
 
     //Particleの反射
     void Update()
     {
         keepPoints = new List<Vector2>();
-        keepLines = new List<Line>();
         keepPoints.Add(new Vector2(transform.position.x, transform.position.y));
+
+        keepLines = new List<Line>();
+
         DrawReflect(transform.position + transform.right * 0.75f, transform.right);
 
         //線の始点と終点を調べその間にParticleを1個ずつ並べる
@@ -91,10 +96,9 @@ public class LineRay : MonoBehaviour
                 break;
             }
         }
-        //Gizmos.DrawLine(startPos, position);
     }
 
-    //反射可能かどうかの検索
+    //反射可能
     bool IsRefrect(RaycastHit2D hit)
     {
         if (hit.collider == null)
@@ -105,6 +109,8 @@ public class LineRay : MonoBehaviour
 
         return true;
     }
+
+    //反射不可能
     bool NotRefrect(RaycastHit2D hit)
     {
         if (hit.collider == null)
@@ -128,11 +134,17 @@ public class LineRay : MonoBehaviour
         return true;
     }
 
+    //レイの始点と終点を調べる
     void RefrectRay(RaycastHit2D hit, ref Vector2 position, ref Vector2 direction)
     {
         direction = Vector2.Reflect(direction, hit.normal);
         position = hit.point;
         keepPoints.Add(new Vector2(position.x, position.y));
-        edge2D.points = keepPoints.Select(v => (Vector2)transform.InverseTransformPoint(v)).ToArray(); //コライダーの反射
+    }
+
+    //レイの通りにコライダー描画
+    void ColInfo()
+    {
+        edge2D.points = keepPoints.Select(v => (Vector2)transform.InverseTransformPoint(v)).ToArray();
     }
 }
