@@ -54,7 +54,7 @@ public class LineRay : MonoBehaviour
         keepPoints = new List<Vector2>();
         keepPoints.Add(new Vector2(transform.position.x, transform.position.y));
 
- keepLines = new List<Line>();
+        keepLines = new List<Line>();
 
         DrawReflect(transform.position + transform.right * 0.75f, transform.right);
 
@@ -73,12 +73,12 @@ public class LineRay : MonoBehaviour
 
 
 
-            //if (keepLinePrevious[i].x != keepPoints[i].x && keepLinePrevious[i].y != keepPoints[i].y)
-            //{
-              
-            //    keepLinePrevious = new List<Vector2>();
-            //    Debug.Log("aaa");
-            //}
+            if (keepLinePrevious[i].x != keepPoints[i].x && keepLinePrevious[i].y != keepPoints[i].y)
+            {
+
+                keepLinePrevious = new List<Vector2>();
+                Debug.Log("aaa");
+            }
         }
     }
 
