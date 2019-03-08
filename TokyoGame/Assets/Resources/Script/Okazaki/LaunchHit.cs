@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class LaunchHit : MonoBehaviour
 {
+    private List<GameObject> m_hitObjects = new List<GameObject>();
     new BoxCollider2D collider2D;
+    int select = 0;
 
     void Start()
     {
@@ -13,21 +15,49 @@ public class LaunchHit : MonoBehaviour
     
     void Update()
     {
-        Collider2D[] hit = Physics2D.OverlapBoxAll(transform.position, collider2D.size, 0f);  // 当たり判定の取得
-
-        for(int i = 0; i < hit.Length; i++)
+        //Debug.Log(m_hitObjects.Count);
+        if (Input.GetKeyDown(KeyCode.G))
         {
-
+            select++;
         }
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            select--;
+        }
+
+        if (select > m_hitObjects.Count - 1)
+        {
+            select = 0;
+        }
+        if (select < 0)
+        {
+            select = m_hitObjects.Count - 1;
+        }
+
+        Debug.Log(select);
     }
 
-    private void OnTriggerStay2D(Collider2D collision)
+    private void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.gameObject.tag != "Launch")
         {
             return;
         }
-        LaunchControl launchControl = GetComponent<LaunchControl>();
-        Debug.Log(collision.gameObject);
+        m_hitObjects.Add(collision.gameObject);
+
+        for (int i = 0; i < m_hitObjects.Count; i++)
+        {
+            LaunchControl[] launchControl = collision.gameObject.GetComponents<LaunchControl>();
+            //launchControl[select].selectFlag = true;
+        }
+    }
+
+    private void OnTriggerExit2D(Collider2D collision)
+    {
+        if (collision.gameObject.tag != "Launch")
+        {
+            return;
+        }
+        m_hitObjects.Remove(collision.gameObject);
     }
 }
