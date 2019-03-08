@@ -9,9 +9,11 @@ public class WorldChoiceTask : MonoBehaviour
     private Camera mCamera;                 //カメラ
     private const float CAMERA_TIME = 0.40f;   //カメラの移動時間
     private IEnumerator moveCamera;
+    private XBox xBox;
     // Start is called before the first frame update
     void Start()
     {
+        xBox = Utility.GetXBox();
         worlds = GetComponent<WorldData>().worlds;
         choiceClass = new ChoiceClass(worlds.Length);
         mCamera = Camera.main;
@@ -30,13 +32,13 @@ public class WorldChoiceTask : MonoBehaviour
         if (moveCamera != null)
             return;
 
-        if (Input.GetKeyDown(KeyCode.D))
+        if (Input.GetKey(KeyCode.D))
         {
             choiceClass.ChoiceChange(true);
             moveCamera = MoveCamera(worlds[choiceClass.nowChoice].cameraPos, worlds[choiceClass.nowChoice].cameraAngle);
             StartCoroutine(moveCamera);
         }
-        else if (Input.GetKeyDown(KeyCode.A))
+        else if (Input.GetKey(KeyCode.A))
         {
             choiceClass.ChoiceChange(false);
             moveCamera = MoveCamera(worlds[choiceClass.nowChoice].cameraPos, worlds[choiceClass.nowChoice].cameraAngle);

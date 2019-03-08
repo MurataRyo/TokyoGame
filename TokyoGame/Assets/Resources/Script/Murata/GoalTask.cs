@@ -9,9 +9,14 @@ public class GoalTask : MonoBehaviour
     [HideInInspector] public List<List<Vec2Class>> lines;  //貰う線の情報
 
     public List<LineRay> lineRays;
+    Star star;
+    EdgeCollider2D edge2D;
+    GameObject colObject;
     // Start is called before the first frame update
     private void Awake()
     {
+        colObject = new GameObject();
+        colObject.tag = GetTag.Star;
         rayVartex = new List<List<Vec2Class>>();
         lines = new List<List<Vec2Class>>();
         lineRays = new List<LineRay>();
@@ -20,6 +25,72 @@ public class GoalTask : MonoBehaviour
         {
             lineRays.Add(go.GetComponent<LineRay>());
         }
+        StartCoroutine(Colliderupdate());
+    }
+
+    private IEnumerator Colliderupdate()
+    {
+        while (true)
+        {
+            if (star != null)
+            {
+                edge2D = CreateCol(star);
+            }
+            else
+            {
+                if (edge2D != null)
+                    Destroy(edge2D);
+            }
+            yield return new WaitForSeconds(0.1f);
+        }
+    }
+
+    private EdgeCollider2D CreateCol(Star star)
+    {
+        EdgeCollider2D edge2D = colObject.AddComponent<EdgeCollider2D>();
+        List<Vector2> vec2s = new List<Vector2>();
+        Overlap baseOverlap = star.outSideOverlaps[0];
+        Line baseLine = baseOverlap.lines[0];
+        vec2s.Add(baseOverlap.pos);
+        while (true)
+        {
+            foreach (Line line in star.lines)
+            {
+                if (line == baseLine ||
+                    !InIfOverlap(line.overlaps.ToArray(), baseOverlap))
+                    continue;
+                foreach (Overlap overlap in line.overlaps)
+                {
+                    if (!InIfOverlap(star.outSideOverlaps, overlap))
+                        continue;
+
+                    if (baseOverlap == overlap)
+                        continue;
+
+                    baseLine = line;
+                    baseOverlap = overlap;
+                    vec2s.Add(overlap.pos);
+                    if (vec2s.Count == 5)
+                    {
+                        vec2s.Add(vec2s[0]);
+                        edge2D.points = vec2s.ToArray();
+                        edge2D.isTrigger = true;
+                        edge2D.edgeRadius = 0.45f;
+                        return edge2D;
+                    }
+                }
+            }
+        }
+    }
+
+    private bool InIfOverlap(Overlap[] overlaps, Overlap baseOverlap)
+    {
+        foreach (Overlap overlap in overlaps)
+        {
+            if (overlap == baseOverlap)
+                return true;
+        }
+        return false;
     }
 
     public static GameObject CreateBlock(Vector2 pos)
@@ -34,32 +105,27 @@ public class GoalTask : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.Return))
-        {
-            //Debug.Log("線の数は" + rayVartex.Count + "本");
-            //Line[] lines = rayVartexToLines(rayVartex);
-            Line[] lines = LineListToLines(lineRays);
-            Star stars = LineToStar(lines);
-            if (stars != null)
-            {
-                Debug.Log("星はあります");
+        Line[] lines = LineListToLines(lineRays);
+        star = LineToStar(lines);
+        //if (star != null)
+        //{
+        //    Debug.Log("星はあります");
 
-                foreach (Overlap overlap in stars.outSideOverlaps)
-                {
-                    GameObject go = CreateBlock(overlap.pos);
-                    go.name = "Out";
-                }
-                foreach (Overlap overlap in stars.inSideOverlaps)
-                {
-                    GameObject go = CreateBlock(overlap.pos);
-                    go.name = "In";
-                }
-            }
-            else
-            {
-                Debug.Log("星はありません");
-            }
-        }
+        //    foreach (Overlap overlap in star.outSideOverlaps)
+        //    {
+        //        GameObject go = CreateBlock(overlap.pos);
+        //        go.name = "Out";
+        //    }
+        //    foreach (Overlap overlap in star.inSideOverlaps)
+        //    {
+        //        GameObject go = CreateBlock(overlap.pos);
+        //        go.name = "In";
+        //    }
+        //}
+        //else
+        //{
+        //    Debug.Log("星はありません");
+        //}
     }
 
     //レイの追加
@@ -142,7 +208,7 @@ public class GoalTask : MonoBehaviour
             }
         }
         Debug.Log("試行回数は" + q + "回");
-        return null; ;
+        return null;
     }
 
     private bool OverlapsAndLinesToStar(Overlap[] overlaps, Line[] lines, out Star star)

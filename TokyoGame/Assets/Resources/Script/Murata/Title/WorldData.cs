@@ -13,7 +13,7 @@ public class WorldData : MonoBehaviour
         worlds[2] = new World(45,8,114,0,-145,0);
         worlds[3] = new World(-50,8,108,0,-215,0);
         worlds[4] = new World(-82,8,13,0,68,0);
-        worlds[5] = new World(0,60,40,90,0,0);
+        worlds[5] = new World(0,60,40,90,31,0);
     }
 }
 

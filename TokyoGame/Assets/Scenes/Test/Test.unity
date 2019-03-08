@@ -316,6 +316,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7f826833381ee2d4dafb67f40aafcf1e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lineRays: []
 --- !u!1001 &580122180
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -818,12 +819,12 @@ PrefabInstance:
     - target: {fileID: 6801619921621022082, guid: dccdeb866256b014f8178fab25112d48,
         type: 3}
       propertyPath: m_LocalScale.x
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6801619921621022082, guid: dccdeb866256b014f8178fab25112d48,
         type: 3}
       propertyPath: m_LocalScale.y
-      value: 2
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 6801619921621022087, guid: dccdeb866256b014f8178fab25112d48,
         type: 3}
