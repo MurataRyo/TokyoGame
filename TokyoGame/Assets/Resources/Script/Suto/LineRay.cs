@@ -44,28 +44,21 @@ public class LineRay : MonoBehaviour
     {
         keepPoints = new List<Vector2>();
         keepPoints.Add(new Vector2(transform.position.x, transform.position.y));
-
-
-
         DrawReflect(transform.position + transform.right * 0.75f, transform.right);
 
         if (ChangeLight())
         {
             keepLines = new List<Line>();
-            //線の始点と終点を調べその間にParticleを1個ずつ並べる
+
             for (int i = 0; i < keepPoints.Count - 1; i++)
             {
-                float range = (keepPoints[i] - keepPoints[i + 1]).magnitude * 10;
-                for (int j = 0; j < range; j++)
-                {
-                    ParticleSystem.EmitParams emit = new ParticleSystem.EmitParams();
-                    emit.position = lightLine.transform.InverseTransformPoint(Vector2.Lerp(keepPoints[i], keepPoints[i + 1], j / range));
-                    lightLine.Emit(emit, 1);
-                }
                 keepLines.Add(new Line(keepPoints[i], keepPoints[i + 1]));
             }
         }
         keepLinePrevious = keepPoints;
+
+        AddLightDrow();
+
     }
 
     //光の情報が変更されたかどうか
@@ -77,10 +70,27 @@ public class LineRay : MonoBehaviour
         for (int i = 0; i < keepPoints.Count; i++)
         {
             if (keepLinePrevious[i] != keepPoints[i])
+            {
                 return true;
+            }
         }
 
         return false;
+    }
+
+    //線の始点と終点を調べその間にParticleを1個ずつ並べる
+    void AddLightDrow()
+    {
+        for (int i = 0; i < keepPoints.Count - 1; i++)
+        {
+            float range = (keepPoints[i] - keepPoints[i + 1]).magnitude * 10;
+            for (int j = 0; j < range; j++)
+            {
+                ParticleSystem.EmitParams emit = new ParticleSystem.EmitParams();
+                emit.position = lightLine.transform.InverseTransformPoint(Vector2.Lerp(keepPoints[i], keepPoints[i + 1], j / range));
+                lightLine.Emit(emit, 1);
+            }
+        }
     }
 
     //レイを反射させる

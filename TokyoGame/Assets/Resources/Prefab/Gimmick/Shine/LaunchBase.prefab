@@ -366,6 +366,21 @@ PrefabInstance:
       propertyPath: EmissionModule.rateOverTime.scalar
       value: 10000
       objectReference: {fileID: 0}
+    - target: {fileID: 1336685169640730476, guid: 7c05ba1e7e9000241853b881d8987d8a,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.r
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1336685169640730476, guid: 7c05ba1e7e9000241853b881d8987d8a,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.g
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1336685169640730476, guid: 7c05ba1e7e9000241853b881d8987d8a,
+        type: 3}
+      propertyPath: InitialModule.startColor.maxColor.b
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7c05ba1e7e9000241853b881d8987d8a, type: 3}
 --- !u!4 &2780023851785609934 stripped
