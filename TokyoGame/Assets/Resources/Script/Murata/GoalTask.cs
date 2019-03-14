@@ -10,14 +10,15 @@ public class GoalTask : MonoBehaviour
 
     public List<LineRay> lineRays;
     Star star;
-    EdgeCollider2D edge2D;
+    Star starLog;
     GameObject colObject;
+    StarTask starTask;
     // Start is called before the first frame update
     private void Awake()
     {
         colObject = new GameObject();
         colObject.tag = GetTag.Star;
-        colObject.AddComponent<StarTask>();
+        starTask = colObject.AddComponent<StarTask>();
         rayVartex = new List<List<Vec2Class>>();
         lines = new List<List<Vec2Class>>();
         lineRays = new List<LineRay>();
@@ -26,29 +27,104 @@ public class GoalTask : MonoBehaviour
         {
             lineRays.Add(go.GetComponent<LineRay>());
         }
+    }
+
+    private void Start()
+    {
         StartCoroutine(Colliderupdate());
     }
 
+    //Updateの役割
     private IEnumerator Colliderupdate()
     {
+        //エラー回避のため
+        yield return null;
+
+        starLog = null;
         while (true)
         {
+            Line[] lines = LineListToLines(lineRays);
+            star = LineToStar(lines);
+            //星があるかどうか
             if (star != null)
             {
-                edge2D = CreateCol(star);
+                //新規生成の場合
+                if (starLog == null)
+                {
+                    starTask.thisStarCol = CreateCol(star);
+                }
+                //座標が変更された場合
+                else if (!IsNewStar(starLog, star))
+                {
+                    starTask.thisStarCol.points = ColliderVec2s(star);
+                }
             }
             else
             {
-                if (edge2D != null)
-                    Destroy(edge2D);
+                if (starTask.thisStarCol != null)
+                    Destroy(starTask.thisStarCol);
+
+                starTask.thisStarCol = null;
             }
             yield return null;
+            starLog = star;
         }
+    }
+
+    private bool IsNewStar(Star oldStar, Star newStar)
+    {
+        Overlap[] oldOverlaps = oldStar.overlaps;
+
+        List<Overlap> newOverlaps = new List<Overlap>();
+        newOverlaps.AddRange(newStar.overlaps);
+
+        foreach (Overlap overlap in oldOverlaps)
+        {
+            Overlap outOverlap;
+            if (IsInOverlapPos(overlap, newOverlaps.ToArray(), out outOverlap))
+            {
+                newOverlaps.Remove(outOverlap);
+
+                if (newOverlaps.Count == 0)
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                return true;
+            }
+        }
+
+        return true;
+    }
+
+    private bool IsInOverlapPos(Overlap inOverlap, Overlap[] overlaps, out Overlap outOverlap)
+    {
+        foreach (Overlap overlap in overlaps)
+        {
+            if (inOverlap.pos == overlap.pos)
+            {
+                outOverlap = overlap;
+                return true;
+            }
+        }
+        outOverlap = null;
+        return false;
     }
 
     private EdgeCollider2D CreateCol(Star star)
     {
         EdgeCollider2D edge2D = colObject.AddComponent<EdgeCollider2D>();
+
+        edge2D.points = ColliderVec2s(star);
+        edge2D.isTrigger = true;
+        edge2D.edgeRadius = 0.45f;
+        return edge2D;
+    }
+
+    private Vector2[] ColliderVec2s(Star star)
+    {
         List<Vector2> vec2s = new List<Vector2>();
         Overlap baseOverlap = star.outSideOverlaps[0];
         Line baseLine = baseOverlap.lines[0];
@@ -74,10 +150,7 @@ public class GoalTask : MonoBehaviour
                     if (vec2s.Count == 5)
                     {
                         vec2s.Add(vec2s[0]);
-                        edge2D.points = vec2s.ToArray();
-                        edge2D.isTrigger = true;
-                        edge2D.edgeRadius = 0.45f;
-                        return edge2D;
+                        return vec2s.ToArray();
                     }
                 }
             }
@@ -104,31 +177,6 @@ public class GoalTask : MonoBehaviour
         return go;
     }
 
-    private void Update()
-    {
-        Line[] lines = LineListToLines(lineRays);
-        star = LineToStar(lines);
-        //if (star != null)
-        //{
-        //    Debug.Log("星はあります");
-
-        //    foreach (Overlap overlap in star.outSideOverlaps)
-        //    {
-        //        GameObject go = CreateBlock(overlap.pos);
-        //        go.name = "Out";
-        //    }
-        //    foreach (Overlap overlap in star.inSideOverlaps)
-        //    {
-        //        GameObject go = CreateBlock(overlap.pos);
-        //        go.name = "In";
-        //    }
-        //}
-        //else
-        //{
-        //    Debug.Log("星はありません");
-        //}
-    }
-
     //レイの追加
     public void AddRayVartex(List<Vec2Class> vertex)
     {
@@ -151,6 +199,7 @@ public class GoalTask : MonoBehaviour
                 lines.Add(line);
             }
         }
+
         return lines.ToArray();
     }
 
@@ -280,7 +329,7 @@ public class GoalTask : MonoBehaviour
     {
         foreach (Overlap overlap in overlaps)
         {
-            if (overlap == overlapBase)
+            if (overlap.pos == overlapBase.pos)
                 return true;
         }
         return false;

@@ -35,6 +35,14 @@ public struct GetTag
     public const string NotRefrect = "NotRefrect";
 }
 
+public struct GetPath
+{
+    public const string Prefab = "Prefab";
+
+    public const string Particle = Prefab + "/Particle";
+}
+
+
 public class Vec2Class
 {
     public Vector2 vec2 { get; set; }
