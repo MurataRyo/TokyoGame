@@ -139,7 +139,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fa3649f580cc03d4197ff866704bdf2b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  selectFlag: 0
 --- !u!1 &6722962623040542272
 GameObject:
   m_ObjectHideFlags: 0
@@ -188,7 +187,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f8eea1b4bc327164eb8e500545937526, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  controlFlag: 0
 --- !u!114 &6722962623040542276
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -281,6 +279,16 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 6722962623040542279}
     m_Modifications:
+    - target: {fileID: 1336685169640730478, guid: 7c05ba1e7e9000241853b881d8987d8a,
+        type: 3}
+      propertyPath: m_Name
+      value: ShineRay
+      objectReference: {fileID: 0}
+    - target: {fileID: 1336685169640730478, guid: 7c05ba1e7e9000241853b881d8987d8a,
+        type: 3}
+      propertyPath: m_TagString
+      value: LightSource
+      objectReference: {fileID: 0}
     - target: {fileID: 1336685169640730477, guid: 7c05ba1e7e9000241853b881d8987d8a,
         type: 3}
       propertyPath: m_LocalPosition.x
@@ -336,16 +344,6 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1336685169640730478, guid: 7c05ba1e7e9000241853b881d8987d8a,
-        type: 3}
-      propertyPath: m_Name
-      value: ShineRay
-      objectReference: {fileID: 0}
-    - target: {fileID: 1336685169640730478, guid: 7c05ba1e7e9000241853b881d8987d8a,
-        type: 3}
-      propertyPath: m_TagString
-      value: LightSource
-      objectReference: {fileID: 0}
     - target: {fileID: 1336685169640730479, guid: 7c05ba1e7e9000241853b881d8987d8a,
         type: 3}
       propertyPath: m_Materials.Array.data[0]
@@ -380,6 +378,11 @@ PrefabInstance:
         type: 3}
       propertyPath: InitialModule.startColor.maxColor.b
       value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1336685169640730476, guid: 7c05ba1e7e9000241853b881d8987d8a,
+        type: 3}
+      propertyPath: playOnAwake
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 7c05ba1e7e9000241853b881d8987d8a, type: 3}
