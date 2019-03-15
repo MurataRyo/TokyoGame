@@ -27,7 +27,14 @@ public class LaunchHit : MonoBehaviour
             // 光源を操作する状態に移行
             if (playerMove.playerState == PlayerMove.PlayerState.Normal && Input.GetButtonDown(XBox.Str.B.ToString()))
             {
-                playerMove.launchControl = true;
+                if (playerMove.launchControl)
+                {
+                    playerMove.launchControl = false;
+                }
+                else
+                {
+                    playerMove.launchControl = true;
+                }
             }
 
             // 光源を操作する状態のとき
@@ -53,7 +60,10 @@ public class LaunchHit : MonoBehaviour
                 select = m_hitObjects.Count - 1;
             }
             target = m_hitObjects[select];                  // 選択されているオブジェクトの取り出し
-            target.GetComponent<LaunchControl>().Select();  // 選択した光源の向きを変えられるようにする
+            if (playerMove.launchControl)
+            {
+                target.GetComponent<LaunchControl>().Select();  // 選択した光源の向きを変えられるようにする
+            }
         }
         else
         {

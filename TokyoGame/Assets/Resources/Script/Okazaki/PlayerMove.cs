@@ -141,10 +141,6 @@ public class PlayerMove : MonoBehaviour
                 {
                     jumpFlag = true;
                 }
-                else if (launchControl)
-                {
-                    launchControl = false;
-                }
             }
 
             if (jumpFlag && !isGround)
