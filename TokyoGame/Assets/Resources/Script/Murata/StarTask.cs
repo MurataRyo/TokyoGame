@@ -24,7 +24,7 @@ public class StarTask : MonoBehaviour
     {
         if (thisStarCol != null)
         {
-            ParticlAdd(thisStarCol.points,new Vector3(0f,0f,-0.25f));
+            ParticlAdd(thisStarCol.points,Vector3.zero);
         }
     }
 

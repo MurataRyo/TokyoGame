@@ -48,6 +48,14 @@ public class GoalTask : MonoBehaviour
             //星があるかどうか
             if (star != null)
             {
+                if (Input.GetKeyDown(KeyCode.A))
+                {
+                    foreach (Overlap overlap in star.outSideOverlaps)
+                    {
+                        CreateBlock(overlap.pos);
+                    }
+                }
+
                 //新規生成の場合
                 if (starLog == null)
                 {
@@ -127,8 +135,9 @@ public class GoalTask : MonoBehaviour
     {
         List<Vector2> vec2s = new List<Vector2>();
         Overlap baseOverlap = star.outSideOverlaps[0];
-        Line baseLine = baseOverlap.lines[0];
+        Line baseLine = BaseLine(baseOverlap,star);
         vec2s.Add(baseOverlap.pos);
+        Overlap overlapLog = null;
         while (true)
         {
             foreach (Line line in star.lines)
@@ -136,14 +145,18 @@ public class GoalTask : MonoBehaviour
                 if (line == baseLine ||
                     !InIfOverlap(line.overlaps.ToArray(), baseOverlap))
                     continue;
+
                 foreach (Overlap overlap in line.overlaps)
                 {
+                    //星の外側の頂点でなければならない
                     if (!InIfOverlap(star.outSideOverlaps, overlap))
                         continue;
-
-                    if (baseOverlap == overlap)
+                    
+                    if (baseOverlap == overlap ||
+                        overlapLog != null && overlap == overlapLog)
                         continue;
 
+                    overlapLog = baseOverlap;
                     baseLine = line;
                     baseOverlap = overlap;
                     vec2s.Add(overlap.pos);
@@ -155,6 +168,22 @@ public class GoalTask : MonoBehaviour
                 }
             }
         }
+    }
+
+    private Line BaseLine(Overlap baseOverlap,Star star)
+    {
+
+        foreach (Line lineA in baseOverlap.lines)
+        {
+            foreach (Line lineB in star.lines)
+            {
+                if (lineA == lineB)
+                {
+                    return lineA;
+                }
+            }
+        }
+        return null;
     }
 
     private bool InIfOverlap(Overlap[] overlaps, Overlap baseOverlap)
@@ -205,7 +234,6 @@ public class GoalTask : MonoBehaviour
 
     private Star LineToStar(Line[] lines)
     {
-        int q = 0;
         //線が５本未満なら星が作れないのでNullを返す
         if (lines.Length < 5)
             return null;
@@ -216,40 +244,26 @@ public class GoalTask : MonoBehaviour
             for (int j = i + 1; j < lines.Length - 3; j++)
             {
                 if (!LineIfOverlaps(lines[j], lines, new int[] { i }))
-                {
-                    q++;
                     continue;
-                }
 
                 for (int k = j + 1; k < lines.Length - 2; k++)
                 {
                     if (!LineIfOverlaps(lines[k], lines, new int[] { i, j }))
-                    {
-                        q++;
                         continue;
-                    }
                     for (int x = k + 1; x < lines.Length - 1; x++)
                     {
                         if (!LineIfOverlaps(lines[x], lines, new int[] { i, j, k }))
-                        {
-                            q++;
                             continue;
-                        }
                         for (int y = x + 1; y < lines.Length; y++)
                         {
                             if (!LineIfOverlaps(lines[y], lines, new int[] { i, j, k, x }))
-                            {
-                                q++;
                                 continue;
-                            }
-                            q++;
                             //5本の線をリストアップする
                             Line[] lineFive = new Line[] { lines[i], lines[j], lines[k], lines[x], lines[y] };
                             Overlap[] overlaps = LineToOverlap(lineFive);
                             Star star = null;
                             if (OverlapsAndLinesToStar(overlaps, lineFive, out star))
                             {
-                                Debug.Log("試行回数は" + q + "回");
                                 return star;
                             }
                         }
@@ -257,7 +271,6 @@ public class GoalTask : MonoBehaviour
                 }
             }
         }
-        Debug.Log("試行回数は" + q + "回");
         return null;
     }
 
