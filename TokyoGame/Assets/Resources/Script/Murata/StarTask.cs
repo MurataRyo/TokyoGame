@@ -33,7 +33,10 @@ public class StarTask : MonoBehaviour
         if(collision.tag == GetTag.Player)
         {
             if (playerMove.playerState == PlayerMove.PlayerState.Light)
+            {
+                playerMove.stopPlayer = true;
                 Debug.Log("クリア");
+            }
         }
     }
 
