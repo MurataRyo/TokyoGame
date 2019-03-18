@@ -16,7 +16,7 @@ public class LaunchHit : MonoBehaviour
     {
         Player = transform.root.gameObject;
         playerMove = Player.GetComponent<PlayerMove>();
-        xbox = GetComponent<XBox>();
+        xbox = Utility.GetTaskObject().GetComponent<XBox>();
     }
     
     void Update()
@@ -41,11 +41,11 @@ public class LaunchHit : MonoBehaviour
             if (playerMove.launchControl)
             {
                 /*動かす光源の選択-------------------*/
-                if (Input.GetKeyDown(KeyCode.L))
+                if (xbox.ButtonDown(XBox.AxisStr.LeftButtonRight, true))
                 {
                     select++;
                 }
-                if (Input.GetKeyDown(KeyCode.J))
+                if (xbox.ButtonDown(XBox.AxisStr.LeftButtonRight, false))
                 {
                     select--;
                 }
@@ -69,8 +69,6 @@ public class LaunchHit : MonoBehaviour
         {
             select = 0;
         }
-        //Debug.Log(m_hitObjects.Count);
-        //Debug.Log(target);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

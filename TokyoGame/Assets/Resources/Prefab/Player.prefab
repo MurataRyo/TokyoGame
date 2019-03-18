@@ -80,8 +80,9 @@ GameObject:
   m_Component:
   - component: {fileID: 6801619921621022082}
   - component: {fileID: 6801619921621022085}
-  - component: {fileID: 6801619921621022084}
+  - component: {fileID: 5902830743324368679}
   - component: {fileID: 6801619921621022087}
+  - component: {fileID: 7604409299768119511}
   - component: {fileID: 6801619921621022086}
   - component: {fileID: 6801619921621022089}
   m_Layer: 9
@@ -100,7 +101,7 @@ Transform:
   m_GameObject: {fileID: 6801619921621022088}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalScale: {x: 0.8, y: 0.8, z: 0.8}
   m_Children:
   - {fileID: 6476682599079600955}
   m_Father: {fileID: 0}
@@ -114,8 +115,8 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 6801619921621022088}
   m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
---- !u!23 &6801619921621022084
-MeshRenderer:
+--- !u!137 &5902830743324368679
+SkinnedMeshRenderer:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -151,6 +152,18 @@ MeshRenderer:
   m_SortingLayerID: 0
   m_SortingLayer: 0
   m_SortingOrder: 0
+  serializedVersion: 2
+  m_Quality: 0
+  m_UpdateWhenOffscreen: 0
+  m_SkinnedMotionVectors: 1
+  m_Mesh: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
+  m_Bones: []
+  m_BlendShapeWeights: []
+  m_RootBone: {fileID: 0}
+  m_AABB:
+    m_Center: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 0.5, y: 1, z: 0.5}
+  m_DirtyAABB: 0
 --- !u!61 &6801619921621022087
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -177,6 +190,22 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 2}
   m_EdgeRadius: 0
+--- !u!58 &7604409299768119511
+CircleCollider2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6801619921621022088}
+  m_Enabled: 1
+  m_Density: 1
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_UsedByEffector: 0
+  m_UsedByComposite: 0
+  m_Offset: {x: 0, y: 0}
+  serializedVersion: 2
+  m_Radius: 0.5
 --- !u!50 &6801619921621022086
 Rigidbody2D:
   serializedVersion: 4
@@ -211,4 +240,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerState: 0
+  mesh1: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
+  mesh2: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
   launchControl: 0

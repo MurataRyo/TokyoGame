@@ -4709,7 +4709,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1012170730802203025}
   - component: {fileID: 7043757965332421271}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: SpotCol
   m_TagString: Col
   m_Icon: {fileID: 0}

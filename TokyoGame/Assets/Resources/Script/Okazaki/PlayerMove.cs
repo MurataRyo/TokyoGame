@@ -13,11 +13,14 @@ public class PlayerMove : MonoBehaviour
 
     [HideInInspector] public PlayerState playerState = PlayerState.Normal;
     GameObject launchHit;
-    
+
+    [SerializeField] Mesh mesh1;
+    [SerializeField] Mesh mesh2;
     float speed;                                // 移動速度
     float jumpPower;                            // ジャンプ力
     private const float WALK_SPEED = 5f;        // 歩行速度
     private const float RUN_SPEED = 7f;         // 走行速度
+    private const float LIGHT_SPEED = 10f;       // 光状態の時の速度
     private const float JUMP_HEIGHT = 6f;       // ジャンプの頂点
     private const float GRAVITY_SIZE = 9.81f;   // 重力の強さ
     bool runFlag = false;                       // 走るかどうか
@@ -26,13 +29,18 @@ public class PlayerMove : MonoBehaviour
     bool isLeftWall = false;                    // 左の壁に触れているかどうか
     bool lightFlag = false;                     // 光と重なっているかどうか
     bool jumpFlag = false;                      // ジャンプするかどうか
+    bool lightJump = false;
+    bool search = false;
     [HideInInspector]
     public bool launchControl = false;          // 光源を操作するかどうか
 
     Vector2 position = Vector2.zero;
+    Vector2 velocity = Vector2.zero;
 
+    new SkinnedMeshRenderer renderer;
     new Rigidbody2D rigidbody;
-    new BoxCollider2D collider2D;
+    BoxCollider2D boxCollider2D;
+    CircleCollider2D circleCollider2D;
     XBox xbox;
 
     void Start()
@@ -40,13 +48,16 @@ public class PlayerMove : MonoBehaviour
         launchHit = GameObject.FindGameObjectWithTag("LaunchHit");
         jumpPower = Mathf.Pow(JUMP_HEIGHT * 2 * GRAVITY_SIZE, 0.5f); // ジャンプ力の計算
         rigidbody = GetComponent<Rigidbody2D>();
-        collider2D = gameObject.GetComponent<BoxCollider2D>();
-        xbox = GetComponent<XBox>();
+        boxCollider2D = gameObject.GetComponent<BoxCollider2D>();
+        circleCollider2D = gameObject.GetComponent<CircleCollider2D>();
+        xbox = Utility.GetTaskObject().GetComponent<XBox>();
+        renderer = GetComponent<SkinnedMeshRenderer>();
     }
 
     void Update()
     {
-        Collider2D[] playerHit = Physics2D.OverlapBoxAll(transform.position, collider2D.size, 0f);  // 自機の当たり判定の取得
+        /*Collider2D[] playerHit = Physics2D.OverlapBoxAll(transform.position, boxCollider2D.size, 0f);*/
+        Collider2D[] playerHit = Physics2D.OverlapCircleAll(transform.position, 0f); // 自機の当たり判定の取得
         Vector2 velocity = rigidbody.velocity;
 
         lightFlag = false;
@@ -60,22 +71,14 @@ public class PlayerMove : MonoBehaviour
             }
         }
 
-        // 光の中を出入りする
-        if (lightFlag && Input.GetButton(XBox.Str.RB.ToString()) && playerState != PlayerState.Light)
-        {
-            playerState = PlayerState.Light;
-            velocity = new Vector2(0f, 0f);     // 速度をリセット
-        }
-        else if ((!lightFlag || !Input.GetButton(XBox.Str.RB.ToString())) && playerState != PlayerState.Normal) 
-        {
-            playerState = PlayerState.Normal;
-            velocity = new Vector2(0f, 0f);     // 速度をリセット
-        }
-
         // 速度の変更
         if (runFlag)
         {
             speed = RUN_SPEED;
+        }
+        else if(playerState == PlayerState.Light)
+        {
+            speed = LIGHT_SPEED;
         }
         else
         {
@@ -83,7 +86,7 @@ public class PlayerMove : MonoBehaviour
         }
 
         // 走るかどうか
-        if (Input.GetButton(XBox.Str.X.ToString()))
+        if (xbox.Button(XBox.Str.X) && playerState == PlayerState.Normal && isGround)
         {
             runFlag = true;
         }
@@ -91,36 +94,71 @@ public class PlayerMove : MonoBehaviour
         {
             runFlag = false;
         }
+
+        if(!xbox.Button(XBox.Str.RB) && lightJump)
+        {
+            lightJump = false;
+        }
+
+        // ジャンプする
+        if (xbox.ButtonDown(XBox.Str.A))
+        {
+            if (playerState == PlayerState.Light)
+            {
+                lightJump = true;
+                playerState = PlayerState.Normal;
+            }
+            else
+            {
+                if (!isGround || launchControl)
+                {
+                    return;
+                }
+            }
+            jumpFlag = true;
+        }
         
+        RayGround();
+        //Debug.Log(lightFlag);
+        //ModeChange();
+    }
+
+    void FixedUpdate()
+    {
+        Vector2 position = transform.position;
+        Vector2 velocity = rigidbody.velocity;
+        float x = circleCollider2D.radius + speed * Time.fixedDeltaTime;
+        Vector2 y = new Vector2(velocity.x, velocity.y).normalized;
+        Vector2 z = x * y + position;
+        Collider2D[] lightSearch = Physics2D.OverlapCircleAll(z, 0f, LayerMask.GetMask("Col"));
+
+        // 光の中を出入りする
+        if (lightFlag && xbox.Button(XBox.Str.RB) && playerState != PlayerState.Light && !lightJump)
+        {
+            playerState = PlayerState.Light;
+            velocity = new Vector2(0f, 0f);     // 速度をリセット
+        }
+        else if ((!lightFlag || !xbox.Button(XBox.Str.RB)) && playerState != PlayerState.Normal)
+        {
+            playerState = PlayerState.Normal;
+            velocity = new Vector2(0f, 0f);     // 速度をリセット
+        }
+
         // 自機の移動
         if (playerState == PlayerState.Light) // 光の中に入っている時の移動
         {
             Vector2 vect2 = new Vector2(Input.GetAxisRaw((XBox.AxisStr.LeftJoyRight).ToString()), -Input.GetAxisRaw((XBox.AxisStr.LeftJoyUp).ToString())).normalized;
             velocity = transform.right * vect2.x + transform.up * vect2.y;
             velocity *= speed;
-            //transform.position = new Vector3(
-            //        Mathf.Clamp(transform.position.x, light.transform.position.x - (light.transform.localScale.x / 2), light.transform.position.x + (light.transform.localScale.x / 2)),
-            //        Mathf.Clamp(transform.position.y, light.transform.position.y - (light.transform.localScale.y / 2), light.transform.position.y + (light.transform.localScale.y / 2)),
-            //        0f);
 
-            // 光の中から出ないようにする
-            //if (!lightFlag)
-            //{
-            //    transform.position = position;
-            //    velocity = new Vector2(0f, 0f);
-            //}
-            //else
-            //{
-            //    velocity = transform.right * vect2.x + transform.up * vect2.y;
-            //    velocity *= speed;
-            //}
-            position = transform.position;
             rigidbody.velocity = new Vector2(velocity.x, velocity.y);
-
+            renderer.sharedMesh = mesh2;
+            boxCollider2D.enabled = false;
+            search = true;
         }
         else // それ以外の時の移動
         {
-            if(launchControl)
+            if (launchControl)
             {
                 velocity.x = 0f;
             }
@@ -134,20 +172,11 @@ public class PlayerMove : MonoBehaviour
                 }
             }
 
-            // ジャンプする
-            if (Input.GetButtonDown(XBox.Str.A.ToString()))
-            {
-                if (isGround && !launchControl)
-                {
-                    jumpFlag = true;
-                }
-            }
-
-            if (jumpFlag && !isGround)
+            if (jumpFlag && velocity.y == jumpPower)
             {
                 jumpFlag = false;
             }
-            
+
             /*重力関係---------------------------------------------------*/
             if (((isGround && !jumpFlag) || playerState == PlayerState.Light) && velocity.y <= 0f)
             {
@@ -164,9 +193,36 @@ public class PlayerMove : MonoBehaviour
             /*----------------------------------------------------------*/
 
             rigidbody.velocity = new Vector2(velocity.x, velocity.y);
+            renderer.sharedMesh = mesh1;
+            boxCollider2D.enabled = true;
+            search = false;
         }
-        RayGround();
-        //ModeChange();
+        for (int i = 0; i < lightSearch.Length; i++)
+        {
+            if (lightSearch[i].tag == "Col")
+            {
+                search = false;
+            }
+        }
+
+        if (search)
+            LightSearch();
+
+        //Debug.Log(search);
+    }
+
+    void LightSearch()
+    {
+        Vector2 position = transform.position;
+        Vector2 velocity = rigidbody.velocity;
+        float x = circleCollider2D.radius + LIGHT_SPEED * Time.fixedDeltaTime;
+        Vector2 y = new Vector2(velocity.x, velocity.y).normalized;
+        Vector2 z = x * y + position;
+        Vector2 direction = position - z;
+
+        RaycastHit2D hit = Physics2D.Raycast(z, direction, x, LayerMask.GetMask("Col"));
+        
+        Debug.Log(hit.normal);
     }
 
     // 自機の状態変化
@@ -175,12 +231,12 @@ public class PlayerMove : MonoBehaviour
         if(playerState == PlayerState.Normal)
         {
             transform.localScale = new Vector3(1f, 1f, 1f);
-            collider2D.size = new Vector2(1f, 2f);
+            boxCollider2D.size = new Vector2(1f, 2f);
         }
         else
         {
             transform.localScale = new Vector3(1f, 0.5f, 1f);
-            collider2D.size = new Vector2(0.5f, 1f);
+            boxCollider2D.size = new Vector2(0.5f, 1f);
         }
     }
 
@@ -190,7 +246,7 @@ public class PlayerMove : MonoBehaviour
         isGround = false;
         Ray2D ray = new Ray2D(transform.position, Vector2.down);
 
-        RaycastHit2D[] hits = Physics2D.BoxCastAll(ray.origin, new Vector2(collider2D.size.x, collider2D.size.y), 0f, ray.direction, 0.1f);
+        RaycastHit2D[] hits = Physics2D.BoxCastAll(ray.origin, new Vector2(boxCollider2D.size.x * transform.localScale.x, boxCollider2D.size.y * transform.localScale.y), 0f, ray.direction, 0.1f);
 
         foreach(RaycastHit2D hit in hits)
         {

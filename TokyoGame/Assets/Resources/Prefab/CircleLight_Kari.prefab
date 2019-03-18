@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 9011263058009993957}
   - component: {fileID: 9011263058009993954}
   - component: {fileID: 9011263058009993955}
-  m_Layer: 0
+  m_Layer: 11
   m_Name: CircleLight_Kari
   m_TagString: Col
   m_Icon: {fileID: 0}
