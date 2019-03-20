@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4664674086404710921}
   - component: {fileID: 4664674086404710922}
-  - component: {fileID: 4264041971605732298}
+  - component: {fileID: 6398380464585500895}
   - component: {fileID: 4664674086404710923}
   m_Layer: 0
   m_Name: FanLightParticle
@@ -26,13 +26,13 @@ Transform:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 4664674086404711028}
-  m_LocalRotation: {x: -0.7071068, y: -0, z: 0.7071068, w: 0}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -0.75, y: -10.62, z: 19.977234}
   m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
-  m_LocalEulerAnglesHint: {x: 0, y: -90, z: 180}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!198 &4664674086404710922
 ParticleSystem:
   m_ObjectHideFlags: 0
@@ -42,7 +42,7 @@ ParticleSystem:
   m_GameObject: {fileID: 4664674086404711028}
   serializedVersion: 6
   lengthInSec: 0.05
-  simulationSpeed: 0.001
+  simulationSpeed: 0.14
   stopAction: 0
   cullingMode: 0
   ringBufferMode: 0
@@ -285,7 +285,7 @@ ParticleSystem:
     startSize:
       serializedVersion: 2
       minMaxState: 0
-      scalar: 7.5
+      scalar: 9.5
       minScalar: 1
       maxCurve:
         serializedVersion: 2
@@ -602,7 +602,7 @@ ParticleSystem:
         m_RotationOrder: 4
     randomizeRotationDirection: 0
     maxNumParticles: 1000
-    size3D: 1
+    size3D: 0
     rotation3D: 0
     gravityModifier:
       serializedVersion: 2
@@ -660,7 +660,7 @@ ParticleSystem:
   ShapeModule:
     serializedVersion: 6
     enabled: 1
-    type: 4
+    type: 10
     angle: 33.95
     length: 5
     boxThickness: {x: 0, y: 0, z: 0}
@@ -804,7 +804,7 @@ ParticleSystem:
           m_PostInfinity: 2
           m_RotationOrder: 4
     arc:
-      value: 360
+      value: 65.5
       mode: 0
       spread: 0
       speed:
@@ -4637,7 +4637,7 @@ ParticleSystem:
         m_PostInfinity: 2
         m_RotationOrder: 4
     vectorLabel1_3: W
---- !u!114 &4264041971605732298
+--- !u!114 &6398380464585500895
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -4646,7 +4646,7 @@ MonoBehaviour:
   m_GameObject: {fileID: 4664674086404711028}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c5222f92cb168644184da8a0e6f9ff7c, type: 3}
+  m_Script: {fileID: 11500000, guid: 97ebd227e2a21da46bd798cae0ee6ff9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!199 &4664674086404710923

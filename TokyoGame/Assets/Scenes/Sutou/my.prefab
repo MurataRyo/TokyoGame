@@ -83,7 +83,7 @@ GameObject:
   - component: {fileID: 389530906}
   m_Layer: 0
   m_Name: GameObject
-  m_TagString: Untagged
+  m_TagString: NotRefrect
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -199,7 +199,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   keepPoints: []
   keepLinePrevious: []
-  keepLinePreviousPlus: []
 --- !u!114 &6296893956418525227
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -277,6 +276,11 @@ PrefabInstance:
     - target: {fileID: 1336685169640730477, guid: 7e275bcaa36bbcb4cbd19dd5a94ddcde,
         type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 1336685169640730476, guid: 7e275bcaa36bbcb4cbd19dd5a94ddcde,
+        type: 3}
+      propertyPath: playOnAwake
       value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
