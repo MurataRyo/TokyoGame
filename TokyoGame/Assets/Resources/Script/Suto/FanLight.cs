@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.U2D;
 
-public class FunLight : MonoBehaviour
+public class FanLight : MonoBehaviour
 {
     [SerializeField] SpriteShapeController shapeController;
     [SerializeField] float range;
