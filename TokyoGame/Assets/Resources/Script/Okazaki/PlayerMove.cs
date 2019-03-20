@@ -27,8 +27,6 @@ public class PlayerMove : MonoBehaviour
     private const float GRAVITY_SIZE = 9.81f;   // 重力の強さ
     bool runFlag = false;                       // 走るかどうか
     bool isGround = false;                      // 接地しているかどうか
-    bool isRightWall = false;                   // 右の壁に触れているかどうか
-    bool isLeftWall = false;                    // 左の壁に触れているかどうか
     bool lightFlag = false;                     // 光と重なっているかどうか
     bool jumpFlag = false;                      // ジャンプするかどうか
     bool lightJump = false;
@@ -124,18 +122,17 @@ public class PlayerMove : MonoBehaviour
         }
         
         RayGround();
-        //Debug.Log(lightFlag);
-        //ModeChange();
+        Debug.Log(lightFlag);
     }
 
     void FixedUpdate()
     {
-        Vector2 position = transform.position;
         Vector2 velocity = rigidbody.velocity;
-        float x = circleCollider2D.radius + speed * Time.fixedDeltaTime;
-        Vector2 y = new Vector2(velocity.x, velocity.y).normalized;
-        Vector2 z = x * y + position;
-        Collider2D[] lightSearch = Physics2D.OverlapCircleAll(z, 0f, LayerMask.GetMask("Col"));
+        //Vector2 position = transform.position;
+        //float x = circleCollider2D.radius + speed * Time.fixedDeltaTime;
+        //Vector2 y = new Vector2(velocity.x, velocity.y).normalized;
+        //Vector2 z = x * y + position;
+        //Collider2D[] lightSearch = Physics2D.OverlapCircleAll(z, 0f, LayerMask.GetMask("Col"));
 
         // 光の中を出入りする
         if (lightFlag && xbox.Button(XBox.Str.RB) && playerState != PlayerState.Light && !lightJump)
@@ -148,9 +145,6 @@ public class PlayerMove : MonoBehaviour
             playerState = PlayerState.Default;
             velocity = new Vector2(0f, 0f);     // 速度をリセット
         }
-
-        //if (search)
-        //    LightSearch();
 
         // 自機の移動
         if (!stopPlayer)
@@ -184,11 +178,6 @@ public class PlayerMove : MonoBehaviour
                 else
                 {
                     velocity.x = Input.GetAxisRaw((XBox.AxisStr.LeftJoyRight).ToString()) * speed;
-
-                    if ((isRightWall && velocity.x > 0f) || (isLeftWall && velocity.x < 0f))
-                    {
-                        velocity.x = 0f;
-                    }
                 }
 
                 if (jumpFlag && velocity.y == jumpPower)
@@ -217,13 +206,13 @@ public class PlayerMove : MonoBehaviour
                 circleCollider2D.isTrigger = true;
                 search = false;
             }
-            for (int i = 0; i < lightSearch.Length; i++)
-            {
-                if (lightSearch[i].tag == "Col")
-                {
-                    search = false;
-                }
-            }
+            //for (int i = 0; i < lightSearch.Length; i++)
+            //{
+            //    if (lightSearch[i].tag == "Col")
+            //    {
+            //        search = false;
+            //    }
+            //}
             //text.enabled = false;
         }
         else
@@ -282,34 +271,5 @@ public class PlayerMove : MonoBehaviour
                 isGround = true;
             }
         }
-    }
-
-    // 衝突判定
-    private void OnCollisionEnter2D(Collision2D collision)
-    {
-        isRightWall = false;
-        isLeftWall = false;
-
-        for (int i = 0; i < collision.contacts.Length; i++)
-        {
-            if (collision.contacts[i].normal.x > 0.5f)
-            {
-                isLeftWall = true;
-                return;
-            }
-            if (collision.contacts[i].normal.x < -0.5f)
-            {
-                isRightWall = true;
-                return;
-            }
-        }
-    }
-    private void OnCollisionStay2D(Collision2D collision)
-    {
-        OnCollisionEnter2D(collision);
-    }
-    private void OnCollisionExit2D(Collision2D collision)
-    {
-        OnCollisionEnter2D(collision);
     }
 }

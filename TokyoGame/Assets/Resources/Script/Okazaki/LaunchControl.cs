@@ -10,7 +10,7 @@ public class LaunchControl : MonoBehaviour
     // 取得
     void Start()
     {
-        launchBase = transform.root.gameObject;
+        launchBase = transform.parent.gameObject;
         launcher = launchBase.GetComponent<Launcher>();
     }
 

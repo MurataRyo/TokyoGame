@@ -14,7 +14,7 @@ public class LaunchHit : MonoBehaviour
     // 取得
     void Start()
     {
-        Player = transform.root.gameObject;
+        Player = transform.parent.gameObject;
         playerMove = Player.GetComponent<PlayerMove>();
         xbox = Utility.GetTaskObject().GetComponent<XBox>();
     }
