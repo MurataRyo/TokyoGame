@@ -21,7 +21,7 @@ public class FanLight : MonoBehaviour
             for (int i = 0; i < vertexCount; i++)
             {
                 Vector2 endPoint = new Vector2(Mathf.Cos(angle / (vertexCount - 1) * i * Mathf.Deg2Rad) * range, Mathf.Sin(angle / (vertexCount - 1) * i * Mathf.Deg2Rad) * range);
-                RaycastHit2D[] hit = Physics2D.RaycastAll(transform.position, endPoint.normalized, range);
+                RaycastHit2D[] hit = Physics2D.RaycastAll(transform.position, transform.TransformDirection(endPoint.normalized), range);
                 foreach (RaycastHit2D hit2D in hit)
                 {
                     if (NotRefrect(hit2D.collider.tag))
