@@ -25,7 +25,7 @@ public class LaunchHit : MonoBehaviour
         if (m_hitObjects.Count > 0)
         {
             // 光源を操作する状態に移行
-            if (playerMove.playerState == PlayerMove.PlayerState.Normal && Input.GetButtonDown(XBox.Str.B.ToString()))
+            if (playerMove.playerState == PlayerMove.PlayerState.Default && Input.GetButtonDown(XBox.Str.B.ToString()))
             {
                 if (playerMove.launchControl)
                 {

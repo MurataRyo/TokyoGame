@@ -8,16 +8,16 @@ public class PlayerMove : MonoBehaviour
     // 自機の状態
     public enum PlayerState
     {
-        Normal,
+        Default,
         Light,
     }
 
-    [HideInInspector] public PlayerState playerState = PlayerState.Normal;
+    [HideInInspector] public PlayerState playerState = PlayerState.Default;
     GameObject launchHit;
 
     [SerializeField] Mesh mesh1;
     [SerializeField] Mesh mesh2;
-    [SerializeField] Text text;
+    //[SerializeField] Text text;
     float speed;                                // 移動速度
     float jumpPower;                            // ジャンプ力
     private const float WALK_SPEED = 5f;        // 歩行速度
@@ -91,7 +91,7 @@ public class PlayerMove : MonoBehaviour
         }
 
         // 走るかどうか
-        if (xbox.Button(XBox.Str.X) && playerState == PlayerState.Normal && isGround)
+        if (xbox.Button(XBox.Str.X) && playerState == PlayerState.Default && isGround)
         {
             runFlag = true;
         }
@@ -111,7 +111,7 @@ public class PlayerMove : MonoBehaviour
             if (playerState == PlayerState.Light)
             {
                 lightJump = true;
-                playerState = PlayerState.Normal;
+                playerState = PlayerState.Default;
             }
             else
             {
@@ -143,14 +143,14 @@ public class PlayerMove : MonoBehaviour
             playerState = PlayerState.Light;
             velocity = new Vector2(0f, 0f);     // 速度をリセット
         }
-        else if ((!lightFlag || !xbox.Button(XBox.Str.RB)) && playerState != PlayerState.Normal)
+        else if ((!lightFlag || !xbox.Button(XBox.Str.RB)) && playerState != PlayerState.Default)
         {
-            playerState = PlayerState.Normal;
+            playerState = PlayerState.Default;
             velocity = new Vector2(0f, 0f);     // 速度をリセット
         }
 
-        if (search)
-            LightSearch();
+        //if (search)
+        //    LightSearch();
 
         // 自機の移動
         if (!stopPlayer)
@@ -172,6 +172,7 @@ public class PlayerMove : MonoBehaviour
                 rigidbody.velocity = new Vector2(velocity.x, velocity.y);
                 renderer.sharedMesh = mesh2;
                 boxCollider2D.enabled = false;
+                circleCollider2D.isTrigger = false;
                 search = true;
             }
             else // それ以外の時の移動
@@ -213,6 +214,7 @@ public class PlayerMove : MonoBehaviour
                 rigidbody.velocity = new Vector2(velocity.x, velocity.y);
                 renderer.sharedMesh = mesh1;
                 boxCollider2D.enabled = true;
+                circleCollider2D.isTrigger = true;
                 search = false;
             }
             for (int i = 0; i < lightSearch.Length; i++)
@@ -222,12 +224,12 @@ public class PlayerMove : MonoBehaviour
                     search = false;
                 }
             }
-            text.enabled = false;
+            //text.enabled = false;
         }
         else
         {
             rigidbody.velocity = new Vector2(0f, 0f);
-            text.enabled = true;
+            //text.enabled = true;
         }
 
         //Debug.Log();
@@ -248,23 +250,21 @@ public class PlayerMove : MonoBehaviour
         {
             Debug.Log(hit.point);
             Debug.Log(Quaternion.FromToRotation(direction, hit.normal).eulerAngles);
+            transform.position = ClosestPoint(hit.collider, z) - (ClosestPoint(hit.collider, z) - position);
         }
-        
+        Debug.DrawRay(z, direction, Color.red);
+        Debug.Log(ClosestPoint(hit.collider, z) - position);
     }
 
-    // 自機の状態変化
-    private void ModeChange()
+    Vector2 ClosestPoint(Collider2D collider, Vector2 point)
     {
-        if(playerState == PlayerState.Normal)
-        {
-            transform.localScale = new Vector3(1f, 1f, 1f);
-            boxCollider2D.size = new Vector2(1f, 2f);
-        }
-        else
-        {
-            transform.localScale = new Vector3(1f, 0.5f, 1f);
-            boxCollider2D.size = new Vector2(0.5f, 1f);
-        }
+        GameObject go = new GameObject();
+        go.transform.position = point;
+        CircleCollider2D circle = go.AddComponent<CircleCollider2D>();
+        circle.radius = 0.01f;
+        ColliderDistance2D dis = collider.Distance(circle);
+        Destroy(go);
+        return dis.pointA;
     }
 
     // 接地判定

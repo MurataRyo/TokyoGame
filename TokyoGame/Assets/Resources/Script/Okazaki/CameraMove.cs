@@ -4,7 +4,9 @@ using UnityEngine;
 
 public class CameraMove : MonoBehaviour
 {
+    const float DEATH_HEIGHT = -5f;
     GameObject Player;
+    Vector3 position = Vector3.zero;
 
     void Start()
     {
@@ -13,6 +15,22 @@ public class CameraMove : MonoBehaviour
     
     void Update()
     {
-        transform.position = new Vector3(0f, 2f, -10f) + Player.transform.position;
+        if(Player.transform.position.y > DEATH_HEIGHT)
+        {
+            position.x = Player.transform.position.x;
+        }
+
+        if (Player.transform.position.y <= DEATH_HEIGHT + 5f && Player.transform.position.y > DEATH_HEIGHT)
+        {
+            position.y = DEATH_HEIGHT + 7f;
+        }
+        else if(Player.transform.position.y > DEATH_HEIGHT + 5f)
+        {
+            position.y = Player.transform.position.y + 2f;
+        }
+
+        position.z = -10f;
+
+        transform.position = position;
     }
 }

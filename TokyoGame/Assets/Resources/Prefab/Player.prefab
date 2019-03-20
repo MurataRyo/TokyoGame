@@ -199,7 +199,7 @@ CircleCollider2D:
   m_GameObject: {fileID: 6801619921621022088}
   m_Enabled: 1
   m_Density: 1
-  m_Material: {fileID: 0}
+  m_Material: {fileID: 6200000, guid: 66292f33929a51f45b297d78daccc1ae, type: 2}
   m_IsTrigger: 0
   m_UsedByEffector: 0
   m_UsedByComposite: 0
@@ -243,3 +243,4 @@ MonoBehaviour:
   mesh1: {fileID: 10208, guid: 0000000000000000e000000000000000, type: 0}
   mesh2: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
   launchControl: 0
+  stopPlayer: 0

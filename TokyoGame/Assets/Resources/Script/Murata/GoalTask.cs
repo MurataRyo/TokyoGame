@@ -252,7 +252,7 @@ public class GoalTask : MonoBehaviour
                             Star star = null;
                             if (OverlapsAndLinesToStar(overlaps, lineFive, out star))
                             {
-                                Debug.Log("試行回数は" + q + "回");
+                                //Debug.Log("試行回数は" + q + "回");
                                 return star;
                             }
                         }
@@ -260,7 +260,7 @@ public class GoalTask : MonoBehaviour
                 }
             }
         }
-        Debug.Log("試行回数は" + q + "回");
+        //Debug.Log("試行回数は" + q + "回");
         return null;
     }
 
