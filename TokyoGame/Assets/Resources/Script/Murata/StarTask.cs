@@ -34,7 +34,7 @@ public class StarTask : MonoBehaviour
         {
             if (playerMove.playerState == PlayerMove.PlayerState.Light)
             {
-                //playerMove.stopPlayer = true;
+                playerMove.stopPlayer = true;
                 Debug.Log("クリア");
             }
         }

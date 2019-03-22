@@ -17,7 +17,7 @@ public class PlayerMove : MonoBehaviour
 
     [SerializeField] Mesh mesh1;
     [SerializeField] Mesh mesh2;
-    //[SerializeField] Text text;
+    [SerializeField] Text text;
     float speed;                                // 移動速度
     float jumpPower;                            // ジャンプ力
     private const float WALK_SPEED = 5f;        // 歩行速度
@@ -33,6 +33,7 @@ public class PlayerMove : MonoBehaviour
     bool search = false;
     [HideInInspector]
     public bool launchControl = false;          // 光源を操作するかどうか
+    [HideInInspector]
     public bool stopPlayer = false;
 
     Vector2 position = Vector2.zero;
@@ -213,12 +214,12 @@ public class PlayerMove : MonoBehaviour
             //        search = false;
             //    }
             //}
-            //text.enabled = false;
+            text.enabled = false;
         }
         else
         {
             rigidbody.velocity = new Vector2(0f, 0f);
-            //text.enabled = true;
+            text.enabled = true;
         }
 
         //Debug.Log();
