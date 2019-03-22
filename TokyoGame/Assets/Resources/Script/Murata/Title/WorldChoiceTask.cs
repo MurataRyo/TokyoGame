@@ -4,10 +4,10 @@ using UnityEngine;
 
 public class WorldChoiceTask : MonoBehaviour
 {
-    private World[] worlds;                 //ワールドデータ
-    private ChoiceClass choiceClass;        //選択用class
-    private Camera mCamera;                 //カメラ
-    private const float CAMERA_TIME = 0.40f;   //カメラの移動時間
+    private World[] worlds;                     //ワールドデータ
+    private ChoiceClass choiceClass;            //選択用class
+    private Camera mCamera;                     //カメラ
+    private const float CAMERA_TIME = 0.40f;    //カメラの移動時間
     private IEnumerator moveCamera;
     private XBox xBox;
     // Start is called before the first frame update
@@ -32,13 +32,13 @@ public class WorldChoiceTask : MonoBehaviour
         if (moveCamera != null)
             return;
 
-        if (Input.GetKey(KeyCode.D))
+        if (Input.GetKeyDown(KeyCode.D))
         {
             choiceClass.ChoiceChange(true);
             moveCamera = MoveCamera(worlds[choiceClass.nowChoice].cameraPos, worlds[choiceClass.nowChoice].cameraAngle);
             StartCoroutine(moveCamera);
         }
-        else if (Input.GetKey(KeyCode.A))
+        else if (Input.GetKeyDown(KeyCode.A))
         {
             choiceClass.ChoiceChange(false);
             moveCamera = MoveCamera(worlds[choiceClass.nowChoice].cameraPos, worlds[choiceClass.nowChoice].cameraAngle);

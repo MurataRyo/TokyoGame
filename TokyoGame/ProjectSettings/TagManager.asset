@@ -18,6 +18,7 @@ TagManager:
   - Star
   - Refrect
   - NotRefrect
+  - Canvas
   layers:
   - Default
   - TransparentFX

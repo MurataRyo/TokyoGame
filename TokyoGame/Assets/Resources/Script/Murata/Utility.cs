@@ -1,9 +1,31 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Utility : MonoBehaviour
 {
+    
+
+    public static Vector2 GAME_SIZE = new Vector2(1920,1080);
+
+    public static GameObject UiAdd(Sprite image,Vector2 pos,Vector2 size)
+    {
+        GameObject go = new GameObject();
+        RectTransform rectTransform = go.AddComponent<RectTransform>();
+        rectTransform.position = pos + GAME_SIZE / 2;
+        rectTransform.sizeDelta = size;
+
+        go.AddComponent<Image>().sprite = image;
+        go.transform.parent = GetCanvas().transform;
+        return go;
+    }
+
+    public static GameObject GetCanvas()
+    {
+        return GameObject.FindGameObjectWithTag("Canvas");
+    }
+
     public static XBox GetXBox()
     {
         return GetTaskObject().GetComponent<XBox>();
@@ -17,6 +39,18 @@ public class Utility : MonoBehaviour
     public static int BoolToInt(bool flag)
     {
         return flag ? 1 : -1;
+    }
+
+    public static bool EnterButton()
+    {
+        XBox xBox = GetXBox();
+        if (xBox.ButtonDown(XBox.Str.A))
+            return true;
+
+        if (Input.GetKeyDown(KeyCode.Space))
+            return true;
+
+        return false;
     }
 }
 
@@ -38,8 +72,12 @@ public struct GetTag
 public struct GetPath
 {
     public const string Prefab = "Prefab";
-
     public const string Particle = Prefab + "/Particle";
+
+    public const string Image = "Image";
+    public const string Title = Image + "/Title";
+
+    public const string Game = Image + "/Game";
 }
 
 
