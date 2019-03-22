@@ -10,8 +10,8 @@ public class GameTask : MonoBehaviour
         gameOver,
         gameClear
     }
-    Mode mode;
-    Mode modeLog;
+    public Mode mode;
+    private Mode modeLog;
 
     private void Start()
     {
