@@ -15,16 +15,16 @@ public class PlayerMove : MonoBehaviour
     [HideInInspector] public PlayerState playerState = PlayerState.Default;
     GameObject launchHit;
 
-    [SerializeField] Mesh mesh1;
-    [SerializeField] Mesh mesh2;
-    [SerializeField] Text text;
+    [SerializeField] GameObject Model;          // 自機のモデル
+    [SerializeField] GameObject LightModel;     // 自機のモデル（光状態）
     float speed;                                // 移動速度
     float jumpPower;                            // ジャンプ力
+    float angle;                                // 向き
     private const float WALK_SPEED = 5f;        // 歩行速度
-    private const float RUN_SPEED = 7f;         // 走行速度
-    private const float LIGHT_SPEED = 10f;      // 光状態の時の速度
-    private const float JUMP_HEIGHT = 6f;       // ジャンプの頂点
-    private const float GRAVITY_SIZE = 9.81f;   // 重力の強さ
+    private const float RUN_SPEED = 10f;        // 走行速度
+    private const float LIGHT_SPEED = 15f;      // 光状態の時の速度
+    private const float JUMP_HEIGHT = 4f;       // ジャンプの頂点
+    private const float GRAVITY_SIZE = 20f;     // 重力の強さ
     bool runFlag = false;                       // 走るかどうか
     bool isGround = false;                      // 接地しているかどうか
     bool lightFlag = false;                     // 光と重なっているかどうか
@@ -35,6 +35,8 @@ public class PlayerMove : MonoBehaviour
     public bool launchControl = false;          // 光源を操作するかどうか
     [HideInInspector]
     public bool stopPlayer = false;
+    [HideInInspector]
+    public float deathHeight;                   // 落下死になる高さ
 
     Vector2 position = Vector2.zero;
     Vector2 velocity = Vector2.zero;
@@ -56,12 +58,13 @@ public class PlayerMove : MonoBehaviour
         circleCollider2D = gameObject.GetComponent<CircleCollider2D>();
         xbox = Utility.GetTaskObject().GetComponent<XBox>();
         renderer = GetComponent<SkinnedMeshRenderer>();
+        deathHeight = -10f;
     }
 
     void Update()
     {
         /*Collider2D[] playerHit = Physics2D.OverlapBoxAll(transform.position, boxCollider2D.size, 0f);*/
-        Collider2D[] playerHit = Physics2D.OverlapCircleAll(transform.position, 0f); // 自機の当たり判定の取得
+        Collider2D[] playerHit = Physics2D.OverlapCircleAll(new Vector2(transform.position.x, transform.position.y + (boxCollider2D.offset.y * transform.localScale.y)), 0f); // 自機の当たり判定の取得
         Vector2 velocity = rigidbody.velocity;
 
         lightFlag = false;
@@ -147,17 +150,27 @@ public class PlayerMove : MonoBehaviour
             velocity = new Vector2(0f, 0f);     // 速度をリセット
         }
 
+        // 落下死判定
+        if(transform.position.y < deathHeight)
+        {
+            Utility.GetTaskObject().GetComponent<GameTask>().mode = GameTask.Mode.gameOver;
+        }
+
         // 自機の移動
         if (!stopPlayer)
         {
             if(launchHit.transform.position != new Vector3(transform.position.x + launchHitCollider.size.x / 2, transform.position.y, transform.position.z) && velocity.x > 0f)
             {
                 launchHit.transform.position = new Vector3(transform.position.x + launchHitCollider.size.x / 2, transform.position.y, transform.position.z);
+                angle = 90f;
             }
             if (launchHit.transform.position != new Vector3(transform.position.x - launchHitCollider.size.x / 2, transform.position.y, transform.position.z) && velocity.x < 0f)
             {
                 launchHit.transform.position = new Vector3(transform.position.x - launchHitCollider.size.x / 2, transform.position.y, transform.position.z);
+                angle = -90f;
             }
+
+            Model.transform.eulerAngles = new Vector3(0f, angle, 0f);
 
             if (playerState == PlayerState.Light) // 光の中に入っている時の移動
             {
@@ -165,7 +178,8 @@ public class PlayerMove : MonoBehaviour
                 velocity = transform.right * vect2.x + transform.up * vect2.y;
 
                 rigidbody.velocity = new Vector2(velocity.x, velocity.y);
-                renderer.sharedMesh = mesh2;
+                Model.SetActive(false);
+                LightModel.SetActive(true);
                 boxCollider2D.enabled = false;
                 circleCollider2D.isTrigger = false;
                 search = true;
@@ -195,6 +209,10 @@ public class PlayerMove : MonoBehaviour
                 {
                     velocity.y = jumpPower;
                 }
+                else if(velocity.y < -15f)
+                {
+                    velocity.y = -15f;
+                }
                 else
                 {
                     velocity.y -= GRAVITY_SIZE * Time.deltaTime;
@@ -202,8 +220,9 @@ public class PlayerMove : MonoBehaviour
                 /*----------------------------------------------------------*/
 
                 rigidbody.velocity = new Vector2(velocity.x, velocity.y);
-                renderer.sharedMesh = mesh1;
                 boxCollider2D.enabled = true;
+                Model.SetActive(true);
+                LightModel.SetActive(false);
                 circleCollider2D.isTrigger = true;
                 search = false;
             }
@@ -214,15 +233,11 @@ public class PlayerMove : MonoBehaviour
             //        search = false;
             //    }
             //}
-            text.enabled = false;
         }
         else
         {
             rigidbody.velocity = new Vector2(0f, 0f);
-            text.enabled = true;
         }
-
-        //Debug.Log();
     }
 
     void LightSearch()
@@ -261,11 +276,11 @@ public class PlayerMove : MonoBehaviour
     void RayGround()
     {
         isGround = false;
-        Ray2D ray = new Ray2D(transform.position, Vector2.down);
+        Ray2D ray = new Ray2D(new Vector2(transform.position.x, transform.position.y + (boxCollider2D.offset.y * transform.localScale.y)), Vector2.down);
 
         RaycastHit2D[] hits = Physics2D.BoxCastAll(ray.origin, new Vector2(boxCollider2D.size.x * transform.localScale.x, boxCollider2D.size.y * transform.localScale.y), 0f, ray.direction, 0.1f);
 
-        foreach(RaycastHit2D hit in hits)
+        foreach (RaycastHit2D hit in hits)
         {
             if(hit.normal.y > 0.5f && (hit.collider.isTrigger == false))
             {

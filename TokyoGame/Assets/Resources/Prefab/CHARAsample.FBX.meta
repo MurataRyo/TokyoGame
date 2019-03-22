@@ -19,9 +19,7 @@ ModelImporter:
     400010: //RootNode
     400012: D-foot01
     400014: D-foot02
-    2100000: 'Material #36'
-    2100002: 'Material #37'
-    2100004: 'Material #71'
+    2100000: 03 - Default
     2300000: A-body
     2300002: B-head
     2300004: b-headParts
@@ -37,12 +35,12 @@ ModelImporter:
     3300010: D-foot01
     3300012: D-foot02
     4300000: A-body
-    4300002: C-arm01
-    4300004: D-foot01
-    4300006: B-head
-    4300008: b-headParts
-    4300010: C-arm02
-    4300012: D-foot02
+    4300002: D-foot01
+    4300004: C-arm01
+    4300006: C-arm02
+    4300008: D-foot02
+    4300010: B-head
+    4300012: b-headParts
   externalObjects: {}
   materials:
     importMaterials: 1
