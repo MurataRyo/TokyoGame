@@ -10,6 +10,7 @@ public class LineRay : MonoBehaviour
     [HideInInspector] public List<Line> keepLines; //線を保存
     [HideInInspector] public List<Vector2> keepLinePrevious; //保存
 
+    private BoxCollider2D box2D;
     private GameObject colGo;
     private EdgeCollider2D edge2D;
     private GameObject taskObject;
@@ -32,6 +33,7 @@ public class LineRay : MonoBehaviour
             }
         }
         edge2D.edgeRadius = 0.45f;
+        box2D = edge2D.gameObject.AddComponent<BoxCollider2D>();
         taskObject = Utility.GetTaskObject();
         goalTask = taskObject.GetComponent<GoalTask>();
         keepPoints = new List<Vector2>();
