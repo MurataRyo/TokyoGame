@@ -16,16 +16,16 @@ public class CameraMove : MonoBehaviour
 
     void Update()
     {
-        if(Player.transform.position.y > playerMove.deathHeight + 5f)
+        if(Player.transform.position.y > playerMove.deathHeight + 2f)
         {
             position.x = Player.transform.position.x;
         }
 
-        if (Player.transform.position.y <= playerMove.deathHeight + 10f && Player.transform.position.y > playerMove.deathHeight + 5f)
+        if (Player.transform.position.y <= playerMove.deathHeight + 7f && Player.transform.position.y > playerMove.deathHeight + 2f)
         {
-            position.y = playerMove.deathHeight + 12f;
+            position.y = playerMove.deathHeight + 9f;
         }
-        else if(Player.transform.position.y > playerMove.deathHeight + 5f)
+        else if(Player.transform.position.y > playerMove.deathHeight + 2f)
         {
             position.y = Player.transform.position.y + 2f;
         }
