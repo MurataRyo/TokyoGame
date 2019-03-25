@@ -31,6 +31,7 @@ public class PlayerMove : MonoBehaviour
     bool jumpFlag = false;                      // ジャンプするかどうか
     bool lightJump = false;
     bool search = false;
+    bool lineMove = false;
     [HideInInspector]
     public bool launchControl = false;          // 光源を操作するかどうか
     [HideInInspector]
@@ -58,13 +59,16 @@ public class PlayerMove : MonoBehaviour
         circleCollider2D = gameObject.GetComponent<CircleCollider2D>();
         xbox = Utility.GetTaskObject().GetComponent<XBox>();
         renderer = GetComponent<SkinnedMeshRenderer>();
-        deathHeight = -10f;
+        deathHeight = -7f;
     }
 
     void Update()
     {
         /*Collider2D[] playerHit = Physics2D.OverlapBoxAll(transform.position, boxCollider2D.size, 0f);*/
-        Collider2D[] playerHit = Physics2D.OverlapCircleAll(new Vector2(transform.position.x, transform.position.y + (boxCollider2D.offset.y * transform.localScale.y)), 0f); // 自機の当たり判定の取得
+        Collider2D[] playerHit = Physics2D.OverlapCircleAll
+            (new Vector2(transform.position.x, transform.position.y + (circleCollider2D.offset.y * transform.localScale.y)), 0f, LayerMask.GetMask("Col")); // 自機の当たり判定の取得
+        //Collider2D[] lineHit = Physics2D.OverlapCircleAll
+        //    (new Vector2(transform.position.x, transform.position.y + (circleCollider2D.offset.y * transform.localScale.y)), 0f, LayerMask.GetMask("Col"));
         Vector2 velocity = rigidbody.velocity;
 
         lightFlag = false;
@@ -72,11 +76,18 @@ public class PlayerMove : MonoBehaviour
         // 侵入判定
         for (int i = 0; i < playerHit.Length; i++)
         {
-            if (playerHit[i].tag == "Col")
+            if (playerHit[i].tag == "Col" || playerHit[i].tag == "Col2")
             {
                 lightFlag = true;
             }
         }
+        //for (int i = 0; i < lineHit.Length; i++)
+        //{
+        //    if (lineHit[i].tag == "Col")
+        //    {
+        //        lineMove = false;
+        //    }
+        //}
 
         // 速度の変更
         if (runFlag)
@@ -124,9 +135,8 @@ public class PlayerMove : MonoBehaviour
             }
             jumpFlag = true;
         }
-        
         RayGround();
-        Debug.Log(lightFlag);
+        //Debug.Log(lineMove);
     }
 
     void FixedUpdate()

@@ -19,6 +19,7 @@ TagManager:
   - Refrect
   - NotRefrect
   - Canvas
+  - Col2
   layers:
   - Default
   - TransparentFX
