@@ -69,6 +69,7 @@ public class LaunchHit : MonoBehaviour
         {
             select = 0;
         }
+        //Debug.Log(m_hitObjects.Count);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)

@@ -15,7 +15,7 @@ public class LightScript : MonoBehaviour
         collider2D = gameObject.GetComponent<CompositeCollider2D>();
     }
     
-    void Update()
+    void FixedUpdate()
     {
         if (playerMove.playerState == PlayerMove.PlayerState.Light)
         {

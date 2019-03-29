@@ -18,11 +18,16 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] GameObject Model;          // 自機のモデル
     [SerializeField] GameObject LightModel;     // 自機のモデル（光状態）
     float speed;                                // 移動速度
+    float moveSpeed;
+    float airSpeed;
+    float moveHigh;
+    float moveLow;
     float jumpPower;                            // ジャンプ力
     float angle;                                // 向き
     private const float WALK_SPEED = 5f;        // 歩行速度
     private const float RUN_SPEED = 10f;        // 走行速度
     private const float LIGHT_SPEED = 15f;      // 光状態の時の速度
+    private const float LINE_SPEED = 25f;       // 光状態の時の速度（直線）
     private const float JUMP_HEIGHT = 4f;       // ジャンプの頂点
     private const float GRAVITY_SIZE = 20f;     // 重力の強さ
     bool runFlag = false;                       // 走るかどうか
@@ -41,8 +46,7 @@ public class PlayerMove : MonoBehaviour
 
     Vector2 position = Vector2.zero;
     Vector2 velocity = Vector2.zero;
-
-    new SkinnedMeshRenderer renderer;
+    
     new Rigidbody2D rigidbody;
     BoxCollider2D boxCollider2D;
     BoxCollider2D launchHitCollider;
@@ -58,8 +62,8 @@ public class PlayerMove : MonoBehaviour
         launchHitCollider = launchHit.GetComponent<BoxCollider2D>();
         circleCollider2D = gameObject.GetComponent<CircleCollider2D>();
         xbox = Utility.GetTaskObject().GetComponent<XBox>();
-        renderer = GetComponent<SkinnedMeshRenderer>();
-        deathHeight = -7f;
+        deathHeight = -7f; launchHit.transform.position = new Vector3(transform.position.x + launchHitCollider.size.x / 2, transform.position.y, transform.position.z);
+        angle = 90f;
     }
 
     void Update()
@@ -96,7 +100,14 @@ public class PlayerMove : MonoBehaviour
         }
         else if(playerState == PlayerState.Light)
         {
-            speed = LIGHT_SPEED;
+            if (lineMove)
+            {
+                speed = LINE_SPEED;
+            }
+            else
+            {
+                speed = LIGHT_SPEED;
+            }
         }
         else
         {
@@ -133,8 +144,10 @@ public class PlayerMove : MonoBehaviour
                     return;
                 }
             }
+            moveHigh = speed;
             jumpFlag = true;
         }
+        moveLow = -moveHigh;
         RayGround();
         //Debug.Log(lineMove);
     }
@@ -156,8 +169,8 @@ public class PlayerMove : MonoBehaviour
         }
         else if ((!lightFlag || !xbox.Button(XBox.Str.RB)) && playerState != PlayerState.Default)
         {
+            moveHigh = speed;
             playerState = PlayerState.Default;
-            velocity = new Vector2(0f, 0f);     // 速度をリセット
         }
 
         // 落下死判定
@@ -169,15 +182,18 @@ public class PlayerMove : MonoBehaviour
         // 自機の移動
         if (!stopPlayer)
         {
-            if(launchHit.transform.position != new Vector3(transform.position.x + launchHitCollider.size.x / 2, transform.position.y, transform.position.z) && velocity.x > 0f)
+            if(isGround || playerState == PlayerState.Light)
             {
-                launchHit.transform.position = new Vector3(transform.position.x + launchHitCollider.size.x / 2, transform.position.y, transform.position.z);
-                angle = 90f;
-            }
-            if (launchHit.transform.position != new Vector3(transform.position.x - launchHitCollider.size.x / 2, transform.position.y, transform.position.z) && velocity.x < 0f)
-            {
-                launchHit.transform.position = new Vector3(transform.position.x - launchHitCollider.size.x / 2, transform.position.y, transform.position.z);
-                angle = -90f;
+                if (launchHit.transform.position != new Vector3(transform.position.x + launchHitCollider.size.x / 2, transform.position.y, transform.position.z) && velocity.x > 0f)
+                {
+                    launchHit.transform.position = new Vector3(transform.position.x + launchHitCollider.size.x / 2, transform.position.y, transform.position.z);
+                    angle = 90f;
+                }
+                if (launchHit.transform.position != new Vector3(transform.position.x - launchHitCollider.size.x / 2, transform.position.y, transform.position.z) && velocity.x < 0f)
+                {
+                    launchHit.transform.position = new Vector3(transform.position.x - launchHitCollider.size.x / 2, transform.position.y, transform.position.z);
+                    angle = -90f;
+                }
             }
 
             Model.transform.eulerAngles = new Vector3(0f, angle, 0f);
@@ -200,14 +216,31 @@ public class PlayerMove : MonoBehaviour
                 {
                     velocity.x = 0f;
                 }
+                else if (!isGround)
+                {
+                    if (moveSpeed <= speed && moveSpeed >= -speed)
+                    {
+                        moveHigh = speed;
+                    }
+
+                    if (moveSpeed > moveHigh)
+                    {
+                        moveSpeed = moveHigh;
+                    }
+                    else if (moveSpeed < moveLow)
+                    {
+                        moveSpeed = moveLow;
+                    }
+
+                    if (moveSpeed <= moveHigh && moveSpeed >= moveLow)
+                    {
+                        moveSpeed += Input.GetAxisRaw((XBox.AxisStr.LeftJoyRight).ToString()) / 3;
+                    }
+                    velocity.x = moveSpeed;
+                }
                 else
                 {
                     velocity.x = Input.GetAxisRaw((XBox.AxisStr.LeftJoyRight).ToString()) * speed;
-                }
-
-                if (jumpFlag && velocity.y == jumpPower)
-                {
-                    jumpFlag = false;
                 }
 
                 /*重力関係---------------------------------------------------*/
@@ -228,6 +261,11 @@ public class PlayerMove : MonoBehaviour
                     velocity.y -= GRAVITY_SIZE * Time.deltaTime;
                 }
                 /*----------------------------------------------------------*/
+                
+                if (jumpFlag && velocity.y == jumpPower)
+                {
+                    jumpFlag = false;
+                }
 
                 rigidbody.velocity = new Vector2(velocity.x, velocity.y);
                 boxCollider2D.enabled = true;
@@ -243,6 +281,7 @@ public class PlayerMove : MonoBehaviour
             //        search = false;
             //    }
             //}
+            moveSpeed = velocity.x;
         }
         else
         {
@@ -295,6 +334,20 @@ public class PlayerMove : MonoBehaviour
             if(hit.normal.y > 0.5f && (hit.collider.isTrigger == false))
             {
                 isGround = true;
+            }
+        }
+    }
+
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        for (int i = 0; i < collision.contacts.Length; i++)
+        {
+            if(collision.contacts[i].normal.x < -0.5f || collision.contacts[i].normal.x > 0.5f)
+            {
+                if(moveSpeed != 0f)
+                {
+                    moveSpeed = 0f;
+                }
             }
         }
     }
