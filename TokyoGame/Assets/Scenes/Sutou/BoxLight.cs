@@ -4,13 +4,13 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-public class LineRay : MonoBehaviour
+public class BoxLight : MonoBehaviour
 {
     [HideInInspector] public List<Vector2> keepPoints; //座標を保存
     [HideInInspector] public List<Line> keepLines; //線を保存
     [HideInInspector] public List<Vector2> keepLinePrevious; //保存
-    
-    private EdgeCollider2D edge2D;
+
+    private BoxCollider2D box2d;
     private GameObject taskObject;
     private GoalTask goalTask;
     private ParticleSystem lightLine;
@@ -22,14 +22,13 @@ public class LineRay : MonoBehaviour
         {
             if (child.gameObject.tag == GetTag.Col)
             {
-                edge2D = child.gameObject.GetComponent<EdgeCollider2D>();
+                box2d = child.gameObject.GetComponent<BoxCollider2D>();
             }
             if (child.transform.tag == GetTag.LightSource)
             {
                 lightLine = child.gameObject.GetComponent<ParticleSystem>();
             }
         }
-        edge2D.edgeRadius = 0.45f;
         taskObject = Utility.GetTaskObject();
         goalTask = taskObject.GetComponent<GoalTask>();
         keepPoints = new List<Vector2>();
@@ -149,13 +148,6 @@ public class LineRay : MonoBehaviour
     {
         direction = Vector2.Reflect(direction, hit.normal);
         position = hit.point;
-        keepPoints.Add(new Vector2(position.x, position.y));    
-        ColInfo();
-    }
-
-    //レイの通りにコライダー描画
-    void ColInfo()
-    {
-        edge2D.points = keepPoints.Select(v => (Vector2)transform.InverseTransformPoint(v)).ToArray();
+        keepPoints.Add(new Vector2(position.x, position.y));
     }
 }
