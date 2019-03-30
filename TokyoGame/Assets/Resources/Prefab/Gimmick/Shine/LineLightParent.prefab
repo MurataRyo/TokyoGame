@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 5757486803714978501}
   - component: {fileID: 6668434390541357071}
   m_Layer: 11
-  m_Name: LineLight
+  m_Name: LineLightParent
   m_TagString: Col2
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

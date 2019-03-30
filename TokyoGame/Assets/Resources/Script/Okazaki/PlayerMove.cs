@@ -174,7 +174,7 @@ public class PlayerMove : MonoBehaviour
         }
 
         // 落下死判定
-        if(transform.position.y < deathHeight)
+        if (transform.position.y < deathHeight)
         {
             Utility.GetTaskObject().GetComponent<GameTask>().mode = GameTask.Mode.gameOver;
         }
