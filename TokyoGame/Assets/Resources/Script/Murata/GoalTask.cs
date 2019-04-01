@@ -138,10 +138,7 @@ public class GoalTask : MonoBehaviour
                     continue;
                 foreach (Overlap overlap in line.overlaps)
                 {
-                    if (!InIfOverlap(star.outSideOverlaps, overlap))
-                        continue;
-
-                    if (baseOverlap == overlap)
+                    if (ContinueFlag(overlap,baseOverlap,star.outSideOverlaps,vec2s))
                         continue;
 
                     baseLine = line;
@@ -155,6 +152,20 @@ public class GoalTask : MonoBehaviour
                 }
             }
         }
+    }
+
+    private bool ContinueFlag(Overlap overlap,Overlap baseOverlap,Overlap[] outSideOverlaps,List<Vector2> listVec2)
+    {
+        if (!InIfOverlap(star.outSideOverlaps, overlap))
+            return true;
+
+        if (baseOverlap == overlap)
+            return true;
+
+        if (listVec2.Contains(overlap.pos))
+            return true;
+
+        return false;
     }
 
     private bool InIfOverlap(Overlap[] overlaps, Overlap baseOverlap)
