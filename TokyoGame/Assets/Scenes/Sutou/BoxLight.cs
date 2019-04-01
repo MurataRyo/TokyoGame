@@ -11,6 +11,7 @@ public class BoxLight : MonoBehaviour
     [HideInInspector] public List<Vector2> keepLinePrevious; //保存
 
     private BoxCollider2D box2d;
+    private List<GameObject> box;
     private GameObject taskObject;
     private GoalTask goalTask;
     private ParticleSystem lightLine;
@@ -20,7 +21,7 @@ public class BoxLight : MonoBehaviour
         //　必要な子オブジェクト
         foreach (Transform child in transform)
         {
-            if (child.gameObject.tag == GetTag.Col)
+            if (child.transform.tag == GetTag.Col)
             {
                 box2d = child.gameObject.GetComponent<BoxCollider2D>();
             }
@@ -31,6 +32,7 @@ public class BoxLight : MonoBehaviour
         }
         taskObject = Utility.GetTaskObject();
         goalTask = taskObject.GetComponent<GoalTask>();
+        box = new List<GameObject>();
         keepPoints = new List<Vector2>();
         keepLines = new List<Line>();
         keepLinePrevious = new List<Vector2>();
@@ -46,16 +48,22 @@ public class BoxLight : MonoBehaviour
         if (ChangeLight())
         {
             keepLines = new List<Line>();
+            box = new List<GameObject>();
 
             for (int i = 0; i < keepPoints.Count - 1; i++)
             {
                 keepLines.Add(new Line(keepPoints[i], keepPoints[i + 1]));
+
+                box[i].transform.position = Vector2.Lerp(keepPoints[i], keepPoints[i + 1], Mathf.Deg2Rad);
+                Debug.Log(box[i].transform.position);
             }
         }
         keepLinePrevious = keepPoints;
 
         AddLightDrow();
+        
 
+        
     }
 
     //光の情報が変更されたかどうか
