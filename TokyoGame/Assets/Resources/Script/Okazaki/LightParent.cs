@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class LightScript : MonoBehaviour
+public class LightParent : MonoBehaviour
 {
     GameObject Player;
     PlayerMove playerMove;
-    CompositeCollider2D collider2D;
+    new CompositeCollider2D collider2D;
 
     void Start()
     {
@@ -17,7 +17,7 @@ public class LightScript : MonoBehaviour
     
     void FixedUpdate()
     {
-        if (playerMove.playerState == PlayerMove.PlayerState.Light)
+        if (playerMove.playerState == PlayerMove.PlayerState.Light && playerMove.lineMove)
         {
             collider2D.isTrigger = false;
         }

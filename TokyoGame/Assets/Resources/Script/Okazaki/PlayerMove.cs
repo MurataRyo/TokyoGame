@@ -43,7 +43,8 @@ public class PlayerMove : MonoBehaviour
     public bool jumpFlag = false;               // ジャンプするかどうか
     bool lightJump = false;
     bool search = false;
-    bool lineMove = false;
+    [HideInInspector]
+    public bool lineMove = false;
     [HideInInspector]
     public bool launchControl = false;          // 光源を操作するかどうか
     [HideInInspector]
@@ -79,8 +80,8 @@ public class PlayerMove : MonoBehaviour
         /*Collider2D[] playerHit = Physics2D.OverlapBoxAll(transform.position, boxCollider2D.size, 0f);*/
         Collider2D[] playerHit = Physics2D.OverlapCircleAll
             (new Vector2(transform.position.x, transform.position.y + (circleCollider2D.offset.y * transform.localScale.y)), 0f, LayerMask.GetMask("Col")); // 自機の当たり判定の取得
-        //Collider2D[] lineHit = Physics2D.OverlapCircleAll
-        //    (new Vector2(transform.position.x, transform.position.y + (circleCollider2D.offset.y * transform.localScale.y)), 0f, LayerMask.GetMask("Col"));
+        Collider2D[] lineHit = Physics2D.OverlapCircleAll
+            (new Vector2(transform.position.x, transform.position.y + (circleCollider2D.offset.y * transform.localScale.y)), 0f, LayerMask.GetMask("Col"));
         Vector2 velocity = rigidbody.velocity;
 
         lightFlag = false;
@@ -88,20 +89,21 @@ public class PlayerMove : MonoBehaviour
         // 侵入判定
         for (int i = 0; i < playerHit.Length; i++)
         {
-            if (playerHit[i].tag == "Col" || playerHit[i].tag == "Col2")
+            if (playerHit[i].tag == GetTag.Col || playerHit[i].tag == GetTag.Col2)
             {
                 lightFlag = true;
+                lineMove = true;
             }
         }
-        //for (int i = 0; i < lineHit.Length; i++)
-        //{
-        //    if (lineHit[i].tag == "Col")
-        //    {
-        //        lineMove = false;
-        //    }
-        //}
+        for (int i = 0; i < lineHit.Length; i++)
+        {
+            if (lineHit[i].tag == GetTag.Col)
+            {
+                lineMove = false;
+            }
+        }
 
-        if(velocity.x != 0f)
+        if (velocity.x != 0f)
         {
             move = true;
         }
@@ -166,7 +168,7 @@ public class PlayerMove : MonoBehaviour
         }
         moveLow = -moveHigh;
         RayGround();
-        //Debug.Log(move);
+        Debug.Log(lineMove);
     }
 
     void FixedUpdate()

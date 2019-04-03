@@ -18,7 +18,7 @@ public class Launcher : MonoBehaviour
         if(FanLight)
             transform.Rotate(0f, Input.GetAxisRaw((XBox.AxisStr.RightJoyRight).ToString()) * -1f, 0f);
         else
-            transform.Rotate(0f, 0f, Input.GetAxisRaw((XBox.AxisStr.RightJoyRight).ToString()) * 1f);
+            transform.Rotate(0f, 0f, Input.GetAxisRaw((XBox.AxisStr.RightJoyRight).ToString()) * -1f);
     }
 }
 

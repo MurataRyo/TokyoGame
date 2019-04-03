@@ -53,7 +53,8 @@ public class BoxLineRay : MonoBehaviour
                 if (box2d.Count <= i)
                 {
                     GameObject box = new GameObject("col");
-                    box.tag = GetTag.Col;
+                    box.tag = GetTag.Col2;
+                    box.layer = LayerMask.NameToLayer("Col");
                     box2d.Add(box.AddComponent<BoxCollider2D>());
                     box2d[i].usedByComposite = true;
                     box.transform.parent = transform;
