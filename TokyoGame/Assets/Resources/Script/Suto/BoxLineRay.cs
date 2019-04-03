@@ -38,7 +38,7 @@ public class BoxLineRay : MonoBehaviour
     {
         keepPoints = new List<Vector2>();
         keepPoints.Add(new Vector2(transform.position.x, transform.position.y));
-        DrawReflect(transform.position + transform.right * 0.75f, transform.right);
+        DrawReflect(transform.position + transform.up * 0.75f, transform.up);
 
         if (ChangeLight())
         {
