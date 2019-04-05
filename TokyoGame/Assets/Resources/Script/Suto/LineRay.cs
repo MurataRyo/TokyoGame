@@ -29,7 +29,7 @@ public class LineRay : MonoBehaviour
                 lightLine = child.gameObject.GetComponent<ParticleSystem>();
             }
         }
-        edge2D.edgeRadius = 0.45f;
+        edge2D.edgeRadius = 0.5f;
         taskObject = Utility.GetTaskObject();
         goalTask = taskObject.GetComponent<GoalTask>();
         keepPoints = new List<Vector2>();

@@ -1,14 +1,14 @@
 fileFormatVersion: 2
-guid: b0b1e6e87231c1443a9c917714a1432a
+guid: bfd2cc4bb46922946b893237cbe97ec7
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
     100000: //RootNode
     400000: //RootNode
-    2100000: Mirror_Texture
+    2100000: Glass
     2300000: //RootNode
     3300000: //RootNode
-    4300000: Mirror
+    4300000: Box001
   externalObjects: {}
   materials:
     importMaterials: 1
