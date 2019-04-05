@@ -4,13 +4,13 @@ using System.Linq;
 using UnityEditor;
 using UnityEngine;
 
-public class BoxLight : MonoBehaviour
+public class BoxLineRay : MonoBehaviour
 {
     [HideInInspector] public List<Vector2> keepPoints; //座標を保存
     [HideInInspector] public List<Line> keepLines; //線を保存
     [HideInInspector] public List<Vector2> keepLinePrevious; //保存
 
-    private BoxCollider2D box2d;
+    private List<BoxCollider2D> box2d;
     private GameObject taskObject;
     private GoalTask goalTask;
     private ParticleSystem lightLine;
@@ -20,10 +20,6 @@ public class BoxLight : MonoBehaviour
         //　必要な子オブジェクト
         foreach (Transform child in transform)
         {
-            if (child.gameObject.tag == GetTag.Col)
-            {
-                box2d = child.gameObject.GetComponent<BoxCollider2D>();
-            }
             if (child.transform.tag == GetTag.LightSource)
             {
                 lightLine = child.gameObject.GetComponent<ParticleSystem>();
@@ -31,6 +27,7 @@ public class BoxLight : MonoBehaviour
         }
         taskObject = Utility.GetTaskObject();
         goalTask = taskObject.GetComponent<GoalTask>();
+        box2d = new List<BoxCollider2D>();
         keepPoints = new List<Vector2>();
         keepLines = new List<Line>();
         keepLinePrevious = new List<Vector2>();
@@ -41,20 +38,41 @@ public class BoxLight : MonoBehaviour
     {
         keepPoints = new List<Vector2>();
         keepPoints.Add(new Vector2(transform.position.x, transform.position.y));
-        DrawReflect(transform.position + transform.right * 0.75f, transform.right);
+        DrawReflect(transform.position + transform.up * 0.75f, transform.up);
 
         if (ChangeLight())
         {
+            foreach (BoxCollider2D b in box2d.Skip(keepPoints.Count - 1))
+            {
+                b.gameObject.SetActive(false);
+            }
             keepLines = new List<Line>();
-
             for (int i = 0; i < keepPoints.Count - 1; i++)
             {
                 keepLines.Add(new Line(keepPoints[i], keepPoints[i + 1]));
+                if (box2d.Count <= i)
+                {
+                    GameObject box = new GameObject("col");
+                    box.tag = GetTag.Col2;
+                    box.layer = LayerMask.NameToLayer("Col");
+                    box2d.Add(box.AddComponent<BoxCollider2D>());
+                    box2d[i].usedByComposite = true;
+                    box.transform.parent = transform;
+                }
+                if (!box2d[i].gameObject.activeSelf)
+                {
+                    box2d[i].gameObject.SetActive(true);
+                }
+                box2d[i].transform.rotation = Quaternion.FromToRotation(Vector3.left, keepPoints[i] - keepPoints[i + 1]);
+                box2d[i].transform.position = Vector2.Lerp(keepPoints[i], keepPoints[i + 1], 0.5f);
+                box2d[i].transform.localScale = new Vector3((keepPoints[i] - keepPoints[i + 1]).magnitude, 1f, 1f);
             }
         }
         keepLinePrevious = keepPoints;
 
         AddLightDrow();
+
+
 
     }
 

@@ -20,7 +20,7 @@ public class LineRay : MonoBehaviour
         //　必要な子オブジェクト
         foreach (Transform child in transform)
         {
-            if (child.gameObject.tag == GetTag.Col)
+            if (child.gameObject.tag == GetTag.Col2)
             {
                 edge2D = child.gameObject.GetComponent<EdgeCollider2D>();
             }
@@ -42,7 +42,7 @@ public class LineRay : MonoBehaviour
     {
         keepPoints = new List<Vector2>();
         keepPoints.Add(new Vector2(transform.position.x, transform.position.y));
-        DrawReflect(transform.position + transform.right * 0.75f, transform.right);
+        DrawReflect(transform.position + transform.up * 0.75f, transform.up);
 
         if (ChangeLight())
         {
@@ -55,7 +55,7 @@ public class LineRay : MonoBehaviour
         }
         keepLinePrevious = keepPoints;
 
-        AddLightDrow();
+        //AddLightDrow();
 
     }
 

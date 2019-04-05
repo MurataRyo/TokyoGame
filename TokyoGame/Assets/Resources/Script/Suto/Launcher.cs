@@ -5,6 +5,7 @@ using UnityEngine;
 public class Launcher : MonoBehaviour
 {
     XBox xbox;
+    [SerializeField] bool FanLight;
 
     void Start()
     {
@@ -14,7 +15,10 @@ public class Launcher : MonoBehaviour
     // 向きを変える
     public void RotateLaunch()
     {
-        transform.eulerAngles -= new Vector3(0f, 0f, Input.GetAxisRaw((XBox.AxisStr.RightJoyRight).ToString()) * 1f);
+        if(FanLight)
+            transform.Rotate(0f, Input.GetAxisRaw((XBox.AxisStr.RightJoyRight).ToString()) * -1f, 0f);
+        else
+            transform.Rotate(0f, 0f, Input.GetAxisRaw((XBox.AxisStr.RightJoyRight).ToString()) * -1f);
     }
 }
 

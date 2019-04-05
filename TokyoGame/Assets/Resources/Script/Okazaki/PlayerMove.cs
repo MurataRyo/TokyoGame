@@ -19,24 +19,32 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] GameObject LightModel;     // 自機のモデル（光状態）
     float speed;                                // 移動速度
     float moveSpeed;
-    float airSpeed;
+    Vector2 moveBlockVelocity = Vector2.zero;
     float moveHigh;
     float moveLow;
     float jumpPower;                            // ジャンプ力
     float angle;                                // 向き
+    [HideInInspector]
+    public float airTime;
     private const float WALK_SPEED = 5f;        // 歩行速度
     private const float RUN_SPEED = 10f;        // 走行速度
     private const float LIGHT_SPEED = 15f;      // 光状態の時の速度
     private const float LINE_SPEED = 25f;       // 光状態の時の速度（直線）
     private const float JUMP_HEIGHT = 4f;       // ジャンプの頂点
     private const float GRAVITY_SIZE = 20f;     // 重力の強さ
-    bool runFlag = false;                       // 走るかどうか
-    bool isGround = false;                      // 接地しているかどうか
+    [HideInInspector]
+    public bool move = false;                   // 走るかどうか
+    [HideInInspector]
+    public bool runFlag = false;                // 走るかどうか
+    [HideInInspector]
+    public bool isGround = false;               // 接地しているかどうか
     bool lightFlag = false;                     // 光と重なっているかどうか
-    bool jumpFlag = false;                      // ジャンプするかどうか
+    [HideInInspector]
+    public bool jumpFlag = false;               // ジャンプするかどうか
     bool lightJump = false;
     bool search = false;
-    bool lineMove = false;
+    [HideInInspector]
+    public bool lineMove = false;
     [HideInInspector]
     public bool launchControl = false;          // 光源を操作するかどうか
     [HideInInspector]
@@ -45,8 +53,9 @@ public class PlayerMove : MonoBehaviour
     public float deathHeight;                   // 落下死になる高さ
 
     Vector2 position = Vector2.zero;
-    Vector2 velocity = Vector2.zero;
-    
+    [HideInInspector]
+    public Vector2 velocity = Vector2.zero;
+
     new Rigidbody2D rigidbody;
     BoxCollider2D boxCollider2D;
     BoxCollider2D launchHitCollider;
@@ -71,8 +80,8 @@ public class PlayerMove : MonoBehaviour
         /*Collider2D[] playerHit = Physics2D.OverlapBoxAll(transform.position, boxCollider2D.size, 0f);*/
         Collider2D[] playerHit = Physics2D.OverlapCircleAll
             (new Vector2(transform.position.x, transform.position.y + (circleCollider2D.offset.y * transform.localScale.y)), 0f, LayerMask.GetMask("Col")); // 自機の当たり判定の取得
-        //Collider2D[] lineHit = Physics2D.OverlapCircleAll
-        //    (new Vector2(transform.position.x, transform.position.y + (circleCollider2D.offset.y * transform.localScale.y)), 0f, LayerMask.GetMask("Col"));
+        Collider2D[] lineHit = Physics2D.OverlapCircleAll
+            (new Vector2(transform.position.x, transform.position.y + (circleCollider2D.offset.y * transform.localScale.y)), 0f, LayerMask.GetMask("Col"));
         Vector2 velocity = rigidbody.velocity;
 
         lightFlag = false;
@@ -80,18 +89,28 @@ public class PlayerMove : MonoBehaviour
         // 侵入判定
         for (int i = 0; i < playerHit.Length; i++)
         {
-            if (playerHit[i].tag == "Col" || playerHit[i].tag == "Col2")
+            if (playerHit[i].tag == GetTag.Col || playerHit[i].tag == GetTag.Col2)
             {
                 lightFlag = true;
+                lineMove = true;
             }
         }
-        //for (int i = 0; i < lineHit.Length; i++)
-        //{
-        //    if (lineHit[i].tag == "Col")
-        //    {
-        //        lineMove = false;
-        //    }
-        //}
+        for (int i = 0; i < lineHit.Length; i++)
+        {
+            if (lineHit[i].tag == GetTag.Col)
+            {
+                lineMove = false;
+            }
+        }
+
+        if (velocity.x != 0f)
+        {
+            move = true;
+        }
+        else
+        {
+            move = false;
+        }
 
         // 速度の変更
         if (runFlag)
@@ -149,7 +168,7 @@ public class PlayerMove : MonoBehaviour
         }
         moveLow = -moveHigh;
         RayGround();
-        //Debug.Log(lineMove);
+        Debug.Log(lineMove);
     }
 
     void FixedUpdate()
@@ -171,6 +190,15 @@ public class PlayerMove : MonoBehaviour
         {
             moveHigh = speed;
             playerState = PlayerState.Default;
+        }
+
+        if(!isGround)
+        {
+            airTime += Time.fixedDeltaTime;
+        }
+        else
+        {
+            airTime = 0f;
         }
 
         // 落下死判定

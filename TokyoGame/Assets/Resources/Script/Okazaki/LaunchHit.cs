@@ -21,8 +21,8 @@ public class LaunchHit : MonoBehaviour
     
     void Update()
     {
-        // 自機の近くに光源があるとき
-        if (m_hitObjects.Count > 0)
+        // 自機の近くに光源があり、かつ接地しているとき
+        if (playerMove.isGround && m_hitObjects.Count > 0)
         {
             // 光源を操作する状態に移行
             if (playerMove.playerState == PlayerMove.PlayerState.Default && Input.GetButtonDown(XBox.Str.B.ToString()))
@@ -65,11 +65,14 @@ public class LaunchHit : MonoBehaviour
                 target.GetComponent<LaunchControl>().Select();  // 選択した光源の向きを変えられるようにする
             }
         }
-        else
+        else    // それ以外のとき
         {
+            if (playerMove.launchControl)
+            {
+                playerMove.launchControl = false;
+            }
             select = 0;
         }
-        //Debug.Log(m_hitObjects.Count);
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
