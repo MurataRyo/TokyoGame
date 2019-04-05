@@ -1,14 +1,46 @@
 fileFormatVersion: 2
-guid: b0b1e6e87231c1443a9c917714a1432a
+guid: a8392872159edef4c8cff04c000fe4a3
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
-    100000: //RootNode
-    400000: //RootNode
-    2100000: Mirror_Texture
-    2300000: //RootNode
-    3300000: //RootNode
-    4300000: Mirror
+    100000: Bar
+    100002: Base
+    100004: BaseVolt
+    100006: Lens
+    100008: Light
+    100010: //RootNode
+    100012: Volt2
+    100014: Volt3
+    400000: Bar
+    400002: Base
+    400004: BaseVolt
+    400006: Lens
+    400008: Light
+    400010: //RootNode
+    400012: Volt2
+    400014: Volt3
+    2100000: LineLightSource_Texture
+    2300000: Bar
+    2300002: Base
+    2300004: BaseVolt
+    2300006: Lens
+    2300008: Light
+    2300010: Volt2
+    2300012: Volt3
+    3300000: Bar
+    3300002: Base
+    3300004: BaseVolt
+    3300006: Lens
+    3300008: Light
+    3300010: Volt2
+    3300012: Volt3
+    4300000: Light
+    4300002: Volt3
+    4300004: Volt2
+    4300006: Lens
+    4300008: Base
+    4300010: Bar
+    4300012: BaseVolt
   externalObjects: {}
   materials:
     importMaterials: 1
