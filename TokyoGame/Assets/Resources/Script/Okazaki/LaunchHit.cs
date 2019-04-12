@@ -9,14 +9,14 @@ public class LaunchHit : MonoBehaviour
     private List<GameObject> m_hitObjects = new List<GameObject>();
     GameObject target;      // 選択されているオブジェクト
     int select = 0;         // 選択している番号
-    XBox xbox;
+    XBoxController controller;
 
     // 取得
     void Start()
     {
         Player = transform.parent.gameObject;
         playerMove = Player.GetComponent<PlayerMove>();
-        xbox = Utility.GetTaskObject().GetComponent<XBox>();
+        controller = Utility.GetTaskObject().GetComponent<XBoxController>();
     }
     
     void Update()
@@ -25,7 +25,7 @@ public class LaunchHit : MonoBehaviour
         if (playerMove.isGround && m_hitObjects.Count > 0)
         {
             // 光源を操作する状態に移行
-            if (playerMove.playerState == PlayerMove.PlayerState.Default && Input.GetButtonDown(XBox.Str.B.ToString()))
+            if (playerMove.playerState == PlayerMove.PlayerState.Default && controller.ControlButton())
             {
                 if (playerMove.launchControl)
                 {
@@ -41,11 +41,11 @@ public class LaunchHit : MonoBehaviour
             if (playerMove.launchControl)
             {
                 /*動かす光源の選択-------------------*/
-                if (xbox.ButtonDown(XBox.AxisStr.LeftButtonRight, true))
+                if (controller.LaunchSelectRight())
                 {
                     select++;
                 }
-                if (xbox.ButtonDown(XBox.AxisStr.LeftButtonRight, false))
+                if (controller.LaunchSelectLeft())
                 {
                     select--;
                 }

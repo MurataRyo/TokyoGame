@@ -18,6 +18,7 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] GameObject Model;          // 自機のモデル
     [SerializeField] GameObject LightModel;     // 自機のモデル（光状態）
     float speed;                                // 移動速度
+    Vector2 power = Vector2.zero;
     float moveSpeed;
     Vector2 moveBlockVelocity = Vector2.zero;
     float moveHigh;
@@ -60,7 +61,7 @@ public class PlayerMove : MonoBehaviour
     BoxCollider2D boxCollider2D;
     BoxCollider2D launchHitCollider;
     CircleCollider2D circleCollider2D;
-    XBox xbox;
+    XBoxController controller;
 
     void Start()
     {
@@ -70,7 +71,7 @@ public class PlayerMove : MonoBehaviour
         boxCollider2D = gameObject.GetComponent<BoxCollider2D>();
         launchHitCollider = launchHit.GetComponent<BoxCollider2D>();
         circleCollider2D = gameObject.GetComponent<CircleCollider2D>();
-        xbox = Utility.GetTaskObject().GetComponent<XBox>();
+        controller = Utility.GetTaskObject().GetComponent<XBoxController>();
         deathHeight = -7f; launchHit.transform.position = new Vector3(transform.position.x + launchHitCollider.size.x / 2, transform.position.y, transform.position.z);
         angle = 90f;
     }
@@ -134,7 +135,7 @@ public class PlayerMove : MonoBehaviour
         }
 
         // 走るかどうか
-        if (xbox.Button(XBox.Str.X) && playerState == PlayerState.Default && isGround)
+        if (controller.RunButton() && playerState == PlayerState.Default && isGround)
         {
             runFlag = true;
         }
@@ -143,13 +144,22 @@ public class PlayerMove : MonoBehaviour
             runFlag = false;
         }
 
-        if(!xbox.Button(XBox.Str.RB) && lightJump)
+        if(!controller.ChangeButton() && lightJump)
         {
             lightJump = false;
         }
 
+        if(playerState == PlayerState.Light)
+        {
+            power = controller.LightMoveButton();
+        }
+        else
+        {
+            power = new Vector2(controller.MoveButton(), 0f);
+        }
+
         // ジャンプする
-        if (xbox.ButtonDown(XBox.Str.A))
+        if (controller.JumpButton())
         {
             if (playerState == PlayerState.Light)
             {
@@ -181,12 +191,12 @@ public class PlayerMove : MonoBehaviour
         //Collider2D[] lightSearch = Physics2D.OverlapCircleAll(z, 0f, LayerMask.GetMask("Col"));
 
         // 光の中を出入りする
-        if (lightFlag && xbox.Button(XBox.Str.RB) && playerState != PlayerState.Light && !lightJump)
+        if (lightFlag && controller.ChangeButton() && playerState != PlayerState.Light && !lightJump)
         {
             playerState = PlayerState.Light;
             velocity = new Vector2(0f, 0f);     // 速度をリセット
         }
-        else if ((!lightFlag || !xbox.Button(XBox.Str.RB)) && playerState != PlayerState.Default)
+        else if ((!lightFlag || !controller.ChangeButton()) && playerState != PlayerState.Default)
         {
             moveHigh = speed;
             playerState = PlayerState.Default;
@@ -228,7 +238,7 @@ public class PlayerMove : MonoBehaviour
 
             if (playerState == PlayerState.Light) // 光の中に入っている時の移動
             {
-                Vector2 vect2 = new Vector2(Input.GetAxisRaw((XBox.AxisStr.LeftJoyRight).ToString()), -Input.GetAxisRaw((XBox.AxisStr.LeftJoyUp).ToString())).normalized * speed;
+                Vector2 vect2 = power * speed;
                 velocity = transform.right * vect2.x + transform.up * vect2.y;
 
                 rigidbody.velocity = new Vector2(velocity.x, velocity.y);
@@ -262,13 +272,13 @@ public class PlayerMove : MonoBehaviour
 
                     if (moveSpeed <= moveHigh && moveSpeed >= moveLow)
                     {
-                        moveSpeed += Input.GetAxisRaw((XBox.AxisStr.LeftJoyRight).ToString()) / 3;
+                        moveSpeed += power.x / 3;
                     }
                     velocity.x = moveSpeed;
                 }
                 else
                 {
-                    velocity.x = Input.GetAxisRaw((XBox.AxisStr.LeftJoyRight).ToString()) * speed;
+                    velocity.x = power.x * speed;
                 }
 
                 /*重力関係---------------------------------------------------*/
@@ -286,7 +296,7 @@ public class PlayerMove : MonoBehaviour
                 }
                 else
                 {
-                    velocity.y -= GRAVITY_SIZE * Time.deltaTime;
+                    velocity.y -= GRAVITY_SIZE * Time.fixedDeltaTime;
                 }
                 /*----------------------------------------------------------*/
                 
