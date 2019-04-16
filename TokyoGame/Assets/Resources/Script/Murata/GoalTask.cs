@@ -5,9 +5,6 @@ using System;
 
 public class GoalTask : MonoBehaviour
 {
-    [HideInInspector] public List<List<Vec2Class>> rayVartex;  //レイの頂点
-    [HideInInspector] public List<List<Vec2Class>> lines;  //貰う線の情報
-
     public List<LineRay> lineRays;
     Star star;
     Star starLog;
@@ -19,8 +16,6 @@ public class GoalTask : MonoBehaviour
         colObject = new GameObject();
         colObject.tag = GetTag.Star;
         starTask = colObject.AddComponent<StarTask>();
-        rayVartex = new List<List<Vec2Class>>();
-        lines = new List<List<Vec2Class>>();
         lineRays = new List<LineRay>();
         GameObject[] gameObjects = GameObject.FindGameObjectsWithTag("LaunchBase");
         foreach (GameObject go in gameObjects)
@@ -186,18 +181,6 @@ public class GoalTask : MonoBehaviour
         Destroy(go.GetComponent<BoxCollider2D>());
 
         return go;
-    }
-
-    //レイの追加
-    public void AddRayVartex(List<Vec2Class> vertex)
-    {
-        rayVartex.Add(vertex);
-    }
-
-    //レイの削除
-    public void RemoveRayVartex(List<Vec2Class> vertex)
-    {
-        rayVartex.Remove(vertex);
     }
 
     private Line[] LineListToLines(List<LineRay> lineRays)
