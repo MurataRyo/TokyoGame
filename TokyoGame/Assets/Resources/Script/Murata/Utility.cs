@@ -17,7 +17,7 @@ public class Utility : MonoBehaviour
         rectTransform.sizeDelta = size;
 
         go.AddComponent<Image>().sprite = image;
-        go.transform.parent = GetCanvas().transform;
+        go.transform.SetParent(GetCanvas().transform);
         return go;
     }
 
@@ -73,6 +73,7 @@ public struct GetTag
 public struct GetPath
 {
     public const string Prefab = "Prefab";
+    public const string TitlePrefab = Prefab + "/Title";
     public const string Particle = Prefab + "/Particle";
 
     public const string Image = "Image";
