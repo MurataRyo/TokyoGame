@@ -19,7 +19,7 @@ public class MapBackCreate : MonoBehaviour
     void Start()
     {
         parent = new GameObject();
-        parent.transform.localPosition = Vector3.zero;
+        parent.transform.position = transform.position;
         flag = new bool[num.x, num.y];
         for (int i = 0; i < num.x; i++)
         {
@@ -57,7 +57,7 @@ public class MapBackCreate : MonoBehaviour
         
         string path = "/" + add.ToString();
         int blockNum = Resources.LoadAll<Sprite>(GetPath.StageBack + path).Length;
-        Sprite sprite = Resources.Load<Sprite>(GetPath.StageBack + path + "/tile" + UnityEngine.Random.Range(1, blockNum).ToString());
+        Sprite sprite = Resources.Load<Sprite>(GetPath.StageBack + path + "/tile" + UnityEngine.Random.Range(1, blockNum + 1).ToString());
 
         rend.sprite = sprite;
         go.transform.localScale = Vector3.one * size;
