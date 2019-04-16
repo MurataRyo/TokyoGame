@@ -18,12 +18,9 @@ public class Glass : MonoBehaviour
     void Update()
     {
         if(playerMove.playerState == PlayerMove.PlayerState.Light)
-        {
             collider2D.isTrigger = true;
-        }
+
         else
-        {
             collider2D.isTrigger = false;
-        }
     }
 }
