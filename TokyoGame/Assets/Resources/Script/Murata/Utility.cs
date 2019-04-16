@@ -80,6 +80,7 @@ public struct GetPath
     public const string Title = Image + "/Title";
 
     public const string Game = Image + "/Game";
+    public const string StageBack = Game + "/StageBack";
 }
 
 
