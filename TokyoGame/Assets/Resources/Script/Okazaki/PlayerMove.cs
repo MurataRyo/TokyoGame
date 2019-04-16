@@ -12,6 +12,7 @@ public class PlayerMove : MonoBehaviour
         Light,
     }
 
+    private List<GameObject> m_hitObjects = new List<GameObject>();
     [HideInInspector] public PlayerState playerState = PlayerState.Default;
     GameObject launchHit;
 
@@ -104,7 +105,7 @@ public class PlayerMove : MonoBehaviour
             }
         }
 
-        if (velocity.x != 0f)
+        if ((velocity.x > 0f && controller.MoveButton() > 0f) || (velocity.x < 0f && controller.MoveButton() < 0f))
         {
             move = true;
         }
@@ -177,13 +178,11 @@ public class PlayerMove : MonoBehaviour
             jumpFlag = true;
         }
         moveLow = -moveHigh;
-        RayGround();
-        Debug.Log(lineMove);
     }
 
     void FixedUpdate()
     {
-        Vector2 velocity = rigidbody.velocity;
+        velocity = rigidbody.velocity;
         //Vector2 position = transform.position;
         //float x = circleCollider2D.radius + speed * Time.fixedDeltaTime;
         //Vector2 y = new Vector2(velocity.x, velocity.y).normalized;
@@ -222,12 +221,12 @@ public class PlayerMove : MonoBehaviour
         {
             if(isGround || playerState == PlayerState.Light)
             {
-                if (launchHit.transform.position != new Vector3(transform.position.x + launchHitCollider.size.x / 2, transform.position.y, transform.position.z) && velocity.x > 0f)
+                if (launchHit.transform.position != new Vector3(transform.position.x + launchHitCollider.size.x / 2, transform.position.y, transform.position.z) && controller.MoveButton() > 0f)
                 {
                     launchHit.transform.position = new Vector3(transform.position.x + launchHitCollider.size.x / 2, transform.position.y, transform.position.z);
                     angle = 90f;
                 }
-                if (launchHit.transform.position != new Vector3(transform.position.x - launchHitCollider.size.x / 2, transform.position.y, transform.position.z) && velocity.x < 0f)
+                if (launchHit.transform.position != new Vector3(transform.position.x - launchHitCollider.size.x / 2, transform.position.y, transform.position.z) && controller.MoveButton() < 0f)
                 {
                     launchHit.transform.position = new Vector3(transform.position.x - launchHitCollider.size.x / 2, transform.position.y, transform.position.z);
                     angle = -90f;
@@ -325,12 +324,15 @@ public class PlayerMove : MonoBehaviour
         {
             rigidbody.velocity = new Vector2(0f, 0f);
         }
+        RayGround();
+        if(m_hitObjects.Count > 0)
+            Debug.Log(m_hitObjects[0].gameObject);
     }
 
     void LightSearch()
     {
         Vector2 position = transform.position;
-        Vector2 velocity = rigidbody.velocity;
+        velocity = rigidbody.velocity;
         float x = circleCollider2D.radius + LIGHT_SPEED * Time.fixedDeltaTime;
         Vector2 y = new Vector2(velocity.x, velocity.y).normalized;
         Vector2 z = x * y + position;
@@ -369,7 +371,7 @@ public class PlayerMove : MonoBehaviour
 
         foreach (RaycastHit2D hit in hits)
         {
-            if(hit.normal.y > 0.5f && (hit.collider.isTrigger == false))
+            if(hit.normal.y > 0.5f && (!hit.collider.isTrigger))
             {
                 isGround = true;
             }
@@ -380,7 +382,7 @@ public class PlayerMove : MonoBehaviour
     {
         for (int i = 0; i < collision.contacts.Length; i++)
         {
-            if(collision.contacts[i].normal.x < -0.5f || collision.contacts[i].normal.x > 0.5f)
+            if (collision.contacts[i].normal.x < -0.5f || collision.contacts[i].normal.x > 0.5f)
             {
                 if(moveSpeed != 0f)
                 {
@@ -388,5 +390,18 @@ public class PlayerMove : MonoBehaviour
                 }
             }
         }
+        if (collision.collider.tag == "MoveBlock" && playerState == PlayerState.Default)
+        {
+            m_hitObjects.Add(collision.gameObject);
+        }
+    }
+
+    void OnCollisionExit2D(Collision2D collision)
+    {
+        if (collision.collider.tag != "MoveBlock")
+        {
+            return;
+        }
+        m_hitObjects.Remove(collision.gameObject);
     }
 }
