@@ -14,6 +14,7 @@ GameObject:
   - component: {fileID: 7618697031197908454}
   - component: {fileID: 681355419784109621}
   - component: {fileID: 4232539138242903940}
+  - component: {fileID: 4815654585120680721}
   m_Layer: 0
   m_Name: Cube
   m_TagString: Block
@@ -94,9 +95,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   speed: 0
   pointDate:
-  - {x: 10, y: 0, z: 0}
-  - {x: 0, y: 0, z: 0}
-  - {x: 10, y: 0, z: 0}
+  - {x: 10, y: 0}
+  - {x: 0, y: 0}
+  - {x: 10, y: 0}
 --- !u!50 &681355419784109621
 Rigidbody2D:
   serializedVersion: 4
@@ -144,3 +145,22 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!257 &4815654585120680721
+TargetJoint2D:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7618697031197908455}
+  m_Enabled: 1
+  serializedVersion: 4
+  m_EnableCollision: 1
+  m_ConnectedRigidBody: {fileID: 0}
+  m_BreakForce: Infinity
+  m_BreakTorque: Infinity
+  m_Anchor: {x: 0, y: 0}
+  m_Target: {x: -0.6443311, y: -4.2490706}
+  m_AutoConfigureTarget: 1
+  m_MaxForce: 10000
+  m_DampingRatio: 1
+  m_Frequency: 5
