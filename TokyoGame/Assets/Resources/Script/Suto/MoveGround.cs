@@ -4,27 +4,49 @@ using UnityEngine;
 
 public class MoveGround : MonoBehaviour
 {
-    private float speed;//移動スピード
+    [SerializeField] float speed;//スピード
     private int pointIndex = 0;//  現データインデックス
-    [SerializeField] Vector3[] pointDate;//移動先の座標を保存
+    [SerializeField] Vector2[] pointDate;//移動先の座標を保存
+    private Vector2 defaultPos;
+    private Rigidbody2D rb2D;
+    private TargetJoint2D tj2D;
+
+
 
     void Start()
     {
-        speed = 0f;
+        defaultPos = transform.position;//初期座標にする
+        for (int i = 0; i < pointDate.Length; i++)
+        {
+            pointDate[i] += defaultPos;
+        }
         transform.position = pointDate[pointIndex];//最初の位置を保存した位置の最初に設定
+        rb2D = GetComponent<Rigidbody2D>();
+        tj2D = GetComponent<TargetJoint2D>();
+
     }
 
     void Update()
     {
-        speed += 0.25f * Time.deltaTime;
-        if (speed >= 1.0f)
+        movePos();
+    }
+
+    void movePos()
+    {
+        Vector2 pos = new Vector2(transform.position.x, transform.position.y);
+        float range = (pos - pointDate[pointIndex]).magnitude;//距離
+        float move = speed * Time.deltaTime;//速度
+
+        //通り越しそうなら指定された場所までしか動かない
+        while (range < move)
         {
-            speed = 0f;
-            //最初の地点に戻す
-            if (++pointIndex >= pointDate.Length - 1)
-                pointIndex = 0;
+            pos = pointDate[pointIndex];
+            pointIndex = pointIndex == pointDate.Length - 1 ? 0 : pointIndex + 1;
+            move -= range;
+            range = (pos - pointDate[pointIndex]).magnitude;
         }
-        //保存した前後の位置を補完してその間を一直線で移動
-        transform.position = Vector3.Lerp(pointDate[pointIndex], pointDate[pointIndex + 1], speed);
+
+        pos = Vector2.MoveTowards(pos, pointDate[pointIndex], move);
+        tj2D.target = pos;
     }
 }

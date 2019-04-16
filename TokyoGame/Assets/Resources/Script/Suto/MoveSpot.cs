@@ -4,27 +4,35 @@ using UnityEngine;
 
 public class MoveSpot : MonoBehaviour
 {
-    private float speed;//移動スピード
+    [SerializeField] float speed;//移動スピード
     private int pointIndex = 0;//  現データインデックス
-    [SerializeField] Vector3[] pointDate;//移動先の座標を保存
+    [SerializeField] Vector2[] pointDate;//移動先の座標を保存
 
     void Start()
     {
-        speed = 0f;
         transform.position = pointDate[pointIndex];//最初の位置を保存した位置の最初に設定
     }
 
     void Update()
     {
-        speed += 0.25f * Time.deltaTime;
-        if (speed >= 1.0f)
+        movePos();
+    }
+
+    void movePos()
+    {
+        Vector2 pos = new Vector2(transform.position.x, transform.position.y);
+        float range = (pos - pointDate[pointIndex]).magnitude;
+        float move = speed * Time.deltaTime;
+
+        //通り越しそうなら指定された場所までしか動かない
+        while (range < move)
         {
-            speed = 0f;
-            //最初の地点に戻す
-            if (++pointIndex >= pointDate.Length - 1)
-                pointIndex = 0;
+            pos = pointDate[pointIndex];
+            pointIndex = pointIndex == pointDate.Length - 1 ? 0 : pointIndex + 1;
+            move -= range;
+            range = (pos - pointDate[pointIndex]).magnitude;
         }
-        //保存した前後の位置を補完してその間を一直線で移動
-        transform.position = Vector3.Lerp(pointDate[pointIndex], pointDate[pointIndex + 1], speed);
+        pos = Vector2.MoveTowards(pos, pointDate[pointIndex], move);
+        transform.position = pos;
     }
 }
