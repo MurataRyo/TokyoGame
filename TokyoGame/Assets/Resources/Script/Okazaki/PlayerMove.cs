@@ -18,6 +18,7 @@ public class PlayerMove : MonoBehaviour
 
     [SerializeField] GameObject Model;          // 自機のモデル
     [SerializeField] GameObject LightModel;     // 自機のモデル（光状態）
+    [SerializeField] GameObject particle;
     float speed;                                // 移動速度
     Vector2 power = Vector2.zero;
     float moveSpeed;
@@ -35,7 +36,7 @@ public class PlayerMove : MonoBehaviour
     private const float JUMP_HEIGHT = 4f;       // ジャンプの頂点
     private const float GRAVITY_SIZE = 20f;     // 重力の強さ
     [HideInInspector]
-    public bool move = false;                   // 走るかどうか
+    public bool move = false;                   // 能動的に動いているかどうか
     [HideInInspector]
     public bool runFlag = false;                // 走るかどうか
     [HideInInspector]
@@ -100,64 +101,47 @@ public class PlayerMove : MonoBehaviour
         for (int i = 0; i < lineHit.Length; i++)
         {
             if (lineHit[i].tag == GetTag.Col)
-            {
                 lineMove = false;
-            }
         }
 
         if ((velocity.x > 0f && controller.MoveButton() > 0f) || (velocity.x < 0f && controller.MoveButton() < 0f))
-        {
             move = true;
-        }
-        else
-        {
-            move = false;
-        }
 
-        // 速度の変更
+        else
+            move = false;
+
+        /*速度の変更------------------------------------------------------------------*/
         if (runFlag)
-        {
             speed = RUN_SPEED;
-        }
+
         else if(playerState == PlayerState.Light)
         {
             if (lineMove)
-            {
                 speed = LINE_SPEED;
-            }
+
             else
-            {
                 speed = LIGHT_SPEED;
-            }
         }
         else
-        {
             speed = WALK_SPEED;
-        }
+        /*----------------------------------------------------------------------------*/
 
-        // 走るかどうか
+        /*走るかどうか-----------------------------------------------------------------*/
         if (controller.RunButton() && playerState == PlayerState.Default && isGround)
-        {
             runFlag = true;
-        }
+
         else
-        {
             runFlag = false;
-        }
+        /*----------------------------------------------------------------------------*/
 
-        if(!controller.ChangeButton() && lightJump)
-        {
+        if (!controller.ChangeButton() && lightJump)
             lightJump = false;
-        }
 
-        if(playerState == PlayerState.Light)
-        {
+        if (playerState == PlayerState.Light)
             power = controller.LightMoveButton();
-        }
+
         else
-        {
             power = new Vector2(controller.MoveButton(), 0f);
-        }
 
         // ジャンプする
         if (controller.JumpButton())
@@ -165,14 +149,13 @@ public class PlayerMove : MonoBehaviour
             if (playerState == PlayerState.Light)
             {
                 lightJump = true;
+                Particle();
                 playerState = PlayerState.Default;
             }
             else
             {
                 if (!isGround || launchControl)
-                {
                     return;
-                }
             }
             moveHigh = speed;
             jumpFlag = true;
@@ -194,31 +177,29 @@ public class PlayerMove : MonoBehaviour
         {
             playerState = PlayerState.Light;
             velocity = new Vector2(0f, 0f);     // 速度をリセット
+            Particle();
         }
         else if ((!lightFlag || !controller.ChangeButton()) && playerState != PlayerState.Default)
         {
+            Particle();
             moveHigh = speed;
             playerState = PlayerState.Default;
         }
 
         if(!isGround)
-        {
             airTime += Time.fixedDeltaTime;
-        }
+
         else
-        {
             airTime = 0f;
-        }
 
         // 落下死判定
         if (transform.position.y < deathHeight)
-        {
             Utility.GetTaskObject().GetComponent<GameTask>().mode = GameTask.Mode.gameOver;
-        }
 
         // 自機の移動
         if (!stopPlayer)
         {
+            // 自機の向きを変える
             if(isGround || playerState == PlayerState.Light)
             {
                 if (launchHit.transform.position != new Vector3(transform.position.x + launchHitCollider.size.x / 2, transform.position.y, transform.position.z) && controller.MoveButton() > 0f)
@@ -255,54 +236,48 @@ public class PlayerMove : MonoBehaviour
                 }
                 else if (!isGround)
                 {
-                    if (moveSpeed <= speed && moveSpeed >= -speed)
+                    if(moveHigh > speed)
                     {
-                        moveHigh = speed;
+                        if (moveSpeed > 0f && moveSpeed < moveHigh)
+                            moveHigh = moveSpeed;
+
+                        else if (moveSpeed < 0f && moveSpeed > moveLow)
+                            moveHigh = -moveSpeed;
                     }
+
+                    if (moveSpeed <= speed && moveSpeed >= -speed)
+                        moveHigh = speed;
 
                     if (moveSpeed > moveHigh)
-                    {
                         moveSpeed = moveHigh;
-                    }
+
                     else if (moveSpeed < moveLow)
-                    {
                         moveSpeed = moveLow;
-                    }
 
                     if (moveSpeed <= moveHigh && moveSpeed >= moveLow)
-                    {
                         moveSpeed += power.x / 3;
-                    }
+
                     velocity.x = moveSpeed;
                 }
                 else
-                {
                     velocity.x = power.x * speed;
-                }
 
                 /*重力関係---------------------------------------------------*/
                 if (((isGround && !jumpFlag) || playerState == PlayerState.Light) && velocity.y <= 0f)
-                {
                     velocity.y = 0f;
-                }
+
                 else if (jumpFlag)
-                {
                     velocity.y = jumpPower;
-                }
+
                 else if(velocity.y < -15f)
-                {
                     velocity.y = -15f;
-                }
+
                 else
-                {
                     velocity.y -= GRAVITY_SIZE * Time.fixedDeltaTime;
-                }
                 /*----------------------------------------------------------*/
-                
+
                 if (jumpFlag && velocity.y == jumpPower)
-                {
                     jumpFlag = false;
-                }
 
                 rigidbody.velocity = new Vector2(velocity.x, velocity.y);
                 boxCollider2D.enabled = true;
@@ -321,10 +296,12 @@ public class PlayerMove : MonoBehaviour
             moveSpeed = velocity.x;
         }
         else
-        {
             rigidbody.velocity = new Vector2(0f, 0f);
-        }
+
         RayGround();
+
+        Debug.Log(moveHigh);
+
         if(m_hitObjects.Count > 0)
             Debug.Log(m_hitObjects[0].gameObject);
     }
@@ -372,9 +349,7 @@ public class PlayerMove : MonoBehaviour
         foreach (RaycastHit2D hit in hits)
         {
             if(hit.normal.y > 0.5f && (!hit.collider.isTrigger))
-            {
                 isGround = true;
-            }
         }
     }
 
@@ -385,9 +360,7 @@ public class PlayerMove : MonoBehaviour
             if (collision.contacts[i].normal.x < -0.5f || collision.contacts[i].normal.x > 0.5f)
             {
                 if(moveSpeed != 0f)
-                {
                     moveSpeed = 0f;
-                }
             }
         }
         if (collision.collider.tag == "MoveBlock" && playerState == PlayerState.Default)
@@ -399,9 +372,17 @@ public class PlayerMove : MonoBehaviour
     void OnCollisionExit2D(Collision2D collision)
     {
         if (collision.collider.tag != "MoveBlock")
-        {
             return;
-        }
+
         m_hitObjects.Remove(collision.gameObject);
+    }
+
+    // 変身時のエフェクト
+    void Particle()
+    {
+        GameObject go = Instantiate(particle);
+        go.transform.parent = transform;
+        go.transform.position = transform.position + new Vector3(0f,1f,-1f);
+        Destroy(go, 0.6f);
     }
 }
