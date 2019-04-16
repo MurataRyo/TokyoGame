@@ -28,13 +28,10 @@ public class LaunchHit : MonoBehaviour
             if (playerMove.playerState == PlayerMove.PlayerState.Default && controller.ControlButton())
             {
                 if (playerMove.launchControl)
-                {
                     playerMove.launchControl = false;
-                }
+
                 else
-                {
                     playerMove.launchControl = true;
-                }
             }
 
             // 光源を操作する状態のとき
@@ -42,35 +39,29 @@ public class LaunchHit : MonoBehaviour
             {
                 /*動かす光源の選択-------------------*/
                 if (controller.LaunchSelectRight())
-                {
                     select++;
-                }
+
                 if (controller.LaunchSelectLeft())
-                {
                     select--;
-                }
+
                 /*----------------------------------*/
             }
             if (select > m_hitObjects.Count - 1)
-            {
                 select = 0;
-            }
+
             if (select < 0)
-            {
                 select = m_hitObjects.Count - 1;
-            }
+
             target = m_hitObjects[select];                  // 選択されているオブジェクトの取り出し
+
             if (playerMove.launchControl)
-            {
                 target.GetComponent<LaunchControl>().Select();  // 選択した光源の向きを変えられるようにする
-            }
         }
         else    // それ以外のとき
         {
             if (playerMove.launchControl)
-            {
                 playerMove.launchControl = false;
-            }
+
             select = 0;
         }
     }
@@ -78,18 +69,16 @@ public class LaunchHit : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if(collision.gameObject.tag != "Launch")
-        {
             return;
-        }
+
         m_hitObjects.Add(collision.gameObject);
     }
 
     private void OnTriggerExit2D(Collider2D collision)
     {
         if (collision.gameObject.tag != "Launch")
-        {
             return;
-        }
+
         m_hitObjects.Remove(collision.gameObject);
     }
 }
