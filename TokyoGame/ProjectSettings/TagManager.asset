@@ -20,6 +20,7 @@ TagManager:
   - NotRefrect
   - Canvas
   - Col2
+  - MoveBlock
   layers:
   - Default
   - TransparentFX

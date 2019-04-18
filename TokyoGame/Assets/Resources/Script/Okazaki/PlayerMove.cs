@@ -27,6 +27,7 @@ public class PlayerMove : MonoBehaviour
     float moveLow;
     float jumpPower;                            // ジャンプ力
     float angle;                                // 向き
+    float changeCount;
     [HideInInspector]
     public float airTime;
     private const float WALK_SPEED = 5f;        // 歩行速度
@@ -74,7 +75,8 @@ public class PlayerMove : MonoBehaviour
         launchHitCollider = launchHit.GetComponent<BoxCollider2D>();
         circleCollider2D = gameObject.GetComponent<CircleCollider2D>();
         controller = Utility.GetTaskObject().GetComponent<XBoxController>();
-        deathHeight = -7f; launchHit.transform.position = new Vector3(transform.position.x + launchHitCollider.size.x / 2, transform.position.y, transform.position.z);
+        deathHeight = -7f;
+        launchHit.transform.position = new Vector3(transform.position.x + launchHitCollider.size.x / 2, transform.position.y, transform.position.z);
         angle = 90f;
     }
 
@@ -151,6 +153,12 @@ public class PlayerMove : MonoBehaviour
                 lightJump = true;
                 Particle();
                 playerState = PlayerState.Default;
+
+                if (LightModel.activeSelf)
+                    LightModel.SetActive(false);
+
+                changeCount = 0f;
+                changeCount += Time.fixedDeltaTime;
             }
             else
             {
@@ -175,15 +183,25 @@ public class PlayerMove : MonoBehaviour
         // 光の中を出入りする
         if (lightFlag && controller.ChangeButton() && playerState != PlayerState.Light && !lightJump)
         {
+            if(Model.activeSelf)
+                Model.SetActive(false);
+
             playerState = PlayerState.Light;
             velocity = new Vector2(0f, 0f);     // 速度をリセット
             Particle();
+            changeCount = 0f;
+            changeCount += Time.fixedDeltaTime;
         }
         else if ((!lightFlag || !controller.ChangeButton()) && playerState != PlayerState.Default)
         {
+            if(LightModel.activeSelf)
+                LightModel.SetActive(false);
+
             Particle();
             moveHigh = speed;
             playerState = PlayerState.Default;
+            changeCount = 0f;
+            changeCount += Time.fixedDeltaTime;
         }
 
         if(!isGround)
@@ -196,11 +214,14 @@ public class PlayerMove : MonoBehaviour
         if (transform.position.y < deathHeight)
             Utility.GetTaskObject().GetComponent<GameTask>().mode = GameTask.Mode.gameOver;
 
+        if (changeCount > 0f)
+            changeCount += Time.fixedDeltaTime;
+
         // 自機の移動
         if (!stopPlayer)
         {
             // 自機の向きを変える
-            if(isGround || playerState == PlayerState.Light)
+            if((isGround && !launchControl) || playerState == PlayerState.Light)
             {
                 if (launchHit.transform.position != new Vector3(transform.position.x + launchHitCollider.size.x / 2, transform.position.y, transform.position.z) && controller.MoveButton() > 0f)
                 {
@@ -221,9 +242,15 @@ public class PlayerMove : MonoBehaviour
                 Vector2 vect2 = power * speed;
                 velocity = transform.right * vect2.x + transform.up * vect2.y;
 
+                if(changeCount >= 0.2f)
+                {
+                    if (!LightModel.activeSelf)
+                        LightModel.SetActive(true);
+
+                    changeCount = 0f;
+                }
+
                 rigidbody.velocity = new Vector2(velocity.x, velocity.y);
-                Model.SetActive(false);
-                LightModel.SetActive(true);
                 boxCollider2D.enabled = false;
                 circleCollider2D.isTrigger = false;
                 search = true;
@@ -279,10 +306,22 @@ public class PlayerMove : MonoBehaviour
                 if (jumpFlag && velocity.y == jumpPower)
                     jumpFlag = false;
 
-                rigidbody.velocity = new Vector2(velocity.x, velocity.y);
+                if (m_hitObjects.Count > 0)
+                    moveBlockVelocity = m_hitObjects[0].gameObject.GetComponent<Rigidbody2D>().velocity;
+
+                else
+                    moveBlockVelocity = Vector2.zero;
+
+                if (changeCount >= 0.2f)
+                {
+                    if(!Model.activeSelf)
+                        Model.SetActive(true);
+
+                    changeCount = 0f;
+                }
+
+                rigidbody.velocity = velocity + moveBlockVelocity;
                 boxCollider2D.enabled = true;
-                Model.SetActive(true);
-                LightModel.SetActive(false);
                 circleCollider2D.isTrigger = true;
                 search = false;
             }
@@ -299,11 +338,6 @@ public class PlayerMove : MonoBehaviour
             rigidbody.velocity = new Vector2(0f, 0f);
 
         RayGround();
-
-        Debug.Log(moveHigh);
-
-        if(m_hitObjects.Count > 0)
-            Debug.Log(m_hitObjects[0].gameObject);
     }
 
     void LightSearch()
@@ -365,7 +399,7 @@ public class PlayerMove : MonoBehaviour
         }
         if (collision.collider.tag == "MoveBlock" && playerState == PlayerState.Default)
         {
-            m_hitObjects.Add(collision.gameObject);
+            m_hitObjects.Add(collision.transform.root.gameObject);
         }
     }
 
@@ -374,7 +408,7 @@ public class PlayerMove : MonoBehaviour
         if (collision.collider.tag != "MoveBlock")
             return;
 
-        m_hitObjects.Remove(collision.gameObject);
+        m_hitObjects.Remove(collision.transform.root.gameObject);
     }
 
     // 変身時のエフェクト
@@ -382,7 +416,7 @@ public class PlayerMove : MonoBehaviour
     {
         GameObject go = Instantiate(particle);
         go.transform.parent = transform;
-        go.transform.position = transform.position + new Vector3(0f,1f,-1f);
+        go.transform.position = transform.position + new Vector3(0f,1f,0f);
         Destroy(go, 0.6f);
     }
 }

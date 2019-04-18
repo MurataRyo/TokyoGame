@@ -26,7 +26,7 @@ public class MoveGround : MonoBehaviour
 
     }
 
-    void Update()
+    void FixedUpdate()
     {
         movePos();
     }
@@ -35,7 +35,7 @@ public class MoveGround : MonoBehaviour
     {
         Vector2 pos = new Vector2(transform.position.x, transform.position.y);
         float range = (pos - pointDate[pointIndex]).magnitude;//距離
-        float move = speed * Time.deltaTime;//速度
+        float move = speed * Time.fixedDeltaTime;//速度
 
         //通り越しそうなら指定された場所までしか動かない
         while (range < move)
