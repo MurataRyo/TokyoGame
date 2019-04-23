@@ -9,27 +9,22 @@ public class LineRay : MonoBehaviour
     [HideInInspector] public List<Vector2> keepPoints; //座標を保存
     [HideInInspector] public List<Line> keepLines; //線を保存
     [HideInInspector] public List<Vector2> keepLinePrevious; //保存
-    
-    private EdgeCollider2D edge2D;
-    private GameObject taskObject;
-    private GoalTask goalTask;
-    private ParticleSystem lightLine;
 
-    void Start()
+    [HideInInspector] public GameObject taskObject;
+    [HideInInspector] public GoalTask goalTask;
+    [HideInInspector] public ParticleSystem lightLine;
+    [HideInInspector] public Vector2 lastPoint; //RayがObjectに当たらないときも光を出すための座標
+
+    protected virtual void Start()
     {
         //　必要な子オブジェクト
         foreach (Transform child in transform)
         {
-            if (child.gameObject.tag == GetTag.Col2)
-            {
-                edge2D = child.gameObject.GetComponent<EdgeCollider2D>();
-            }
             if (child.transform.tag == GetTag.LightSource)
             {
                 lightLine = child.gameObject.GetComponent<ParticleSystem>();
             }
         }
-        edge2D.edgeRadius = 0.5f;
         taskObject = Utility.GetTaskObject();
         goalTask = taskObject.GetComponent<GoalTask>();
         keepPoints = new List<Vector2>();
@@ -37,8 +32,8 @@ public class LineRay : MonoBehaviour
         keepLinePrevious = new List<Vector2>();
     }
 
-    //Particleの反射
-    void Update()
+    // Update is called once per frame
+    protected virtual void Update()
     {
         keepPoints = new List<Vector2>();
         keepPoints.Add(new Vector2(transform.position.x, transform.position.y));
@@ -55,12 +50,11 @@ public class LineRay : MonoBehaviour
         }
         keepLinePrevious = keepPoints;
 
-        //AddLightDrow();
-
+        AddLightDrow();
     }
 
     //光の情報が変更されたかどうか
-    private bool ChangeLight()
+    public bool ChangeLight()
     {
         if (keepLinePrevious.Count != keepPoints.Count)
             return true;
@@ -96,24 +90,35 @@ public class LineRay : MonoBehaviour
     {
         Vector2 startPos = new Vector2(position.x, position.y); //初期位置
 
-        // 反射地点を変えてその座標からレイを伸ばす
-        foreach (RaycastHit2D hit in Physics2D.RaycastAll(position + direction * 0.5f, direction))
+        RaycastHit2D[] hits = Physics2D.RaycastAll(position + direction * 0.5f, direction);
+        hits = hits.OrderBy(x => x.distance).ToArray();
+
+        if (hits.Length != 0)
         {
-            if (IsRefrect(hit)) //光が反射
+            // 反射地点を変えてその座標からレイを伸ばす
+            foreach (RaycastHit2D hit in hits)
             {
-                RefrectRay(hit, ref position, ref direction);
+                if (IsRefrect(hit)) //光が反射
+                {
+                    RefrectRay(hit, ref position, ref direction);
 
-                //Debug.Log("鏡に当たった");
-                DrawReflect(position, direction);
+                    //Debug.Log("鏡に当たった");
+                    DrawReflect(position, direction);
 
-                break;
+                    break;
+                }
+                else if (NotRefrect(hit)) //光の終了
+                {
+                    RefrectRay(hit, ref position, ref direction);
+                    //Debug.Log("反射しません");
+                    break;
+                }
             }
-            else if (NotRefrect(hit)) //光の終了
-            {
-                RefrectRay(hit, ref position, ref direction);
-                //Debug.Log("反射しません");
-                break;
-            }
+        }
+        else
+        {
+            lastPoint = position + direction * 100;
+            keepPoints.Add(lastPoint);
         }
     }
 
@@ -145,17 +150,10 @@ public class LineRay : MonoBehaviour
     }
 
     //レイの始点と終点を調べる
-    void RefrectRay(RaycastHit2D hit, ref Vector2 position, ref Vector2 direction)
+    protected virtual void RefrectRay(RaycastHit2D hit, ref Vector2 position, ref Vector2 direction)
     {
         direction = Vector2.Reflect(direction, hit.normal);
         position = hit.point;
-        keepPoints.Add(new Vector2(position.x, position.y));    
-        ColInfo();
-    }
-
-    //レイの通りにコライダー描画
-    void ColInfo()
-    {
-        edge2D.points = keepPoints.Select(v => (Vector2)transform.InverseTransformPoint(v)).ToArray();
+        keepPoints.Add(new Vector2(position.x, position.y));
     }
 }
