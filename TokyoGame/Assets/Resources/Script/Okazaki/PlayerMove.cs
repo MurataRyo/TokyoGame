@@ -168,7 +168,6 @@ public class PlayerMove : MonoBehaviour
             moveHigh = speed;
             jumpFlag = true;
         }
-        moveLow = -moveHigh;
     }
 
     void FixedUpdate()
@@ -216,6 +215,8 @@ public class PlayerMove : MonoBehaviour
 
         if (changeCount > 0f)
             changeCount += Time.fixedDeltaTime;
+
+        moveLow = -moveHigh;
 
         // 自機の移動
         if (!stopPlayer)
@@ -338,6 +339,7 @@ public class PlayerMove : MonoBehaviour
             rigidbody.velocity = new Vector2(0f, 0f);
 
         RayGround();
+        Debug.Log(moveHigh);
     }
 
     void LightSearch()
