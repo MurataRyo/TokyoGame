@@ -48,7 +48,6 @@ public class LineRay : MonoBehaviour
                 keepLines.Add(new Line(keepPoints[i], keepPoints[i + 1]));
             }
         }
-        keepLinePrevious = keepPoints;
 
         AddLightDrow();
     }

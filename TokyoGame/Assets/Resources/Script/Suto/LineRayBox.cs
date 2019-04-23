@@ -10,12 +10,14 @@ public class LineRayBox : LineRay
     protected override void Start()
     {
         base.Start();
+
+        box2d = new List<BoxCollider2D>();
     }
 
     protected override void Update()
     {
         base.Update();
-
+        
         if (ChangeLight())
         {
             foreach (BoxCollider2D b in box2d.Skip(keepPoints.Count - 1))
@@ -42,5 +44,6 @@ public class LineRayBox : LineRay
                 box2d[i].transform.localScale = new Vector3((keepPoints[i] - keepPoints[i + 1]).magnitude, 1f, 1f);
             }
         }
+        keepLinePrevious = keepPoints;
     }
 }
