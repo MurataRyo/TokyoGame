@@ -23,7 +23,6 @@ public class PlayerMove : MonoBehaviour
     Vector2 power = Vector2.zero;
     float moveSpeed;
     Vector2 moveBlockVelocity = Vector2.zero;
-    float hitRadius;
     float moveHigh;
     float moveLow;
     float jumpPower;                            // ジャンプ力
@@ -85,9 +84,9 @@ public class PlayerMove : MonoBehaviour
     {
         /*Collider2D[] playerHit = Physics2D.OverlapBoxAll(transform.position, boxCollider2D.size, 0f);*/
         Collider2D[] playerHit = Physics2D.OverlapCircleAll
-            (new Vector2(transform.position.x, transform.position.y + (circleCollider2D.offset.y * transform.localScale.y)), hitRadius, LayerMask.GetMask("Col")); // 自機の当たり判定の取得
+            (new Vector2(transform.position.x, transform.position.y + (circleCollider2D.offset.y * transform.localScale.y)), 0f, LayerMask.GetMask("Col")); // 自機の当たり判定の取得
         Collider2D[] lineHit = Physics2D.OverlapCircleAll
-            (new Vector2(transform.position.x, transform.position.y + (circleCollider2D.offset.y * transform.localScale.y)), hitRadius, LayerMask.GetMask("Col"));
+            (new Vector2(transform.position.x, transform.position.y + (circleCollider2D.offset.y * transform.localScale.y)), 0f, LayerMask.GetMask("Col"));
         Vector2 velocity = rigidbody.velocity;
 
         lightFlag = false;
@@ -255,7 +254,6 @@ public class PlayerMove : MonoBehaviour
                 rigidbody.velocity = new Vector2(velocity.x, velocity.y);
                 boxCollider2D.enabled = false;
                 circleCollider2D.isTrigger = false;
-                hitRadius = circleCollider2D.radius / 5;
                 search = true;
             }
             else // それ以外の時の移動
@@ -326,7 +324,6 @@ public class PlayerMove : MonoBehaviour
                 rigidbody.velocity = velocity + moveBlockVelocity;
                 boxCollider2D.enabled = true;
                 circleCollider2D.isTrigger = true;
-                hitRadius = 0f;
                 search = false;
             }
             //for (int i = 0; i < lightSearch.Length; i++)
