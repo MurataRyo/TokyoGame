@@ -16,7 +16,7 @@ public class LineRayEdge : LineRay
                 edge2D = child.gameObject.GetComponent<EdgeCollider2D>();
             }
         }
-        edge2D.edgeRadius = 0.5f;
+        edge2D.edgeRadius = 0.35f;
     }
 
     protected override void RefrectRay(RaycastHit2D hit, ref Vector2 position, ref Vector2 direction)
