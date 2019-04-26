@@ -13,6 +13,7 @@ public class MapBackCreate : MonoBehaviour
     {
         t1_1,
         t2_1,
+        t3_1,
     }
 
     // Start is called before the first frame update
@@ -39,7 +40,18 @@ public class MapBackCreate : MonoBehaviour
                 while (true)
                 {
                     int range = Enum.GetValues(typeof(Add)).Length;
-                    int k = UnityEngine.Random.Range(0, range);
+                    int k = UnityEngine.Random.Range(0, 101);
+                    if (k < 75)
+                        k = 0;
+                    else if(k < 90)
+                    {
+                        k = 1;
+                    }
+                    else
+                    {
+                        k = 2;
+                    }
+
                     if (CreateNum((Add)k, i, j))
                     {
                         CreateNum(i, j, (Add)k);
@@ -59,6 +71,7 @@ public class MapBackCreate : MonoBehaviour
         int blockNum = Resources.LoadAll<Sprite>(GetPath.StageBack + path).Length;
         Sprite sprite = Resources.Load<Sprite>(GetPath.StageBack + path + "/tile" + UnityEngine.Random.Range(1, blockNum + 1).ToString());
 
+        rend.sortingOrder = -1;
         rend.sprite = sprite;
         go.transform.localScale = Vector3.one * size;
         go.transform.parent = parent.transform;
@@ -87,6 +100,32 @@ public class MapBackCreate : MonoBehaviour
 
                 flag[i, j] = true;
                 flag[i + 1, j] = true;
+                return true; ;
+
+            case Add.t3_1:
+
+                if (flag[i, j])
+                    return false;
+
+                if (flag.GetLongLength(0) <= i + 1)
+                    return false;
+
+                if (flag[i + 1, j])
+                    return false;
+
+                if (flag.GetLongLength(1) <= j + 1)
+                    return false;
+
+                if (flag[i, j + 1])
+                    return false;
+                
+                if (flag[i + 1, j + 1])
+                    return false;
+
+                flag[i, j] = true;
+                flag[i + 1, j] = true;
+                flag[i, j + 1] = true;
+                flag[i + 1, j + 1] = true;
                 return true; ;
         }
         return false;
