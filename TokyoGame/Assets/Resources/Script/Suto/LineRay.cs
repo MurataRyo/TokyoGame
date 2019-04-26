@@ -74,7 +74,7 @@ public class LineRay : MonoBehaviour
     {
         for (int i = 0; i < keepPoints.Count - 1; i++)
         {
-            float range = (keepPoints[i] - keepPoints[i + 1]).magnitude * 10;
+            float range = (keepPoints[i] - keepPoints[i + 1]).magnitude * 3;
             for (int j = 0; j < range; j++)
             {
                 ParticleSystem.EmitParams emit = new ParticleSystem.EmitParams();
