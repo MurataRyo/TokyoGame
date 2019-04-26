@@ -19,6 +19,7 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] GameObject Model;          // 自機のモデル
     [SerializeField] GameObject LightModel;     // 自機のモデル（光状態）
     [SerializeField] GameObject particle;
+    [SerializeField] GameObject point;          // 自機の現在位置（サブカメラ用レーダー）
     float speed;                                // 移動速度
     Vector2 power = Vector2.zero;
     float moveSpeed;
@@ -33,8 +34,8 @@ public class PlayerMove : MonoBehaviour
     public float airTime;
     private const float WALK_SPEED = 5f;        // 歩行速度
     private const float RUN_SPEED = 10f;        // 走行速度
-    private const float LIGHT_SPEED = 15f;      // 光状態の時の速度
-    private const float LINE_SPEED = 25f;       // 光状態の時の速度（直線）
+    private const float LIGHT_SPEED = 25f;      // 光状態の時の速度
+    //private const float LINE_SPEED = 25f;       // 光状態の時の速度（直線）
     private const float JUMP_HEIGHT = 4f;       // ジャンプの頂点
     private const float GRAVITY_SIZE = 20f;     // 重力の強さ
     [HideInInspector]
@@ -119,10 +120,10 @@ public class PlayerMove : MonoBehaviour
 
         else if(playerState == PlayerState.Light)
         {
-            if (lineMove)
-                speed = LINE_SPEED;
+            //if (lineMove)
+            //    speed = LINE_SPEED;
 
-            else
+            //else
                 speed = LIGHT_SPEED;
         }
         else
@@ -293,7 +294,7 @@ public class PlayerMove : MonoBehaviour
                     velocity.x = power.x * speed;
 
                 /*重力関係---------------------------------------------------*/
-                if (((isGround && !jumpFlag) || playerState == PlayerState.Light) && velocity.y <= 0f)
+                if (isGround && !jumpFlag && velocity.y <= 0f)
                     velocity.y = 0f;
 
                 else if (jumpFlag)
@@ -405,6 +406,7 @@ public class PlayerMove : MonoBehaviour
         if (collision.collider.tag == "MoveBlock" && playerState == PlayerState.Default)
         {
             m_hitObjects.Add(collision.transform.root.gameObject);
+            transform.SetParent(collision.transform);
         }
     }
 
@@ -414,6 +416,7 @@ public class PlayerMove : MonoBehaviour
             return;
 
         m_hitObjects.Remove(collision.transform.root.gameObject);
+        transform.SetParent(null);
     }
 
     // 変身時のエフェクト
