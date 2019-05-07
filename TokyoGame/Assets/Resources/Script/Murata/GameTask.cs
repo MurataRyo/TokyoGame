@@ -12,22 +12,26 @@ public class GameTask : MonoBehaviour
     }
     public Mode mode;
     private Mode modeLog;
+    public static GameObject stageData;
 
     private void Start()
     {
         modeLog = mode = Mode.main;
+
+        if (stageData != null)
+            Instantiate(stageData);
     }
 
     private void Update()
     {
         //タイトル画面へ
-        if(mode != Mode.main && Utility.EnterButton())
+        if (mode != Mode.main && Utility.EnterButton())
         {
             SceneTask.LoadScene(SceneTask.GameMode.Title);
             return;
         }
 
-        if(mode != modeLog)
+        if (mode != modeLog)
         {
             switch (mode)
             {
@@ -52,7 +56,7 @@ public class GameTask : MonoBehaviour
     {
         GameOverAndClear();
         Sprite sprite = Resources.Load<Sprite>(GetPath.Game + "/GameOver");
-        Utility.UiAdd(sprite,Vector2.zero,Utility.GAME_SIZE);
+        Utility.UiAdd(sprite, Vector2.zero, Utility.GAME_SIZE);
     }
 
     private void GameClear()

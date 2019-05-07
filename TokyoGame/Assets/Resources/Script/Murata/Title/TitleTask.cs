@@ -33,7 +33,7 @@ public class TitleTask : MonoBehaviour
 
     private void CameraPosReset()
     {
-        Camera.main.transform.position = worldData.worlds[0].cameraPos;
+        //Camera.main.transform.position = worldData.worlds[0].cameraPos;
         Camera.main.transform.eulerAngles = worldData.worlds[0].cameraAngle;
     }
 
@@ -80,8 +80,9 @@ public class TitleTask : MonoBehaviour
 
     private void SelectMove()
     {
-        if(Utility.EnterButton())
+        if(Utility.EnterButton() && worldChoiceTask.moveCamera == null)
         {
+            GameTask.stageData = Resources.Load<GameObject>(GetPath.StageData + "/Stage" + (worldChoiceTask.choiceClass.nowChoice + 1).ToString());
             SceneTask.LoadScene(SceneTask.GameMode.Game);
         }
     }
@@ -90,5 +91,8 @@ public class TitleTask : MonoBehaviour
     {
         worldChoiceTask = gameObject.AddComponent<WorldChoiceTask>();
         Destroy(title);
+
+        worldChoiceTask.moveCamera = worldChoiceTask.MoveCamera(worldData.worlds[0].cameraPos, worldData.worlds[0].cameraAngle,1.0f,WorldChoiceTask.MoveMode.start);
+        StartCoroutine(worldChoiceTask.moveCamera);
     }
 }

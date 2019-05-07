@@ -75,6 +75,7 @@ public struct GetPath
     public const string Prefab = "Prefab";
     public const string TitlePrefab = Prefab + "/Title";
     public const string Particle = Prefab + "/Particle";
+    public const string StageData = Prefab + "/StageData";
 
     public const string Image = "Image";
     public const string Title = Image + "/Title";
