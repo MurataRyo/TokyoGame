@@ -91,7 +91,7 @@ public class LineRay : MonoBehaviour
 
         RaycastHit2D[] hits = Physics2D.RaycastAll(position + direction * 0.5f, direction);
         hits = hits.OrderBy(x => x.distance).ToArray();
-
+        Debug.Log(hits.Length);
         if (hits.Length != 0)
         {
             // 反射地点を変えてその座標からレイを伸ばす
@@ -104,21 +104,20 @@ public class LineRay : MonoBehaviour
                     //Debug.Log("鏡に当たった");
                     DrawReflect(position, direction);
 
-                    break;
+                    return;
                 }
                 else if (NotRefrect(hit)) //光の終了
                 {
                     RefrectRay(hit, ref position, ref direction);
                     //Debug.Log("反射しません");
-                    break;
+                    return;
                 }
             }
         }
-        else
-        {
-            lastPoint = position + direction * 100;
-            keepPoints.Add(lastPoint);
-        }
+
+        lastPoint = position + direction * 1000;
+        keepPoints.Add(lastPoint);
+
     }
 
     //反射可能
