@@ -91,7 +91,6 @@ public class LineRay : MonoBehaviour
 
         RaycastHit2D[] hits = Physics2D.RaycastAll(position + direction * 0.5f, direction);
         hits = hits.OrderBy(x => x.distance).ToArray();
-        Debug.Log(hits.Length);
         if (hits.Length != 0)
         {
             // 反射地点を変えてその座標からレイを伸ばす
@@ -115,7 +114,7 @@ public class LineRay : MonoBehaviour
             }
         }
 
-        lastPoint = position + direction * 1000;
+        lastPoint = position + direction * 500;
         keepPoints.Add(lastPoint);
 
     }
