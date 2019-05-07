@@ -56,7 +56,8 @@ public class PlayerMove : MonoBehaviour
     [HideInInspector]
     public bool stopPlayer = false;
     [HideInInspector]
-    public float deathHeight;                   // 落下死になる高さ
+    public float death;                   // 落下死になる高さ
+    const float DEATH_HEIGHT = -7f;
 
     Vector2 position = Vector2.zero;
     [HideInInspector]
@@ -77,7 +78,7 @@ public class PlayerMove : MonoBehaviour
         launchHitCollider = launchHit.GetComponent<BoxCollider2D>();
         circleCollider2D = gameObject.GetComponent<CircleCollider2D>();
         controller = Utility.GetTaskObject().GetComponent<XBoxController>();
-        deathHeight = -7f;
+        death = DEATH_HEIGHT;
         launchHit.transform.position = new Vector3(transform.position.x + launchHitCollider.size.x / 2, transform.position.y, transform.position.z);
         angle = 90f;
     }
@@ -212,7 +213,7 @@ public class PlayerMove : MonoBehaviour
             airTime = 0f;
 
         // 落下死判定
-        if (transform.position.y < deathHeight)
+        if (transform.position.y < death)
             Utility.GetTaskObject().GetComponent<GameTask>().mode = GameTask.Mode.gameOver;
 
         if (changeCount > 0f)
@@ -343,7 +344,7 @@ public class PlayerMove : MonoBehaviour
             rigidbody.velocity = new Vector2(0f, 0f);
 
         RayGround();
-        Debug.Log(moveHigh);
+        Debug.Log(moveBlockVelocity);
     }
 
     void LightSearch()
