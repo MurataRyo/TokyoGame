@@ -7,10 +7,10 @@ using System;
 public class WorldChoiceTask : MonoBehaviour
 {
     private World[] worlds;                     //ワールドデータ
-    private ChoiceClass choiceClass;            //選択用class
+    public  ChoiceClass choiceClass;            //選択用class
     private Camera mCamera;                     //カメラ
     private const float CAMERA_TIME = 0.40f;    //カメラの移動時間
-    private IEnumerator moveCamera;
+    public IEnumerator moveCamera;
     private XBox xBox;
     private GameObject titleBarPrefab;
 
@@ -18,19 +18,21 @@ public class WorldChoiceTask : MonoBehaviour
     private List<ChoiceBar> choiceBars = new List<ChoiceBar>();
 
     // Start is called before the first frame update
-    void Start()
+    void Awake()
     {
         xBox = Utility.GetXBox();
         titleBarPrefab = Resources.Load<GameObject>(GetPath.TitlePrefab + "/TitleBar");
         worlds = GetComponent<WorldData>().worlds;
         choiceClass = new ChoiceClass(worlds.Length);
         mCamera = Camera.main;
-        mCamera.transform.position = worlds[choiceClass.nowChoice].cameraPos;
-        mCamera.transform.eulerAngles = worlds[choiceClass.nowChoice].cameraAngle;
 
+    }
+
+    private void StartUiAdd()
+    {
         choiceBars.Add(CreateChoiceBar(worlds[choiceClass.nowChoice].worldname, Vector2.zero));
         choiceBars.Add(CreateChoiceBar(worlds[choiceClass.nowChoice + 1].worldname, Vector2.down * ChoiceBar.UpDownRange));
-        choiceBars.Add(CreateChoiceBar(worlds[choiceClass.choiceNum -1].worldname, Vector2.up * ChoiceBar.UpDownRange));
+        choiceBars.Add(CreateChoiceBar(worlds[choiceClass.choiceNum - 1].worldname, Vector2.up * ChoiceBar.UpDownRange));
     }
 
     // Update is called once per frame
@@ -47,20 +49,20 @@ public class WorldChoiceTask : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.D))
         {
             choiceClass.ChoiceChange(true);
-            StartCoroutine(MoveChoiceBars(true));
-            moveCamera = MoveCamera(worlds[choiceClass.nowChoice].cameraPos, worlds[choiceClass.nowChoice].cameraAngle);
+            StartCoroutine(MoveChoiceBars(true, CAMERA_TIME));
+            moveCamera = MoveCamera(worlds[choiceClass.nowChoice].cameraPos, worlds[choiceClass.nowChoice].cameraAngle, CAMERA_TIME, MoveMode.normal);
             StartCoroutine(moveCamera);
         }
         else if (Input.GetKeyDown(KeyCode.A))
         {
             choiceClass.ChoiceChange(false);
-            StartCoroutine(MoveChoiceBars(false));
-            moveCamera = MoveCamera(worlds[choiceClass.nowChoice].cameraPos, worlds[choiceClass.nowChoice].cameraAngle);
+            StartCoroutine(MoveChoiceBars(false, CAMERA_TIME));
+            moveCamera = MoveCamera(worlds[choiceClass.nowChoice].cameraPos, worlds[choiceClass.nowChoice].cameraAngle, CAMERA_TIME,MoveMode.normal);
             StartCoroutine(moveCamera);
         }
     }
 
-    private IEnumerator MoveChoiceBars(bool flag)
+    private IEnumerator MoveChoiceBars(bool flag,float t)
     {
         float timer = 0;
 
@@ -73,7 +75,7 @@ public class WorldChoiceTask : MonoBehaviour
         while (true)
         {
             timer += Time.deltaTime;
-            if (timer > CAMERA_TIME)
+            if (timer > t)
             {
                 foreach (ChoiceBar choiceBar in choiceBars)
                 {
@@ -86,7 +88,7 @@ public class WorldChoiceTask : MonoBehaviour
 
             foreach(ChoiceBar choiceBar in choiceBars)
             {
-                choiceBar.AddPos(Utility.BoolToInt(flag) * ChoiceBar.UpDownRange / CAMERA_TIME * Time.deltaTime);
+                choiceBar.AddPos(Utility.BoolToInt(flag) * ChoiceBar.UpDownRange / t * Time.deltaTime);
                 choiceBar.ColorChange();
             }
             yield return null;
@@ -124,25 +126,35 @@ public class WorldChoiceTask : MonoBehaviour
             return 0;
     }
 
-    private IEnumerator MoveCamera(Vector3 cameraPos, Vector3 cameraAngle)
+    public enum MoveMode
     {
-        float moveRange = (cameraPos - mCamera.transform.position).magnitude / CAMERA_TIME;
+        start,
+        normal
+    }
+
+    public IEnumerator MoveCamera(Vector3 cameraPos, Vector3 cameraAngle,float t, MoveMode moveMode)
+    {
+        float moveRange = (cameraPos - mCamera.transform.position).magnitude / t;
         float timer = 0;
         Vector3 pos = mCamera.transform.position;
         Vector3 angle = mCamera.transform.eulerAngles;
         while (true)
         {
             timer += Time.deltaTime;
-            if (timer > CAMERA_TIME)
+            if (timer > t)
             {
                 mCamera.transform.position = cameraPos;
                 mCamera.transform.eulerAngles = cameraAngle;
                 moveCamera = null;
+
+                if (moveMode == MoveMode.start)
+                    StartUiAdd();
+
                 yield break;
             }
-            float t = timer / CAMERA_TIME;
-            mCamera.transform.position = Vector3.Lerp(pos, cameraPos,t);
-            mCamera.transform.eulerAngles = MoveRangeAngle(angle, cameraAngle, t);
+            float time = timer / t;
+            mCamera.transform.position = Vector3.Lerp(pos, cameraPos,time);
+            mCamera.transform.eulerAngles = MoveRangeAngle(angle, cameraAngle, time);
             yield return null;
         }
     }
