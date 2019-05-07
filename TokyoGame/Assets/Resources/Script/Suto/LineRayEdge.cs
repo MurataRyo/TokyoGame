@@ -19,15 +19,10 @@ public class LineRayEdge : LineRay
         edge2D.edgeRadius = 0.3f;
     }
 
-    protected override void RefrectRay(RaycastHit2D hit, ref Vector2 position, ref Vector2 direction)
-    {
-        base.RefrectRay(hit, ref position, ref direction);
-        ColInfo();
-    }
-
     //レイの通りにコライダー描画
-    void ColInfo()
+    protected override void Update()
     {
+        base.Update();
         edge2D.points = keepPoints.Select(v => (Vector2)transform.InverseTransformPoint(v)).ToArray();
     }
 }
