@@ -15,6 +15,7 @@ public class PlayerMove : MonoBehaviour
     private List<GameObject> m_hitObjects = new List<GameObject>();
     [HideInInspector] public PlayerState playerState = PlayerState.Default;
     GameObject launchHit;
+    LaunchHit launchHitSc;
 
     [SerializeField] GameObject Model;          // 自機のモデル
     [SerializeField] GameObject LightModel;     // 自機のモデル（光状態）
@@ -71,6 +72,7 @@ public class PlayerMove : MonoBehaviour
     void Start()
     {
         launchHit = GameObject.FindGameObjectWithTag("LaunchHit");
+        launchHitSc = launchHit.GetComponent<LaunchHit>();
         jumpPower = Mathf.Pow(JUMP_HEIGHT * 2 * GRAVITY_SIZE, 0.5f); // ジャンプ力の計算
         rigidbody = GetComponent<Rigidbody2D>();
         boxCollider2D = gameObject.GetComponent<BoxCollider2D>();
@@ -224,14 +226,16 @@ public class PlayerMove : MonoBehaviour
         if (!stopPlayer)
         {
             // 自機の向きを変える
-            if((isGround && !launchControl) || playerState == PlayerState.Light)
+            if(isGround || playerState == PlayerState.Light)
             {
-                if (launchHit.transform.position != new Vector3(transform.position.x + launchHitCollider.size.x / 2, transform.position.y, transform.position.z) && controller.MoveButton() > 0f)
+                if ((!launchControl && launchHit.transform.position != new Vector3(transform.position.x + launchHitCollider.size.x / 2, transform.position.y, transform.position.z) && controller.MoveButton() > 0f) ||
+                    (launchControl && transform.position.x < launchHitSc.target.transform.parent.transform.parent.transform.position.x))
                 {
                     launchHit.transform.position = new Vector3(transform.position.x + launchHitCollider.size.x / 2, transform.position.y, transform.position.z);
                     angle = 90f;
                 }
-                if (launchHit.transform.position != new Vector3(transform.position.x - launchHitCollider.size.x / 2, transform.position.y, transform.position.z) && controller.MoveButton() < 0f)
+                if ((!launchControl && launchHit.transform.position != new Vector3(transform.position.x - launchHitCollider.size.x / 2, transform.position.y, transform.position.z) && controller.MoveButton() < 0f) ||
+                    (launchControl && transform.position.x > launchHitSc.target.transform.parent.transform.parent.transform.position.x))
                 {
                     launchHit.transform.position = new Vector3(transform.position.x - launchHitCollider.size.x / 2, transform.position.y, transform.position.z);
                     angle = -90f;
@@ -254,6 +258,7 @@ public class PlayerMove : MonoBehaviour
                 }
 
                 rigidbody.velocity = new Vector2(velocity.x, velocity.y);
+                rigidbody.gravityScale = 0f;
                 boxCollider2D.enabled = false;
                 circleCollider2D.isTrigger = false;
                 hitRadius = circleCollider2D.radius / 4;
@@ -294,17 +299,15 @@ public class PlayerMove : MonoBehaviour
                     velocity.x = power.x * speed;
 
                 /*重力関係---------------------------------------------------*/
-                if (isGround && !jumpFlag && velocity.y <= 0f)
-                    velocity.y = 0f;
+                //if (isGround && !jumpFlag && velocity.y <= 0f)
+                //    velocity.y = 0f;
 
-                else if (jumpFlag)
+                /*else */if (jumpFlag)
                     velocity.y = jumpPower;
 
                 else if(velocity.y < -15f)
                     velocity.y = -15f;
 
-                else
-                    velocity.y -= GRAVITY_SIZE * Time.fixedDeltaTime;
                 /*----------------------------------------------------------*/
 
                 if (jumpFlag && velocity.y == jumpPower)
@@ -324,7 +327,8 @@ public class PlayerMove : MonoBehaviour
                     changeCount = 0f;
                 }
 
-                rigidbody.velocity = velocity + moveBlockVelocity;
+                rigidbody.velocity = new Vector2(velocity.x + moveBlockVelocity.x, velocity.y);
+                rigidbody.gravityScale = 2;
                 boxCollider2D.enabled = true;
                 circleCollider2D.isTrigger = true;
                 hitRadius = 0f;
@@ -406,7 +410,7 @@ public class PlayerMove : MonoBehaviour
         if (collision.collider.tag == "MoveBlock" && playerState == PlayerState.Default)
         {
             m_hitObjects.Add(collision.transform.root.gameObject);
-            transform.SetParent(collision.transform);
+            //transform.SetParent(collision.transform);
         }
     }
 
@@ -416,7 +420,7 @@ public class PlayerMove : MonoBehaviour
             return;
 
         m_hitObjects.Remove(collision.transform.root.gameObject);
-        transform.SetParent(null);
+        //transform.SetParent(null);
     }
 
     // 変身時のエフェクト

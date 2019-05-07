@@ -7,7 +7,7 @@ public class LaunchHit : MonoBehaviour
     GameObject Player;      // 自機
     PlayerMove playerMove;  // 自機のスクリプト
     private List<GameObject> m_hitObjects = new List<GameObject>();
-    GameObject target;      // 選択されているオブジェクト
+    [HideInInspector] public GameObject target;      // 選択されているオブジェクト
     int select = 0;         // 選択している番号
     XBoxController controller;
 

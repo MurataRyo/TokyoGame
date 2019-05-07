@@ -33,7 +33,7 @@ public class MoveGround : MonoBehaviour
 
     void movePos()
     {
-        Vector2 pos = new Vector2(transform.position.x, transform.position.y);
+        Vector2 pos = tj2D.target;
         float range = (pos - pointDate[pointIndex]).magnitude;//距離
         float move = speed * Time.fixedDeltaTime;//速度
 
