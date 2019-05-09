@@ -41,7 +41,7 @@ public class LineRayBox : LineRay
                 }
                 box2d[i].transform.rotation = Quaternion.FromToRotation(Vector3.left, keepPoints[i] - keepPoints[i + 1]);
                 box2d[i].transform.position = Vector2.Lerp(keepPoints[i], keepPoints[i + 1], 0.5f);
-                box2d[i].size = new Vector2( (keepPoints[i] - keepPoints[i + 1]).magnitude, 1.0078125f);
+                box2d[i].size = new Vector2(1.0078125f * (keepPoints[i] - keepPoints[i + 1]).magnitude, 1f);
             }
         }
         keepLinePrevious = keepPoints;

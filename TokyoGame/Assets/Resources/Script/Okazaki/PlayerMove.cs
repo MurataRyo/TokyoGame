@@ -22,12 +22,12 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] GameObject particle;
     [SerializeField] GameObject point;          // 自機の現在位置（サブカメラ用レーダー）
     float speed;                                // 移動速度
-    Vector2 power = Vector2.zero;
-    float moveSpeed;
+    Vector2 power = Vector2.zero;               // 自機にかかっている力
+    float moveSpeed;                            // 空中にいるときの移動速度
     Vector2 moveBlockVelocity = Vector2.zero;
     float hitRadius;
-    float moveHigh;
-    float moveLow;
+    float moveHigh;                             // 空中にいるときの速度の上限（右方向）
+    float moveLow;                              // 空中にいるときの速度の上限（左方向）
     float jumpPower;                            // ジャンプ力
     float angle;                                // 向き
     float changeCount;
@@ -36,9 +36,8 @@ public class PlayerMove : MonoBehaviour
     private const float WALK_SPEED = 5f;        // 歩行速度
     private const float RUN_SPEED = 10f;        // 走行速度
     private const float LIGHT_SPEED = 25f;      // 光状態の時の速度
-    //private const float LINE_SPEED = 25f;       // 光状態の時の速度（直線）
     private const float JUMP_HEIGHT = 4f;       // ジャンプの頂点
-    private const float GRAVITY_SIZE = 20f;     // 重力の強さ
+    private const float GRAVITY_SIZE = 2f;      // 重力の強さ
     [HideInInspector]
     public bool move = false;                   // 能動的に動いているかどうか
     [HideInInspector]
@@ -48,10 +47,10 @@ public class PlayerMove : MonoBehaviour
     bool lightFlag = false;                     // 光と重なっているかどうか
     [HideInInspector]
     public bool jumpFlag = false;               // ジャンプするかどうか
-    bool lightJump = false;
+    bool lightJump = false;                     // 光の中でジャンプしたかどうか
     bool search = false;
     [HideInInspector]
-    public bool lineMove = false;
+    public bool lineMove = false;               // 直線光以外の光に当たっていないかどうか
     [HideInInspector]
     public bool launchControl = false;          // 光源を操作するかどうか
     [HideInInspector]
@@ -73,8 +72,8 @@ public class PlayerMove : MonoBehaviour
     {
         launchHit = GameObject.FindGameObjectWithTag("LaunchHit");
         launchHitSc = launchHit.GetComponent<LaunchHit>();
-        jumpPower = Mathf.Pow(JUMP_HEIGHT * 2 * GRAVITY_SIZE, 0.5f); // ジャンプ力の計算
         rigidbody = GetComponent<Rigidbody2D>();
+        jumpPower = Mathf.Pow(JUMP_HEIGHT * 2 * 9.81f * GRAVITY_SIZE, 0.5f); // ジャンプ力の計算
         boxCollider2D = gameObject.GetComponent<BoxCollider2D>();
         launchHitCollider = launchHit.GetComponent<BoxCollider2D>();
         circleCollider2D = gameObject.GetComponent<CircleCollider2D>();
@@ -121,13 +120,8 @@ public class PlayerMove : MonoBehaviour
             speed = RUN_SPEED;
 
         else if(playerState == PlayerState.Light)
-        {
-            //if (lineMove)
-            //    speed = LINE_SPEED;
+            speed = LIGHT_SPEED;
 
-            //else
-                speed = LIGHT_SPEED;
-        }
         else
             speed = WALK_SPEED;
         /*----------------------------------------------------------------------------*/
@@ -177,11 +171,6 @@ public class PlayerMove : MonoBehaviour
     void FixedUpdate()
     {
         velocity = rigidbody.velocity;
-        //Vector2 position = transform.position;
-        //float x = circleCollider2D.radius + speed * Time.fixedDeltaTime;
-        //Vector2 y = new Vector2(velocity.x, velocity.y).normalized;
-        //Vector2 z = x * y + position;
-        //Collider2D[] lightSearch = Physics2D.OverlapCircleAll(z, 0f, LayerMask.GetMask("Col"));
 
         // 光の中を出入りする
         if (lightFlag && controller.ChangeButton() && playerState != PlayerState.Light && !lightJump)
@@ -257,22 +246,23 @@ public class PlayerMove : MonoBehaviour
                     changeCount = 0f;
                 }
 
-                rigidbody.velocity = new Vector2(velocity.x, velocity.y);
-                rigidbody.gravityScale = 0f;
+                rigidbody.velocity = velocity;
+                rigidbody.gravityScale = 0f;            // 重力を消す
                 boxCollider2D.enabled = false;
                 circleCollider2D.isTrigger = false;
-                hitRadius = circleCollider2D.radius / 4;
+                hitRadius = circleCollider2D.radius;
                 search = true;
             }
             else // それ以外の時の移動
             {
-                if (launchControl)
+                if (launchControl)  // 光源操作中は動かない
                 {
                     velocity.x = 0f;
                 }
-                else if (!isGround)
+                else if (!isGround) // 空中にいるとき
                 {
-                    if(moveHigh > speed)
+                    /*速度上限の再設定--------------------------------------*/
+                    if (moveHigh > speed)
                     {
                         if (moveSpeed > 0f && moveSpeed < moveHigh)
                             moveHigh = moveSpeed;
@@ -283,6 +273,7 @@ public class PlayerMove : MonoBehaviour
 
                     if (moveSpeed <= speed && moveSpeed >= -speed)
                         moveHigh = speed;
+                    /*-----------------------------------------------------*/
 
                     if (moveSpeed > moveHigh)
                         moveSpeed = moveHigh;
@@ -290,19 +281,18 @@ public class PlayerMove : MonoBehaviour
                     else if (moveSpeed < moveLow)
                         moveSpeed = moveLow;
 
+                    // 自機の制御
                     if (moveSpeed <= moveHigh && moveSpeed >= moveLow)
                         moveSpeed += power.x / 3;
 
                     velocity.x = moveSpeed;
                 }
-                else
+                else // 接地しているとき
                     velocity.x = power.x * speed;
 
                 /*重力関係---------------------------------------------------*/
-                //if (isGround && !jumpFlag && velocity.y <= 0f)
-                //    velocity.y = 0f;
 
-                /*else */if (jumpFlag)
+                if (jumpFlag)
                     velocity.y = jumpPower;
 
                 else if(velocity.y < -15f)
@@ -313,6 +303,7 @@ public class PlayerMove : MonoBehaviour
                 if (jumpFlag && velocity.y == jumpPower)
                     jumpFlag = false;
 
+                // 乗っている動く床のvelocityを取得
                 if (m_hitObjects.Count > 0)
                     moveBlockVelocity = m_hitObjects[0].gameObject.GetComponent<Rigidbody2D>().velocity;
 
@@ -328,19 +319,12 @@ public class PlayerMove : MonoBehaviour
                 }
 
                 rigidbody.velocity = new Vector2(velocity.x + moveBlockVelocity.x, velocity.y);
-                rigidbody.gravityScale = 2;
+                rigidbody.gravityScale = GRAVITY_SIZE;  // 重力を適用
                 boxCollider2D.enabled = true;
                 circleCollider2D.isTrigger = true;
                 hitRadius = 0f;
                 search = false;
             }
-            //for (int i = 0; i < lightSearch.Length; i++)
-            //{
-            //    if (lightSearch[i].tag == "Col")
-            //    {
-            //        search = false;
-            //    }
-            //}
             moveSpeed = velocity.x;
         }
         else
@@ -348,38 +332,6 @@ public class PlayerMove : MonoBehaviour
 
         RayGround();
         Debug.Log(moveHigh);
-    }
-
-    void LightSearch()
-    {
-        Vector2 position = transform.position;
-        velocity = rigidbody.velocity;
-        float x = circleCollider2D.radius + LIGHT_SPEED * Time.fixedDeltaTime;
-        Vector2 y = new Vector2(velocity.x, velocity.y).normalized;
-        Vector2 z = x * y + position;
-        Vector2 direction = position - z;
-
-        RaycastHit2D hit = Physics2D.Raycast(z, direction, x, LayerMask.GetMask("Col"));
-
-        if(Physics2D.Raycast(z, direction, x, LayerMask.GetMask("Col")))
-        {
-            Debug.Log(hit.point);
-            Debug.Log(Quaternion.FromToRotation(direction, hit.normal).eulerAngles);
-            transform.position = ClosestPoint(hit.collider, z) - (ClosestPoint(hit.collider, z) - position);
-        }
-        Debug.DrawRay(z, direction, Color.red);
-        Debug.Log(ClosestPoint(hit.collider, z) - position);
-    }
-
-    Vector2 ClosestPoint(Collider2D collider, Vector2 point)
-    {
-        GameObject go = new GameObject();
-        go.transform.position = point;
-        CircleCollider2D circle = go.AddComponent<CircleCollider2D>();
-        circle.radius = 0.01f;
-        ColliderDistance2D dis = collider.Distance(circle);
-        Destroy(go);
-        return dis.pointA;
     }
 
     // 接地判定
