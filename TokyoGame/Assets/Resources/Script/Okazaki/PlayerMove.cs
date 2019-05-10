@@ -246,11 +246,16 @@ public class PlayerMove : MonoBehaviour
                     changeCount = 0f;
                 }
 
+                if(lineMove)
+                    hitRadius = circleCollider2D.radius;
+
+                else
+                    hitRadius = 0f;
+
                 rigidbody.velocity = velocity;
                 rigidbody.gravityScale = 0f;            // 重力を消す
                 boxCollider2D.enabled = false;
                 circleCollider2D.isTrigger = false;
-                hitRadius = circleCollider2D.radius;
                 search = true;
             }
             else // それ以外の時の移動
