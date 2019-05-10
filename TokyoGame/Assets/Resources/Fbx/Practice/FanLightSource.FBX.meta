@@ -1,46 +1,47 @@
 fileFormatVersion: 2
-guid: a8392872159edef4c8cff04c000fe4a3
+guid: 5544dc4e7f4efaf45b7cefc38edd0fab
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
-    100000: Bar
-    100002: Base
-    100004: BaseVolt
-    100006: Lens
+    100000: Bar001
+    100002: Base001
+    100004: Cylinder001
+    100006: //RootNode
     100008: Light
-    100010: //RootNode
-    100012: Volt2
-    100014: Volt3
-    400000: Bar
-    400002: Base
-    400004: BaseVolt
-    400006: Lens
+    100010: Miller001
+    100012: Volt005
+    100014: Volt006
+    400000: Bar001
+    400002: Base001
+    400004: Cylinder001
+    400006: //RootNode
     400008: Light
-    400010: //RootNode
-    400012: Volt2
-    400014: Volt3
-    2100000: LineLightSource_Texture
-    2300000: Bar
-    2300002: Base
-    2300004: BaseVolt
-    2300006: Lens
-    2300008: Light
-    2300010: Volt2
-    2300012: Volt3
-    3300000: Bar
-    3300002: Base
-    3300004: BaseVolt
-    3300006: Lens
-    3300008: Light
-    3300010: Volt2
-    3300012: Volt3
-    4300000: Light
-    4300002: Volt3
-    4300004: Volt2
-    4300006: Lens
-    4300008: Base
-    4300010: Bar
-    4300012: BaseVolt
+    400010: Miller001
+    400012: Volt005
+    400014: Volt006
+    2100000: No Name
+    2100002: LightMiller
+    2300000: Bar001
+    2300002: Base001
+    2300004: Cylinder001
+    2300006: Light
+    2300008: Miller001
+    2300010: Volt005
+    2300012: Volt006
+    3300000: Bar001
+    3300002: Base001
+    3300004: Cylinder001
+    3300006: Light
+    3300008: Miller001
+    3300010: Volt005
+    3300012: Volt006
+    4300000: Base001
+    4300002: Bar001
+    4300004: Light
+    4300006: Miller001
+    4300008: Volt005
+    4300010: Volt006
+    4300012: Cylinder001
   externalObjects: {}
   materials:
     importMaterials: 1
