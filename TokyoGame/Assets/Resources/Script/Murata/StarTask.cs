@@ -8,6 +8,7 @@ public class StarTask : MonoBehaviour
     PlayerMove playerMove;
     public EdgeCollider2D thisStarCol;
     private ParticleSystem lightLine;
+    GameTask gameTask;
 
     private void Start()
     {
@@ -18,25 +19,27 @@ public class StarTask : MonoBehaviour
         particleOb.transform.parent = gameObject.transform;
         particleOb.transform.position = transform.position;
         lightLine = particleOb.GetComponent<ParticleSystem>();
+        gameTask = Utility.GetTaskObject().GetComponent<GameTask>();
     }
 
     private void Update()
     {
         if (thisStarCol != null)
-        {
-            ParticlAdd(thisStarCol.points,Vector3.zero);
-        }
+            ParticlAdd(thisStarCol.points, Vector3.zero);
     }
 
     private void OnTriggerStay2D(Collider2D collision)
     {
         if(collision.tag == GetTag.Player)
         {
-            if (playerMove.playerState == PlayerMove.PlayerState.Light)
+            if (playerMove.playerState == PlayerMove.PlayerState.Light && playerMove.changeCount == 0f)
             {
                 playerMove.stopPlayer = true;
+                gameTask.image.color = new Vector4(1f, 1f, 1f, gameTask.alpha);
+                gameTask.alpha += Time.deltaTime / 2;
                 //クリア判定
-                Utility.GetTaskObject().GetComponent<GameTask>().mode = GameTask.Mode.gameClear;
+                if(gameTask.alpha >= 1f)
+                    gameTask.mode = GameTask.Mode.gameClear;
             }
         }
     }

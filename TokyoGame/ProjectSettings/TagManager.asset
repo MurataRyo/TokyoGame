@@ -21,6 +21,7 @@ TagManager:
   - Canvas
   - Col2
   - MoveBlock
+  - WhiteOut
   layers:
   - Default
   - TransparentFX

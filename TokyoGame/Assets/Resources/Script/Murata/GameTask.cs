@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class GameTask : MonoBehaviour
 {
@@ -13,10 +14,17 @@ public class GameTask : MonoBehaviour
     public Mode mode;
     private Mode modeLog;
     public static GameObject stageData;
+    [HideInInspector] public GameObject whiteOut;
+    [HideInInspector] public Image image;
+    [HideInInspector] public float alpha;
 
     private void Start()
     {
         modeLog = mode = Mode.main;
+        whiteOut = GameObject.FindGameObjectWithTag("WhiteOut");
+        image = whiteOut.GetComponent<Image>();
+        image.color = new Vector4(1f, 1f, 1f, alpha);
+        alpha = 0f;
 
         if (stageData != null)
             Instantiate(stageData);

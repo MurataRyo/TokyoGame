@@ -30,7 +30,8 @@ public class PlayerMove : MonoBehaviour
     float moveLow;                              // 空中にいるときの速度の上限（左方向）
     float jumpPower;                            // ジャンプ力
     float angle;                                // 向き
-    float changeCount;
+    [HideInInspector]
+    public float changeCount;
     [HideInInspector]
     public float airTime;
     private const float WALK_SPEED = 5f;        // 歩行速度
@@ -67,6 +68,7 @@ public class PlayerMove : MonoBehaviour
     BoxCollider2D launchHitCollider;
     CircleCollider2D circleCollider2D;
     XBoxController controller;
+    GameTask gameTask;
 
     void Start()
     {
@@ -78,6 +80,7 @@ public class PlayerMove : MonoBehaviour
         launchHitCollider = launchHit.GetComponent<BoxCollider2D>();
         circleCollider2D = gameObject.GetComponent<CircleCollider2D>();
         controller = Utility.GetTaskObject().GetComponent<XBoxController>();
+        gameTask = Utility.GetTaskObject().GetComponent<GameTask>();
         deathHeight = -7f;
         launchHit.transform.position = new Vector3(transform.position.x + launchHitCollider.size.x / 2, transform.position.y, transform.position.z);
         angle = 90f;
@@ -85,7 +88,7 @@ public class PlayerMove : MonoBehaviour
 
     void Update()
     {
-        /*Collider2D[] playerHit = Physics2D.OverlapBoxAll(transform.position, boxCollider2D.size, 0f);*/
+        //Collider2D[] playerHit = Physics2D.OverlapBoxAll(transform.position, boxCollider2D.size, 0f);
         Collider2D[] playerHit = Physics2D.OverlapCircleAll
             (new Vector2(transform.position.x, transform.position.y + (circleCollider2D.offset.y * transform.localScale.y)), hitRadius, LayerMask.GetMask("Col")); // 自機の当たり判定の取得
         Collider2D[] lineHit = Physics2D.OverlapCircleAll
@@ -137,11 +140,17 @@ public class PlayerMove : MonoBehaviour
         if (lightJump && (!controller.ChangeButton() || !lightFlag || velocity.y < 0f))
             lightJump = false;
 
-        if (playerState == PlayerState.Light)
-            power = controller.LightMoveButton();
+        if (!stopPlayer)
+        {
+            if (playerState == PlayerState.Light)
+                power = controller.LightMoveButton();
 
+            else
+                power = new Vector2(controller.MoveButton(), 0f);
+        }
         else
-            power = new Vector2(controller.MoveButton(), 0f);
+            power = Vector2.zero;
+
 
         // ジャンプする
         if (controller.JumpButton())
@@ -184,7 +193,7 @@ public class PlayerMove : MonoBehaviour
             changeCount = 0f;
             changeCount += Time.fixedDeltaTime;
         }
-        else if ((!lightFlag || !controller.ChangeButton()) && playerState != PlayerState.Default)
+        else if ((!lightFlag || !controller.ChangeButton()) && playerState != PlayerState.Default && !stopPlayer)
         {
             if(LightModel.activeSelf)
                 LightModel.SetActive(false);
@@ -204,139 +213,143 @@ public class PlayerMove : MonoBehaviour
 
         // 落下死判定
         if (transform.position.y < deathHeight)
-            Utility.GetTaskObject().GetComponent<GameTask>().mode = GameTask.Mode.gameOver;
+        {
+            stopPlayer = true;
+            gameTask.image.color = new Vector4(0f, 0f, 0f, gameTask.alpha);
+            gameTask.alpha += Time.deltaTime / 2;
+
+            if (gameTask.alpha >= 1f)
+                Utility.GetTaskObject().GetComponent<GameTask>().mode = GameTask.Mode.gameOver;
+        }
 
         if (changeCount > 0f)
             changeCount += Time.fixedDeltaTime;
 
         moveLow = -moveHigh;
 
-        // 自機の移動
-        if (!stopPlayer)
+        /*自機の移動----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        // 自機の向きを変える
+        if (isGround || playerState == PlayerState.Light)
         {
-            // 自機の向きを変える
-            if(isGround || playerState == PlayerState.Light)
+            if ((!launchControl && launchHit.transform.position != new Vector3(transform.position.x + launchHitCollider.size.x / 2, transform.position.y, transform.position.z) && controller.MoveButton() > 0f) ||
+                (launchControl && transform.position.x < launchHitSc.target.transform.parent.transform.parent.transform.position.x))
             {
-                if ((!launchControl && launchHit.transform.position != new Vector3(transform.position.x + launchHitCollider.size.x / 2, transform.position.y, transform.position.z) && controller.MoveButton() > 0f) ||
-                    (launchControl && transform.position.x < launchHitSc.target.transform.parent.transform.parent.transform.position.x))
-                {
-                    launchHit.transform.position = new Vector3(transform.position.x + launchHitCollider.size.x / 2, transform.position.y, transform.position.z);
-                    angle = 90f;
-                }
-                if ((!launchControl && launchHit.transform.position != new Vector3(transform.position.x - launchHitCollider.size.x / 2, transform.position.y, transform.position.z) && controller.MoveButton() < 0f) ||
-                    (launchControl && transform.position.x > launchHitSc.target.transform.parent.transform.parent.transform.position.x))
-                {
-                    launchHit.transform.position = new Vector3(transform.position.x - launchHitCollider.size.x / 2, transform.position.y, transform.position.z);
-                    angle = -90f;
-                }
+                launchHit.transform.position = new Vector3(transform.position.x + launchHitCollider.size.x / 2, transform.position.y, transform.position.z);
+                angle = 90f;
             }
-
-            Model.transform.eulerAngles = new Vector3(0f, angle, 0f);
-
-            if (playerState == PlayerState.Light) // 光の中に入っている時の移動
+            if ((!launchControl && launchHit.transform.position != new Vector3(transform.position.x - launchHitCollider.size.x / 2, transform.position.y, transform.position.z) && controller.MoveButton() < 0f) ||
+                (launchControl && transform.position.x > launchHitSc.target.transform.parent.transform.parent.transform.position.x))
             {
-                Vector2 vect2 = power * speed;
-                velocity = transform.right * vect2.x + transform.up * vect2.y;
-
-                if(changeCount >= 0.2f)
-                {
-                    if (!LightModel.activeSelf)
-                        LightModel.SetActive(true);
-
-                    changeCount = 0f;
-                }
-
-                if(lineMove)
-                    hitRadius = circleCollider2D.radius;
-
-                else
-                    hitRadius = 0f;
-
-                rigidbody.velocity = velocity;
-                rigidbody.gravityScale = 0f;            // 重力を消す
-                boxCollider2D.enabled = false;
-                circleCollider2D.isTrigger = false;
-                search = true;
+                launchHit.transform.position = new Vector3(transform.position.x - launchHitCollider.size.x / 2, transform.position.y, transform.position.z);
+                angle = -90f;
             }
-            else // それ以外の時の移動
-            {
-                if (launchControl)  // 光源操作中は動かない
-                {
-                    velocity.x = 0f;
-                }
-                else if (!isGround) // 空中にいるとき
-                {
-                    /*速度上限の再設定--------------------------------------*/
-                    if (moveHigh > speed)
-                    {
-                        if (moveSpeed > 0f && moveSpeed < moveHigh)
-                            moveHigh = moveSpeed;
-
-                        else if (moveSpeed < 0f && moveSpeed > moveLow)
-                            moveHigh = -moveSpeed;
-                    }
-
-                    if (moveSpeed <= speed && moveSpeed >= -speed)
-                        moveHigh = speed;
-                    /*-----------------------------------------------------*/
-
-                    if (moveSpeed > moveHigh)
-                        moveSpeed = moveHigh;
-
-                    else if (moveSpeed < moveLow)
-                        moveSpeed = moveLow;
-
-                    // 自機の制御
-                    if (moveSpeed <= moveHigh && moveSpeed >= moveLow)
-                        moveSpeed += power.x / 3;
-
-                    velocity.x = moveSpeed;
-                }
-                else // 接地しているとき
-                    velocity.x = power.x * speed;
-
-                /*重力関係---------------------------------------------------*/
-
-                if (jumpFlag)
-                    velocity.y = jumpPower;
-
-                else if(velocity.y < -15f)
-                    velocity.y = -15f;
-
-                /*----------------------------------------------------------*/
-
-                if (jumpFlag && velocity.y == jumpPower)
-                    jumpFlag = false;
-
-                // 乗っている動く床のvelocityを取得
-                if (m_hitObjects.Count > 0)
-                    moveBlockVelocity = m_hitObjects[0].gameObject.GetComponent<Rigidbody2D>().velocity;
-
-                else
-                    moveBlockVelocity = Vector2.zero;
-
-                if (changeCount >= 0.2f)
-                {
-                    if(!Model.activeSelf)
-                        Model.SetActive(true);
-
-                    changeCount = 0f;
-                }
-
-                rigidbody.velocity = new Vector2(velocity.x + moveBlockVelocity.x, velocity.y);
-                rigidbody.gravityScale = GRAVITY_SIZE;  // 重力を適用
-                boxCollider2D.enabled = true;
-                circleCollider2D.isTrigger = true;
-                hitRadius = 0f;
-                search = false;
-            }
-            moveSpeed = velocity.x;
         }
-        else
-            rigidbody.velocity = new Vector2(0f, 0f);
+
+        Model.transform.eulerAngles = new Vector3(0f, angle, 0f);
+
+        if (playerState == PlayerState.Light) // 光の中に入っている時の移動
+        {
+            Vector2 vect2 = power * speed;
+            velocity = transform.right * vect2.x + transform.up * vect2.y;
+
+            if (changeCount >= 0.2f)
+            {
+                if (!LightModel.activeSelf)
+                    LightModel.SetActive(true);
+
+                changeCount = 0f;
+            }
+
+            if (lineMove)
+                hitRadius = circleCollider2D.radius;
+
+            else
+                hitRadius = 0f;
+
+            rigidbody.velocity = velocity;
+            rigidbody.gravityScale = 0f;            // 重力を消す
+            boxCollider2D.enabled = false;
+            circleCollider2D.isTrigger = false;
+            search = true;
+        }
+        else // それ以外の時の移動
+        {
+            if (launchControl)  // 光源操作中は動かない
+            {
+                velocity.x = 0f;
+            }
+            else if (!isGround) // 空中にいるとき
+            {
+                /*速度上限の再設定--------------------------------------*/
+                if (moveHigh > speed)
+                {
+                    if (moveSpeed > 0f && moveSpeed < moveHigh)
+                        moveHigh = moveSpeed;
+
+                    else if (moveSpeed < 0f && moveSpeed > moveLow)
+                        moveHigh = -moveSpeed;
+                }
+
+                if (moveSpeed <= speed && moveSpeed >= -speed)
+                    moveHigh = speed;
+                /*-----------------------------------------------------*/
+
+                if (moveSpeed > moveHigh)
+                    moveSpeed = moveHigh;
+
+                else if (moveSpeed < moveLow)
+                    moveSpeed = moveLow;
+
+                // 自機の制御
+                if (moveSpeed <= moveHigh && moveSpeed >= moveLow)
+                    moveSpeed += power.x / 3;
+
+                velocity.x = moveSpeed;
+            }
+            else // 接地しているとき
+                velocity.x = power.x * speed;
+
+            /*重力関係---------------------------------------------------*/
+
+            if (jumpFlag)
+                velocity.y = jumpPower;
+
+            else if (velocity.y < -15f)
+                velocity.y = -15f;
+
+            /*----------------------------------------------------------*/
+
+            if (jumpFlag && velocity.y == jumpPower)
+                jumpFlag = false;
+
+            // 乗っている動く床のvelocityを取得
+            if (m_hitObjects.Count > 0)
+                moveBlockVelocity = m_hitObjects[0].gameObject.GetComponent<Rigidbody2D>().velocity;
+
+            else
+                moveBlockVelocity = Vector2.zero;
+
+            if (changeCount >= 0.2f)
+            {
+                if (!Model.activeSelf)
+                    Model.SetActive(true);
+
+                changeCount = 0f;
+            }
+
+            rigidbody.velocity = new Vector2(velocity.x + moveBlockVelocity.x, velocity.y);
+            rigidbody.gravityScale = GRAVITY_SIZE;  // 重力を適用
+            boxCollider2D.enabled = true;
+            circleCollider2D.isTrigger = true;
+            hitRadius = 0f;
+            search = false;
+        }
+        moveSpeed = velocity.x;
+        /*-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
         RayGround();
-        Debug.Log(moveHigh);
+        //Debug.Log(moveHigh);
     }
 
     // 接地判定
