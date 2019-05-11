@@ -71,7 +71,7 @@ public class MapBackCreate : MonoBehaviour
         int blockNum = Resources.LoadAll<Sprite>(GetPath.StageBack + path).Length;
         Sprite sprite = Resources.Load<Sprite>(GetPath.StageBack + path + "/tile" + UnityEngine.Random.Range(1, blockNum + 1).ToString());
 
-        rend.sortingOrder = -1;
+        rend.sortingOrder = -2;
         rend.sprite = sprite;
         go.transform.localScale = Vector3.one * size;
         go.transform.parent = parent.transform;
