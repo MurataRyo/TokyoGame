@@ -284,7 +284,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 47ad5febed5b6224aa2a1d8af9e2ff4e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  num: {x: 14, y: 24}
+  num: {x: 19, y: 11}
   size: 10
 --- !u!4 &1551754364
 Transform:
