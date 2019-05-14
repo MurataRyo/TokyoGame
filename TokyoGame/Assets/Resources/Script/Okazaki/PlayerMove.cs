@@ -10,6 +10,7 @@ public class PlayerMove : MonoBehaviour
     {
         Default,
         Light,
+        Start,
     }
 
     private List<GameObject> m_hitObjects = new List<GameObject>();
@@ -19,8 +20,9 @@ public class PlayerMove : MonoBehaviour
 
     [SerializeField] GameObject Model;          // 自機のモデル
     [SerializeField] GameObject LightModel;     // 自機のモデル（光状態）
+    [SerializeField] GameObject StartModel;     // 自機のモデル（開始時）
     [SerializeField] GameObject particle;
-    [SerializeField] GameObject point;          // 自機の現在位置（サブカメラ用レーダー）
+    [SerializeField] GameObject Point;          // 自機の現在位置（サブカメラ用レーダー）
     float speed;                                // 移動速度
     Vector2 power = Vector2.zero;               // 自機にかかっている力
     float moveSpeed;                            // 空中にいるときの移動速度
@@ -30,6 +32,7 @@ public class PlayerMove : MonoBehaviour
     float moveLow;                              // 空中にいるときの速度の上限（左方向）
     float jumpPower;                            // ジャンプ力
     float angle;                                // 向き
+    float startCount;
     [HideInInspector]
     public float changeCount;
     [HideInInspector]
@@ -49,7 +52,6 @@ public class PlayerMove : MonoBehaviour
     [HideInInspector]
     public bool jumpFlag = false;               // ジャンプするかどうか
     bool lightJump = false;                     // 光の中でジャンプしたかどうか
-    bool search = false;
     [HideInInspector]
     public bool lineMove = false;               // 直線光以外の光に当たっていないかどうか
     [HideInInspector]
@@ -59,9 +61,11 @@ public class PlayerMove : MonoBehaviour
     [HideInInspector]
     public float deathHeight;                   // 落下死になる高さ
 
-    Vector2 position = Vector2.zero;
+    [HideInInspector]
+    public Vector3 startPosition = Vector2.zero;
     [HideInInspector]
     public Vector2 velocity = Vector2.zero;
+    Vector3 position = Vector3.zero;
 
     new Rigidbody2D rigidbody;
     BoxCollider2D boxCollider2D;
@@ -69,6 +73,17 @@ public class PlayerMove : MonoBehaviour
     CircleCollider2D circleCollider2D;
     XBoxController controller;
     GameTask gameTask;
+
+    void Awake()
+    {
+        playerState = PlayerState.Start;
+        startPosition = transform.position;
+        transform.position = new Vector3(startPosition.x, startPosition.y + 10f, startPosition.z);
+        StartModel.SetActive(true);
+        Model.SetActive(false);
+        LightModel.SetActive(false);
+        Point.SetActive(false);
+    }
 
     void Start()
     {
@@ -182,27 +197,30 @@ public class PlayerMove : MonoBehaviour
         velocity = rigidbody.velocity;
 
         // 光の中を出入りする
-        if (lightFlag && controller.ChangeButton() && playerState != PlayerState.Light && !lightJump)
+        if(!launchControl)
         {
-            if(Model.activeSelf)
-                Model.SetActive(false);
+            if (lightFlag && controller.ChangeButton() && playerState == PlayerState.Default && !lightJump)
+            {
+                if (Model.activeSelf)
+                    Model.SetActive(false);
 
-            playerState = PlayerState.Light;
-            velocity = new Vector2(0f, 0f);     // 速度をリセット
-            Particle();
-            changeCount = 0f;
-            changeCount += Time.fixedDeltaTime;
-        }
-        else if ((!lightFlag || !controller.ChangeButton()) && playerState != PlayerState.Default && !stopPlayer)
-        {
-            if(LightModel.activeSelf)
-                LightModel.SetActive(false);
+                playerState = PlayerState.Light;
+                velocity = new Vector2(0f, 0f);     // 速度をリセット
+                Particle();
+                changeCount = 0f;
+                changeCount += Time.fixedDeltaTime;
+            }
+            else if ((!lightFlag || !controller.ChangeButton()) && playerState == PlayerState.Light && !stopPlayer)
+            {
+                if (LightModel.activeSelf)
+                    LightModel.SetActive(false);
 
-            Particle();
-            moveHigh = speed;
-            playerState = PlayerState.Default;
-            changeCount = 0f;
-            changeCount += Time.fixedDeltaTime;
+                Particle();
+                moveHigh = speed;
+                playerState = PlayerState.Default;
+                changeCount = 0f;
+                changeCount += Time.fixedDeltaTime;
+            }
         }
 
         if(!isGround)
@@ -248,7 +266,41 @@ public class PlayerMove : MonoBehaviour
 
         Model.transform.eulerAngles = new Vector3(0f, angle, 0f);
 
-        if (playerState == PlayerState.Light) // 光の中に入っている時の移動
+        if (playerState == PlayerState.Start)   // 開始時の演出
+        {
+            position = transform.position;
+
+            if (transform.position.y != startPosition.y)
+                transform.position = Vector3.Lerp(position, startPosition, 0.05f);
+
+            if (transform.position.y - startPosition.y <= 0.01f)
+                transform.position = startPosition;
+
+            if (transform.position == startPosition && startCount == 0f)
+            {
+                Particle();
+                StartModel.SetActive(false);
+                Point.SetActive(true);
+                startCount += Time.fixedDeltaTime;
+                changeCount = Time.fixedDeltaTime;
+            }
+
+            if (startCount > 0f)
+                startCount += Time.fixedDeltaTime;
+
+            if (changeCount >= 0.2f)
+            {
+                Model.SetActive(true);
+                changeCount = 0f;
+            }
+
+            if (startCount > 1f)
+                playerState = PlayerState.Default;
+
+            rigidbody.gravityScale = 0f;
+            boxCollider2D.enabled = false;
+        }
+        else if (playerState == PlayerState.Light) // 光の中に入っている時の移動
         {
             Vector2 vect2 = power * speed;
             velocity = transform.right * vect2.x + transform.up * vect2.y;
@@ -271,7 +323,6 @@ public class PlayerMove : MonoBehaviour
             rigidbody.gravityScale = 0f;            // 重力を消す
             boxCollider2D.enabled = false;
             circleCollider2D.isTrigger = false;
-            search = true;
         }
         else // それ以外の時の移動
         {
@@ -343,13 +394,11 @@ public class PlayerMove : MonoBehaviour
             boxCollider2D.enabled = true;
             circleCollider2D.isTrigger = true;
             hitRadius = 0f;
-            search = false;
         }
         moveSpeed = velocity.x;
         /*-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
 
         RayGround();
-        //Debug.Log(moveHigh);
     }
 
     // 接地判定
