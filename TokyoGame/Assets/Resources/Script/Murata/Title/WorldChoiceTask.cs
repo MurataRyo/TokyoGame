@@ -14,7 +14,7 @@ public class WorldChoiceTask : MonoBehaviour
     public IEnumerator moveCamera;
     private XBox xBox;
     private GameObject titleBarPrefab;
-    private int count;
+    public int count;
 
     public const float choiceBarPos = -350f;
     private List<ChoiceBar> choiceBars = new List<ChoiceBar>();
@@ -45,9 +45,7 @@ public class WorldChoiceTask : MonoBehaviour
 
     private void CameraChoice()
     {
-        if (count < 0)
-            count = 0;
-        else if (count != 0)
+        if (count != 0)
             return;
 
         if (Input.GetKeyDown(KeyCode.D))

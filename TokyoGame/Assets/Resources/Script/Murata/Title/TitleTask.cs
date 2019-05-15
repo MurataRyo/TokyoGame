@@ -85,7 +85,7 @@ public class TitleTask : MonoBehaviour
 
     private void SelectMove()
     {
-        if(Utility.EnterButton() && worldChoiceTask.moveCamera == null)
+        if(Utility.EnterButton() && worldChoiceTask.count == 0)
         {
             GameTask.nowStage = worldChoiceTask.choiceClass.nowChoice + 1;
             StageLoad();
@@ -96,6 +96,7 @@ public class TitleTask : MonoBehaviour
     private void TitleToSelect()
     {
         worldChoiceTask = gameObject.AddComponent<WorldChoiceTask>();
+        worldChoiceTask.count++;
         Destroy(title);
 
         worldChoiceTask.moveCamera = worldChoiceTask.MoveCamera(worldData.worlds[0].cameraPos, worldData.worlds[0].cameraAngle,1.0f,WorldChoiceTask.MoveMode.start);
