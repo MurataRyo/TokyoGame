@@ -78,11 +78,17 @@ public class TitleTask : MonoBehaviour
             titleMode = TitleMode.select;
     }
 
+    public static void StageLoad()
+    {
+        GameTask.stageData = Resources.Load<GameObject>(GetPath.PlayStage + "/Stage" + GameTask.nowStage.ToString());
+    }
+
     private void SelectMove()
     {
         if(Utility.EnterButton() && worldChoiceTask.moveCamera == null)
         {
-            GameTask.stageData = Resources.Load<GameObject>(GetPath.StageData + "/Stage" + (worldChoiceTask.choiceClass.nowChoice + 1).ToString());
+            GameTask.nowStage = worldChoiceTask.choiceClass.nowChoice + 1;
+            StageLoad();
             SceneTask.LoadScene(SceneTask.GameMode.Game);
         }
     }

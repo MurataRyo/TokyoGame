@@ -5,6 +5,7 @@ using UnityEngine.SceneManagement;
 
 public class SceneTask : MonoBehaviour
 {
+    public static string sceneName;
     public enum GameMode
     {
         Title,
@@ -13,6 +14,13 @@ public class SceneTask : MonoBehaviour
 
     public static void LoadScene(GameMode nextScene)
     {
-        SceneManager.LoadScene(nextScene.ToString());
+        sceneName = nextScene.ToString();
+        SceneManager.LoadScene("Load");
+    }
+
+    private void Start()
+    {
+        Time.timeScale = 1;
+        SceneManager.LoadScene(sceneName);
     }
 }

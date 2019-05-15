@@ -14,6 +14,8 @@ public class GameTask : MonoBehaviour
     public Mode mode;
     private Mode modeLog;
     public static GameObject stageData;
+    public static int choiceStage = 1;      //選択できるステージ数
+    public static int nowStage = 1;         //プレイ中のステージ
     [HideInInspector] public GameObject whiteOut;
     [HideInInspector] public Image image;
     [HideInInspector] public float alpha;
@@ -32,10 +34,28 @@ public class GameTask : MonoBehaviour
 
     private void Update()
     {
+        if (Input.GetKeyDown(KeyCode.A))
+            mode = Mode.gameClear;
+
         //タイトル画面へ
         if (mode != Mode.main && Utility.EnterButton())
         {
-            SceneTask.LoadScene(SceneTask.GameMode.Title);
+            if (mode == Mode.gameClear)
+            {
+                if (nowStage < WorldData.MAX_WORLDS)
+                {
+                    nowStage++;
+                    TitleTask.StageLoad();
+                    SceneTask.LoadScene(SceneTask.GameMode.Game);
+                }
+                else
+                {
+                    SceneTask.LoadScene(SceneTask.GameMode.Title);
+                    return;
+                }
+            }
+
+            SceneTask.LoadScene(SceneTask.GameMode.Game);
             return;
         }
 
@@ -70,6 +90,10 @@ public class GameTask : MonoBehaviour
     private void GameClear()
     {
         GameOverAndClear();
+        if (choiceStage == nowStage && nowStage < WorldData.MAX_WORLDS)
+        {
+            choiceStage++;
+        }
         Sprite sprite = Resources.Load<Sprite>(GetPath.Game + "/GameClear");
         Utility.UiAdd(sprite, Vector2.zero, Utility.GAME_SIZE);
     }
