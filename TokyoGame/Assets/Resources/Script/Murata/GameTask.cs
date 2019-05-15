@@ -34,8 +34,8 @@ public class GameTask : MonoBehaviour
 
     private void Update()
     {
-        if (Input.GetKeyDown(KeyCode.A))
-            mode = Mode.gameClear;
+        //if (Input.GetKeyDown(KeyCode.A))
+        //    mode = Mode.gameClear;
 
         //タイトル画面へ
         if (mode != Mode.main && Utility.EnterButton())
