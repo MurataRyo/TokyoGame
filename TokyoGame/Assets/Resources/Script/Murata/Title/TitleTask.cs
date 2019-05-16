@@ -15,6 +15,8 @@ public class TitleTask : MonoBehaviour
     WorldData worldData;
     GameObject canvas;
     GameObject title;
+    public IEnumerator enumerator = null;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -33,7 +35,6 @@ public class TitleTask : MonoBehaviour
 
     private void CameraPosReset()
     {
-        //Camera.main.transform.position = worldData.worlds[0].cameraPos;
         Camera.main.transform.eulerAngles = worldData.worlds[0].cameraAngle;
     }
 
@@ -46,6 +47,9 @@ public class TitleTask : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (enumerator != null)
+            return;
+
         switch (titleMode)
         {
             case TitleMode.title:
@@ -53,7 +57,8 @@ public class TitleTask : MonoBehaviour
                 break;
 
             case TitleMode.select:
-                SelectMove();
+                enumerator = SelectMove();
+                StartCoroutine(enumerator);
                 break;
         }
 
@@ -83,18 +88,23 @@ public class TitleTask : MonoBehaviour
         GameTask.stageData = Resources.Load<GameObject>(GetPath.PlayStage + "/Stage" + GameTask.nowStage.ToString());
     }
 
-    private void SelectMove()
+    private IEnumerator SelectMove()
     {
         if(Utility.EnterButton() && worldChoiceTask.count == 0)
         {
+            AudioTask.PlaySe(GetPath.Se + "/Ok");
             GameTask.nowStage = worldChoiceTask.choiceClass.nowChoice + 1;
             StageLoad();
+            yield return new WaitForSeconds(1f);
             SceneTask.LoadScene(SceneTask.GameMode.Game);
         }
+        enumerator = null;
+        yield break;
     }
 
     private void TitleToSelect()
     {
+        AudioTask.PlaySe(GetPath.Se + "/Ok");
         worldChoiceTask = gameObject.AddComponent<WorldChoiceTask>();
         worldChoiceTask.count++;
         Destroy(title);

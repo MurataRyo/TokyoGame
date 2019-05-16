@@ -15,6 +15,7 @@ public class WorldChoiceTask : MonoBehaviour
     private XBox xBox;
     private GameObject titleBarPrefab;
     public int count;
+    private TitleTask titleTask;
 
     public const float choiceBarPos = -350f;
     private List<ChoiceBar> choiceBars = new List<ChoiceBar>();
@@ -28,6 +29,7 @@ public class WorldChoiceTask : MonoBehaviour
         choiceClass = new ChoiceClass(worlds.Length);
         mCamera = Camera.main;
         count = 0;
+        titleTask = Utility.GetTaskObject().GetComponent<TitleTask>();
     }
 
     private void StartUiAdd()
@@ -45,7 +47,7 @@ public class WorldChoiceTask : MonoBehaviour
 
     private void CameraChoice()
     {
-        if (count != 0)
+        if (count != 0 || titleTask.enumerator != null)
             return;
 
         if (Input.GetKeyDown(KeyCode.D))
@@ -60,6 +62,7 @@ public class WorldChoiceTask : MonoBehaviour
 
     private void NextBar(bool flag)
     {
+        AudioTask.PlaySe(GetPath.Se + "/Landing");
         count++;
         choiceClass.ChoiceChange(flag);
         float time = choiceClass.nowChoice >= GameTask.choiceStage ? HIGH_CAMERA_TIME : CAMERA_TIME;

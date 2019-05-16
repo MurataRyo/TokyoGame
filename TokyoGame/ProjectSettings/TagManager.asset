@@ -22,6 +22,7 @@ TagManager:
   - Col2
   - MoveBlock
   - WhiteOut
+  - Audio
   layers:
   - Default
   - TransparentFX
