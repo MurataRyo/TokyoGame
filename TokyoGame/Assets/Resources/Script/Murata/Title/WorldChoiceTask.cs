@@ -7,7 +7,7 @@ using System;
 public class WorldChoiceTask : MonoBehaviour
 {
     private World[] worlds;                     //ワールドデータ
-    public ChoiceClass choiceClass;            //選択用class
+    public ChoiceClass choiceClass;             //選択用class
     private Camera mCamera;                     //カメラ
     private const float CAMERA_TIME = 0.40f;    //カメラの移動時間
     private const float HIGH_CAMERA_TIME = 0.30f;    //カメラの移動時間
@@ -32,9 +32,9 @@ public class WorldChoiceTask : MonoBehaviour
 
     private void StartUiAdd()
     {
-        choiceBars.Add(CreateChoiceBar(worlds[choiceClass.nowChoice].worldname, Vector2.zero));
-        choiceBars.Add(CreateChoiceBar(worlds[choiceClass.nowChoice + 1].worldname, Vector2.down * ChoiceBar.UpDownRange));
-        choiceBars.Add(CreateChoiceBar(worlds[choiceClass.choiceNum - 1].worldname, Vector2.up * ChoiceBar.UpDownRange));
+        choiceBars.Add(CreateChoiceBar(choiceClass.nowChoice + 1, Vector2.zero));
+        choiceBars.Add(CreateChoiceBar(choiceClass.nowChoice + 2, Vector2.down * ChoiceBar.UpDownRange));
+        choiceBars.Add(CreateChoiceBar(choiceClass.choiceNum, Vector2.up * ChoiceBar.UpDownRange));
     }
 
     // Update is called once per frame
@@ -88,7 +88,7 @@ public class WorldChoiceTask : MonoBehaviour
                     choiceBar.go.transform.position = choiceBar.nextPos;
                     choiceBar.ColorChange();
                 }
-                choiceBars.Add(CreateChoiceBar(worlds[ChoiceNum(Utility.BoolToInt(flag))].worldname, (flag ? Vector2.down : Vector2.up) * ChoiceBar.UpDownRange));
+                choiceBars.Add(CreateChoiceBar(ChoiceNum(Utility.BoolToInt(flag)) + 1, (flag ? Vector2.down : Vector2.up) * ChoiceBar.UpDownRange));
 
                 if (choiceClass.nowChoice >= GameTask.choiceStage)
                     NextBar(flag);
@@ -173,12 +173,17 @@ public class WorldChoiceTask : MonoBehaviour
         return new Vector3(Mathf.LerpAngle(now.x, next.x, t), Mathf.LerpAngle(now.y, next.y, t), Mathf.LerpAngle(now.z, next.z, t));
     }
 
-    private ChoiceBar CreateChoiceBar(string stageName, Vector2 addPos)
+    private ChoiceBar CreateChoiceBar(int StageNum, Vector2 addPos)
     {
         GameObject go = Instantiate(titleBarPrefab);
         go.transform.SetParent(Utility.GetCanvas().transform);
         go.transform.localPosition = new Vector2(0f, choiceBarPos) + addPos;
-        ChoiceBar choiceBar = new ChoiceBar(stageName, go);
+        string path = GetPath.StagePlate + "/Stage" + StageNum.ToString();
+        if(!worlds[StageNum - 1].choiceFlag)
+        {
+            path += "_unknown";
+        }
+        ChoiceBar choiceBar = new ChoiceBar(path, go);
 
         return choiceBar;
     }
@@ -191,18 +196,11 @@ public class ChoiceBar
     public const float UpDownRange = 200f;
     Image BackImage;
     public Vector2 nextPos;
-    public ChoiceBar(string stageName, GameObject go)
+    public ChoiceBar(string stagePath, GameObject go)
     {
         this.go = go;
         BackImage = go.GetComponent<Image>();
-        foreach (Transform child in go.transform)
-        {
-            if (child.name == "Text")
-            {
-                this.stageName = child.gameObject.GetComponent<Text>();
-            }
-        }
-        this.stageName.text = stageName;
+        BackImage.sprite = Resources.Load<Sprite>(stagePath);
         ColorChange();
         nextPos = go.transform.position;
     }
@@ -220,16 +218,11 @@ public class ChoiceBar
         if (alpha < 0.1f)
             alpha = 0.1f;
         AlphaColor(BackImage, alpha);
-        AlphaColor(stageName, alpha);
     }
 
     private void AlphaColor(Image image, float alpha)
     {
         image.color = new Color(image.color.r, image.color.g, image.color.b, alpha);
-    }
-    private void AlphaColor(Text text, float alpha)
-    {
-        text.color = new Color(text.color.r, text.color.g, text.color.b, alpha);
     }
 }
 

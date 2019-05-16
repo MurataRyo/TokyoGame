@@ -14,7 +14,7 @@ public class GameTask : MonoBehaviour
     public Mode mode;
     private Mode modeLog;
     public static GameObject stageData;
-    public static int choiceStage = 1;      //選択できるステージ数
+    public static int choiceStage = 3;      //選択できるステージ数
     public static int nowStage = 1;         //プレイ中のステージ
     [HideInInspector] public GameObject whiteOut;
     [HideInInspector] public Image image;
@@ -34,9 +34,6 @@ public class GameTask : MonoBehaviour
 
     private void Update()
     {
-        //if (Input.GetKeyDown(KeyCode.A))
-        //    mode = Mode.gameClear;
-
         //タイトル画面へ
         if (mode != Mode.main && Utility.EnterButton())
         {

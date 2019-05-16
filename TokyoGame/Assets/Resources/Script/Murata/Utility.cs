@@ -79,6 +79,7 @@ public struct GetPath
 
     public const string Image = "Image";
     public const string Title = Image + "/Title";
+    public const string StagePlate = Title + "/StagePlate";
 
     public const string Game = Image + "/Game";
     public const string StageBack = Game + "/StageBack";
