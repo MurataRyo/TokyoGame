@@ -7,7 +7,7 @@ public class SceneTask : MonoBehaviour
 {
     public static string sceneName;
     AsyncOperation loadScene;      //ロード先
-    const float LoadTimeMin = 1f;  //最低のロード時間
+    const float LoadTimeMin = 0.3f;  //最低のロード時間
     public enum GameMode
     {
         Title,
