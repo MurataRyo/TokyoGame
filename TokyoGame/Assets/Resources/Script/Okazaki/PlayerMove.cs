@@ -428,8 +428,7 @@ public class PlayerMove : MonoBehaviour
         }
         if (collision.collider.tag == "MoveBlock" && playerState == PlayerState.Default)
         {
-            m_hitObjects.Add(collision.transform.root.gameObject);
-            //transform.SetParent(collision.transform);
+            m_hitObjects.Add(collision.gameObject);
         }
     }
 
@@ -438,8 +437,7 @@ public class PlayerMove : MonoBehaviour
         if (collision.collider.tag != "MoveBlock")
             return;
 
-        m_hitObjects.Remove(collision.transform.root.gameObject);
-        //transform.SetParent(null);
+        m_hitObjects.Remove(collision.gameObject);
     }
 
     // 変身時のエフェクト
