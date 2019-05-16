@@ -83,6 +83,10 @@ public struct GetPath
 
     public const string Game = Image + "/Game";
     public const string StageBack = Game + "/StageBack";
+
+    public const string Audio = "Audio";
+    public const string Bgm = Audio + "/Bgm";
+    public const string Se = Audio + "/Se";
 }
 
 
