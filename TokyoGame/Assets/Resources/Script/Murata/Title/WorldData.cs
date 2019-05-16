@@ -9,12 +9,12 @@ public class WorldData : MonoBehaviour
     private void Awake()
     {
         worlds = new World[MAX_WORLDS];
-        worlds[0] = new World(-5, 8, -40, 0, 0, 0);
-        worlds[1] = new World(70, 8, 11, 0, -72, 0);
-        worlds[2] = new World(45, 8, 114, 0, -145, 0);
-        worlds[3] = new World(-50, 8, 108, 0, -215, 0);
-        worlds[4] = new World(-82, 8, 13, 0, 68, 0);
-        worlds[5] = new World(0, 60, 40, 90, 31, 0);
+        worlds[0] = new World(-5, 22.5f, -40, 17, 0, 0);
+        worlds[1] = new World(71.3f, 22.5f, 14.75f, 17, -74, 0);
+        worlds[2] = new World(51.5f, 22.5f, 107.2f, 17, -140.5f, 0);
+        worlds[3] = new World(-56, 22.5f, 103, 17, 140, -1);
+        worlds[4] = new World(-82, 22.5f, 14.3f, 17, 71.32f, 0);
+        worlds[5] = new World(-16, 40, 20, 60, 25, -7);
 
         //選択できないステージを？？？にする
         for (int i = GameTask.choiceStage; i < worlds.Length; i++)

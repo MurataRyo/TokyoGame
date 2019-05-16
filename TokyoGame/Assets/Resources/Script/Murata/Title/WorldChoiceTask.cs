@@ -50,11 +50,11 @@ public class WorldChoiceTask : MonoBehaviour
         if (count != 0 || titleTask.enumerator != null)
             return;
 
-        if (Input.GetKeyDown(KeyCode.D))
+        if (xBox.ButtonDown(XBox.AxisStr.LeftJoyUp,false))
         {
             NextBar(true);
         }
-        else if (Input.GetKeyDown(KeyCode.A))
+        else if (xBox.ButtonDown(XBox.AxisStr.LeftJoyUp, true))
         {
             NextBar(false);
         }
@@ -196,7 +196,7 @@ public class ChoiceBar
 {
     public GameObject go;
     Text stageName;
-    public const float UpDownRange = 200f;
+    public const float UpDownRange = 150f;
     Image BackImage;
     public Vector2 nextPos;
     public ChoiceBar(string stagePath, GameObject go)
@@ -217,7 +217,7 @@ public class ChoiceBar
     {
         float f = WorldChoiceTask.choiceBarPos - go.transform.localPosition.y;
         f = Mathf.Abs(f);
-        float alpha = (1 / -WorldChoiceTask.choiceBarPos) * (-WorldChoiceTask.choiceBarPos - f * 1.5f);
+        float alpha = (1 / -WorldChoiceTask.choiceBarPos) * (-WorldChoiceTask.choiceBarPos - f * 2f);
         if (alpha < 0.1f)
             alpha = 0.1f;
         AlphaColor(BackImage, alpha);
