@@ -168,7 +168,7 @@ public class PlayerMove : MonoBehaviour
 
 
         // ジャンプする
-        if (controller.JumpButton())
+        if (controller.JumpButton() && !stopPlayer)
         {
             if (playerState == PlayerState.Light)
             {
