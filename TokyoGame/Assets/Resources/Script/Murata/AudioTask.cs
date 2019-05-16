@@ -4,9 +4,11 @@ using UnityEngine;
 
 public class AudioTask : MonoBehaviour
 {
-    public static void PlayBgm()
+    public static void ChangeBgm(string path)
     {
-
+        AudioSource source = Utility.GetTaskObject().GetComponent<AudioSource>();
+        source.clip = Resources.Load<AudioClip>(path);
+        source.Play();
     }
 
     public static void PlaySe(string path)

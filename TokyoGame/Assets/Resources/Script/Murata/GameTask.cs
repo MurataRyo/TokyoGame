@@ -79,6 +79,7 @@ public class GameTask : MonoBehaviour
 
     private void GameOver()
     {
+        AudioTask.ChangeBgm(GetPath.Bgm + "/OverBgm");
         GameOverAndClear();
         Sprite sprite = Resources.Load<Sprite>(GetPath.Game + "/GameOver");
         Utility.UiAdd(sprite, Vector2.zero, Utility.GAME_SIZE);
@@ -86,6 +87,7 @@ public class GameTask : MonoBehaviour
 
     private void GameClear()
     {
+        AudioTask.ChangeBgm(GetPath.Bgm + "/ClearBgm");
         GameOverAndClear();
         if (choiceStage == nowStage && nowStage < WorldData.MAX_WORLDS)
         {
