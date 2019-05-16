@@ -42,8 +42,6 @@ public class GoalTask : MonoBehaviour
         {
             Line[] lines = LineListToLines(lineRays);
             star = LineToStar(lines);
-
-            Debug.Log(star);
             //星があるかどうか
             if (star != null)
             {
