@@ -17,15 +17,17 @@ public class GoalTask : MonoBehaviour
         colObject.tag = GetTag.Star;
         starTask = colObject.AddComponent<StarTask>();
         lineRays = new List<LineRay>();
+
+        
+    }
+
+    private void Start()
+    {
         GameObject[] gameObjects = GameObject.FindGameObjectsWithTag("LaunchBase");
         foreach (GameObject go in gameObjects)
         {
             lineRays.Add(go.GetComponent<LineRay>());
         }
-    }
-
-    private void Start()
-    {
         StartCoroutine(Colliderupdate());
     }
 
@@ -40,6 +42,8 @@ public class GoalTask : MonoBehaviour
         {
             Line[] lines = LineListToLines(lineRays);
             star = LineToStar(lines);
+
+            Debug.Log(star);
             //星があるかどうか
             if (star != null)
             {
