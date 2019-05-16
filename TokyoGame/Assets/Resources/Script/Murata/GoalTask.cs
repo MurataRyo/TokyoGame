@@ -273,20 +273,37 @@ public class GoalTask : MonoBehaviour
             Overlap minOverlap = null;
             float max = -Mathf.Infinity;
             Overlap maxOverlap = null;
-
+            if (line.overlaps.Count < 2)
+                return false;
+            bool flag = line.overlaps[0].pos.x == line.overlaps[1].pos.x;
             //端っこの頂点を探す
             foreach (Overlap overlap in line.overlaps)
             {
-                if (min > overlap.pos.x)
+                if (!flag)
                 {
-                    minOverlap = overlap;
-                    min = overlap.pos.x;
+                    if (min > overlap.pos.x)
+                    {
+                        minOverlap = overlap;
+                        min = overlap.pos.x;
+                    }
+                    if (max < overlap.pos.x)
+                    {
+                        maxOverlap = overlap;
+                        max = overlap.pos.x;
+                    }
                 }
-
-                if (max < overlap.pos.x)
+                else
                 {
-                    maxOverlap = overlap;
-                    max = overlap.pos.x;
+                    if (min > overlap.pos.y)
+                    {
+                        minOverlap = overlap;
+                        min = overlap.pos.y;
+                    }
+                    if (max < overlap.pos.y)
+                    {
+                        maxOverlap = overlap;
+                        max = overlap.pos.y;
+                    }
                 }
             }
             //端っこと内側かどうかを調べ1つの頂点に対して両方（端と内)になれば星ではないのでfalse
@@ -505,8 +522,7 @@ public class Overlap : IComparable
         {
             return 1;
         }
-
-        Debug.Log("a");
+        
         return 0;
     }
 
