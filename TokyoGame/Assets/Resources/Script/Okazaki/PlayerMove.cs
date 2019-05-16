@@ -23,6 +23,12 @@ public class PlayerMove : MonoBehaviour
     [SerializeField] GameObject StartModel;     // 自機のモデル（開始時）
     [SerializeField] GameObject particle;
     [SerializeField] GameObject Point;          // 自機の現在位置（サブカメラ用レーダー）
+    [SerializeField] AudioClip WalkSe;          // 効果音（通常移動）
+    [SerializeField] AudioClip RunSe;           // 効果音（ダッシュ）
+    [SerializeField] AudioClip JumpSe;          // 効果音（ジャンプ）
+    [SerializeField] AudioClip LandingSe;       // 効果音（着地）
+    [SerializeField] AudioClip LightInSe;       // 効果音（変身）
+    [SerializeField] AudioClip LightMoveSe;     // 効果音（光状態時の移動）
     float speed;                                // 移動速度
     Vector2 power = Vector2.zero;               // 自機にかかっている力
     float moveSpeed;                            // 空中にいるときの移動速度
@@ -52,6 +58,7 @@ public class PlayerMove : MonoBehaviour
     [HideInInspector]
     public bool jumpFlag = false;               // ジャンプするかどうか
     bool lightJump = false;                     // 光の中でジャンプしたかどうか
+    bool landing = false;
     [HideInInspector]
     public bool lineMove = false;               // 直線光以外の光に当たっていないかどうか
     [HideInInspector]
@@ -72,6 +79,7 @@ public class PlayerMove : MonoBehaviour
     BoxCollider2D launchHitCollider;
     CircleCollider2D circleCollider2D;
     XBoxController controller;
+    AudioSource aSource;
     GameTask gameTask;
 
     void Awake()
@@ -87,6 +95,7 @@ public class PlayerMove : MonoBehaviour
 
     void Start()
     {
+        aSource = GetComponent<AudioSource>();
         launchHit = GameObject.FindGameObjectWithTag("LaunchHit");
         launchHitSc = launchHit.GetComponent<LaunchHit>();
         rigidbody = GetComponent<Rigidbody2D>();
@@ -168,10 +177,11 @@ public class PlayerMove : MonoBehaviour
 
 
         // ジャンプする
-        if (controller.JumpButton() && !stopPlayer)
+        if (controller.JumpButton() && !stopPlayer && playerState != PlayerState.Start)
         {
             if (playerState == PlayerState.Light)
             {
+                aSource.PlayOneShot(LightInSe);
                 lightJump = true;
                 Particle();
                 playerState = PlayerState.Default;
@@ -186,6 +196,8 @@ public class PlayerMove : MonoBehaviour
             {
                 if (!isGround || launchControl)
                     return;
+
+                aSource.PlayOneShot(JumpSe);
             }
             moveHigh = speed;
             jumpFlag = true;
@@ -204,6 +216,7 @@ public class PlayerMove : MonoBehaviour
                 if (Model.activeSelf)
                     Model.SetActive(false);
 
+                aSource.PlayOneShot(LightInSe);
                 playerState = PlayerState.Light;
                 velocity = new Vector2(0f, 0f);     // 速度をリセット
                 Particle();
@@ -215,6 +228,7 @@ public class PlayerMove : MonoBehaviour
                 if (LightModel.activeSelf)
                     LightModel.SetActive(false);
 
+                aSource.PlayOneShot(LightInSe);
                 Particle();
                 moveHigh = speed;
                 playerState = PlayerState.Default;
@@ -372,7 +386,9 @@ public class PlayerMove : MonoBehaviour
             /*----------------------------------------------------------*/
 
             if (jumpFlag && velocity.y == jumpPower)
+            {
                 jumpFlag = false;
+            }
 
             // 乗っている動く床のvelocityを取得
             if (m_hitObjects.Count > 0)
@@ -420,15 +436,24 @@ public class PlayerMove : MonoBehaviour
     {
         for (int i = 0; i < collision.contacts.Length; i++)
         {
-            if (collision.contacts[i].normal.x < -0.5f || collision.contacts[i].normal.x > 0.5f)
-            {
-                if(moveSpeed != 0f)
-                    moveSpeed = 0f;
-            }
+            if (collision.contacts[i].normal.y > 0.5f && playerState == PlayerState.Default && (collision.collider.tag == "Block" || collision.collider.tag == "Glass"))
+                aSource.PlayOneShot(LandingSe);
         }
-        if (collision.collider.tag == "MoveBlock" && playerState == PlayerState.Default)
+
+        if (collision.collider.tag != "MoveBlock")
+            return;
+
+        m_hitObjects.Add(collision.gameObject);
+    }
+
+    void OnCollisionStay2D(Collision2D collision)
+    {
+        for (int i = 0; i < collision.contacts.Length; i++)
         {
-            m_hitObjects.Add(collision.gameObject);
+            if ((collision.contacts[i].normal.x < -0.5f && moveSpeed > 0f) || (collision.contacts[i].normal.x > 0.5f && moveSpeed < 0f))
+            {
+                moveSpeed = 0f;
+            }
         }
     }
 
@@ -446,6 +471,6 @@ public class PlayerMove : MonoBehaviour
         GameObject go = Instantiate(particle);
         go.transform.parent = transform;
         go.transform.position = transform.position + new Vector3(0f,1f,0f);
-        Destroy(go, 0.6f);
+        Destroy(go, 1f);
     }
 }
