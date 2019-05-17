@@ -80,10 +80,15 @@ public class PlayerMove : MonoBehaviour
     CircleCollider2D circleCollider2D;
     XBoxController controller;
     AudioSource aSource;
+    AudioSource aSource2;
+    AudioClip se;
     GameTask gameTask;
 
     void Awake()
     {
+        GameObject go = new GameObject();
+        aSource2 = go.AddComponent<AudioSource>();
+        aSource2.loop = true;
         playerState = PlayerState.Start;
         startPosition = transform.position;
         transform.position = new Vector3(startPosition.x, startPosition.y + 10f, startPosition.z);
@@ -136,7 +141,7 @@ public class PlayerMove : MonoBehaviour
                 lineMove = false;
         }
 
-        if ((velocity.x > 0f && controller.MoveButton() > 0f) || (velocity.x < 0f && controller.MoveButton() < 0f))
+        if (isGround && ((velocity.x > 0f && controller.MoveButton() > 0f) || (velocity.x < 0f && controller.MoveButton() < 0f)))
             move = true;
 
         else
@@ -200,6 +205,18 @@ public class PlayerMove : MonoBehaviour
             }
             moveHigh = speed;
             jumpFlag = true;
+        }
+
+        aSource2.clip = se;
+
+        if (playerState == PlayerState.Light)
+            se = LightMoveSe;
+        else
+        {
+            if (runFlag)
+                se = RunSe;
+            else
+                se = WalkSe;
         }
     }
 
@@ -412,8 +429,17 @@ public class PlayerMove : MonoBehaviour
         }
         moveSpeed = velocity.x;
         /*-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
+
+        if ((playerState == PlayerState.Light && velocity != Vector2.zero && power != Vector2.zero) || move)
+        {
+            if(!aSource2.isPlaying)
+                aSource2.Play();
+        }
+        else
+            aSource2.Stop();
         
         RayGround();
+        Debug.Log(velocity);
     }
 
     // 接地判定
