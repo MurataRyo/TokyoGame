@@ -14,6 +14,8 @@ public class Launcher : MonoBehaviour
     private bool flagLog = false;
     private bool f = false;
 
+    private float tSe = 0f;
+
     void Start()
     {
         controller = Utility.GetTaskObject().GetComponent<XBoxController>();
@@ -31,7 +33,7 @@ public class Launcher : MonoBehaviour
             audio.Play();
         }
 
-        if(flagLog == flag)
+        if (flagLog == flag)
         {
             f = false;
             audio.Stop();
@@ -48,8 +50,14 @@ public class Launcher : MonoBehaviour
         else
             transform.Rotate(0f, 0f, controller.LaunchMoveButton() * -1f);
 
-        if(controller.LaunchMoveButton() != 0f)
-        flag = !flag;
+        if (controller.LaunchMoveButton() != 0f)
+        {
+            flag = !flag;
+            if (audio.time >= 0.9f)
+            {
+                audio.time = 0.08f;
+            }
+        }
     }
 }
 
