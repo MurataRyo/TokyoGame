@@ -175,7 +175,6 @@ public class PlayerMove : MonoBehaviour
         else
             power = Vector2.zero;
 
-
         // ジャンプする
         if (controller.JumpButton() && !stopPlayer && playerState != PlayerState.Start)
         {
@@ -413,7 +412,7 @@ public class PlayerMove : MonoBehaviour
         }
         moveSpeed = velocity.x;
         /*-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------*/
-
+        
         RayGround();
     }
 
@@ -450,10 +449,9 @@ public class PlayerMove : MonoBehaviour
     {
         for (int i = 0; i < collision.contacts.Length; i++)
         {
-            if ((collision.contacts[i].normal.x < -0.5f && moveSpeed > 0f) || (collision.contacts[i].normal.x > 0.5f && moveSpeed < 0f))
-            {
+            if ((collision.collider.tag == "Block" || collision.collider.tag == "Glass") &&
+                ((collision.contacts[i].normal.x < -0.5f && moveSpeed > 0f) || (collision.contacts[i].normal.x > 0.5f && moveSpeed < 0f)))
                 moveSpeed = 0f;
-            }
         }
     }
 
