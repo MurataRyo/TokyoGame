@@ -10,13 +10,34 @@ public class Launcher : MonoBehaviour
     private AudioClip se;
     private AudioSource audio;
 
-    private 
+    private bool flag = false;
+    private bool flagLog = false;
+    private bool f = false;
 
     void Start()
     {
         controller = Utility.GetTaskObject().GetComponent<XBoxController>();
         audio = gameObject.AddComponent<AudioSource>();
         se = Resources.Load<AudioClip>(GetPath.Se + "/LightRotation");
+        audio.loop = true;
+        audio.clip = se;
+    }
+
+    private void Update()
+    {
+        if (flagLog != flag && !f)
+        {
+            f = true;
+            audio.Play();
+        }
+
+        if(flagLog == flag)
+        {
+            f = false;
+            audio.Stop();
+        }
+        flagLog = flag;
+
     }
 
     // 向きを変える
@@ -28,9 +49,7 @@ public class Launcher : MonoBehaviour
             transform.Rotate(0f, 0f, controller.LaunchMoveButton() * -1f);
 
         if(controller.LaunchMoveButton() != 0f)
-        {
-            audio.PlayOneShot(se);
-        }
+        flag = !flag;
     }
 }
 
