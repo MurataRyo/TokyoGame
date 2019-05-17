@@ -14,7 +14,7 @@ public class GameTask : MonoBehaviour
     public Mode mode;
     private Mode modeLog;
     public static GameObject stageData;
-    public static int choiceStage = 6;      //選択できるステージ数
+    public static int choiceStage = 3;      //選択できるステージ数
     public static int nowStage = 1;         //プレイ中のステージ
     [HideInInspector] public GameObject whiteOut;
     [HideInInspector] public Image image;
@@ -79,7 +79,7 @@ public class GameTask : MonoBehaviour
 
     private void GameOver()
     {
-        AudioTask.ChangeBgm(GetPath.Bgm + "/OverBgm");
+        AudioTask.ChangeBgm(GetPath.Bgm + "/OverBgm",1f);
         GameOverAndClear();
         Sprite sprite = Resources.Load<Sprite>(GetPath.Game + "/GameOver");
         Utility.UiAdd(sprite, Vector2.zero, Utility.GAME_SIZE);
@@ -87,7 +87,7 @@ public class GameTask : MonoBehaviour
 
     private void GameClear()
     {
-        AudioTask.ChangeBgm(GetPath.Bgm + "/ClearBgm");
+        AudioTask.ChangeBgm(GetPath.Bgm + "/ClearBgm",1f);
         GameOverAndClear();
         if (choiceStage == nowStage && nowStage < WorldData.MAX_WORLDS)
         {
