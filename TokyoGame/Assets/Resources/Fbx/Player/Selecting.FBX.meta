@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 39429c53960767a4ba9f8d4a94e62ca6
+guid: db48b15c460399d41909090bf936bee7
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
@@ -73,7 +73,7 @@ ModelImporter:
     4300008: B-head
     4300010: b-headParts
     4300012: C-arm02
-    7400000: Fall
+    7400000: Selecting
     9500000: //RootNode
     13700000: A-body
     13700002: B-head
@@ -111,17 +111,17 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Fall
+      name: Selecting
       takeName: Take 001
-      firstFrame: 328
-      lastFrame: 338
+      firstFrame: 369
+      lastFrame: 389
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0

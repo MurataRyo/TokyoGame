@@ -43,6 +43,8 @@ public class PlayerMove : MonoBehaviour
     public float changeCount;
     [HideInInspector]
     public float airTime;
+    [HideInInspector]
+    public float waitTime;
     private const float WALK_SPEED = 5f;        // 歩行速度
     private const float RUN_SPEED = 10f;        // 走行速度
     private const float LIGHT_SPEED = 25f;      // 光状態の時の速度
@@ -146,6 +148,14 @@ public class PlayerMove : MonoBehaviour
 
         else
             move = false;
+
+        if (!move && isGround && !launchControl)
+            waitTime += Time.deltaTime;
+        else
+            waitTime = 0f;
+
+        if (waitTime > 8f)
+            waitTime = 0f;
 
         /*速度の変更------------------------------------------------------------------*/
         if (runFlag)

@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 1a451826f0d97fc4da980f2e1a0e1068
+guid: 64f09b39534e36a43be1778cbe504d3c
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
@@ -73,7 +73,7 @@ ModelImporter:
     4300008: B-head
     4300010: b-headParts
     4300012: C-arm02
-    7400000: Wait02
+    7400000: Walk
     9500000: //RootNode
     13700000: A-body
     13700002: B-head
@@ -111,17 +111,17 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Wait02
+      name: Walk
       takeName: Take 001
-      firstFrame: 65
-      lastFrame: 185
+      firstFrame: 186
+      lastFrame: 245
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
       cycleOffset: 0
       loop: 0
       hasAdditiveReferencePose: 0
-      loopTime: 0
+      loopTime: 1
       loopBlend: 0
       loopBlendOrientation: 0
       loopBlendPositionY: 0

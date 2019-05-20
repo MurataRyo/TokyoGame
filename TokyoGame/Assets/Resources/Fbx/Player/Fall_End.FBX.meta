@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 3b784293ffda01c4d8a71b7e6034f61c
+guid: 1385b494da72c6c4a8c0736f09822044
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
@@ -73,7 +73,7 @@ ModelImporter:
     4300008: B-head
     4300010: b-headParts
     4300012: C-arm02
-    7400000: Jump
+    7400000: Fall_End
     9500000: //RootNode
     13700000: A-body
     13700002: B-head
@@ -111,10 +111,10 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Jump
+      name: Fall_End
       takeName: Take 001
-      firstFrame: 308
-      lastFrame: 338
+      firstFrame: 348
+      lastFrame: 368
       wrapMode: 0
       orientationOffsetY: 0
       level: 0

@@ -23,5 +23,6 @@ public class Animation : MonoBehaviour
         animator.SetBool("Control", playerMove.launchControl);
         animator.SetBool("Run", playerMove.runFlag);
         animator.SetFloat("AirTime", playerMove.airTime);
+        animator.SetFloat("WaitTime", playerMove.waitTime);
     }
 }

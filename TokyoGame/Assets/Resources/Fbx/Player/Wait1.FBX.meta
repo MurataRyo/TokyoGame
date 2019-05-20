@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 0b94b9fe9ef66204e99f49258a83cecf
+guid: c6a516d6589607c4fa4ba045718fef92
 ModelImporter:
   serializedVersion: 23
   fileIDToRecycleName:
@@ -73,7 +73,7 @@ ModelImporter:
     4300008: B-head
     4300010: b-headParts
     4300012: C-arm02
-    7400000: Selecting
+    7400000: Wait1
     9500000: //RootNode
     13700000: A-body
     13700002: B-head
@@ -111,10 +111,10 @@ ModelImporter:
     extraUserProperties: []
     clipAnimations:
     - serializedVersion: 16
-      name: Selecting
+      name: Wait1
       takeName: Take 001
-      firstFrame: 369
-      lastFrame: 389
+      firstFrame: 5
+      lastFrame: 65
       wrapMode: 0
       orientationOffsetY: 0
       level: 0
