@@ -61,6 +61,7 @@ public class PlayerMove : MonoBehaviour
     public bool jumpFlag = false;               // ジャンプするかどうか
     bool lightJump = false;                     // 光の中でジャンプしたかどうか
     bool landing = false;
+    bool changeFlag = false;
     [HideInInspector]
     public bool lineMove = false;               // 直線光以外の光に当たっていないかどうか
     [HideInInspector]
@@ -217,6 +218,12 @@ public class PlayerMove : MonoBehaviour
             jumpFlag = true;
         }
 
+        if (controller.ChangeButton() && !lightJump)
+            changeFlag = true;
+
+        else
+            changeFlag = false;
+
         aSource2.clip = se;
 
         if (playerState == PlayerState.Light)
@@ -235,9 +242,9 @@ public class PlayerMove : MonoBehaviour
         velocity = rigidbody.velocity;
 
         // 光の中を出入りする
-        if(!launchControl)
+        if(!launchControl && !stopPlayer)
         {
-            if (lightFlag && controller.ChangeButton() && playerState == PlayerState.Default && !lightJump)
+            if (playerState == PlayerState.Default && lightFlag && changeFlag)
             {
                 if (Model.activeSelf)
                     Model.SetActive(false);
@@ -249,7 +256,7 @@ public class PlayerMove : MonoBehaviour
                 changeCount = 0f;
                 changeCount += Time.fixedDeltaTime;
             }
-            else if ((!lightFlag || !controller.ChangeButton()) && playerState == PlayerState.Light && !stopPlayer)
+            else if (playerState == PlayerState.Light && (!lightFlag || !changeFlag))
             {
                 if (LightModel.activeSelf)
                     LightModel.SetActive(false);
@@ -318,6 +325,7 @@ public class PlayerMove : MonoBehaviour
 
             if (transform.position == startPosition && startCount == 0f)
             {
+                aSource.PlayOneShot(LightInSe);
                 Particle();
                 StartModel.SetActive(false);
                 Point.SetActive(true);
@@ -449,7 +457,6 @@ public class PlayerMove : MonoBehaviour
             aSource2.Stop();
         
         RayGround();
-        Debug.Log(velocity);
     }
 
     // 接地判定
@@ -471,7 +478,7 @@ public class PlayerMove : MonoBehaviour
     {
         for (int i = 0; i < collision.contacts.Length; i++)
         {
-            if (collision.contacts[i].normal.y > 0.5f && playerState == PlayerState.Default && (collision.collider.tag == "Block" || collision.collider.tag == "Glass"))
+            if (collision.contacts[i].normal.y > 0.5f && playerState == PlayerState.Default && (collision.collider.tag == "Block" || collision.collider.tag == "Glass") && !isGround)
                 aSource.PlayOneShot(LandingSe);
         }
 
