@@ -4,16 +4,13 @@ using UnityEngine;
 
 public class StarTask : MonoBehaviour
 {
-    GameObject player;
-    PlayerMove playerMove;
+    public PlayerMove playerMove;
     public EdgeCollider2D thisStarCol;
     private ParticleSystem lightLine;
     GameTask gameTask;
 
     private void Start()
     {
-        player = GameObject.FindGameObjectWithTag("Player");
-        playerMove = player.GetComponent<PlayerMove>();
         GameObject prefab = Resources.Load<GameObject>(GetPath.Particle + "/GoalParticle");
         GameObject particleOb = Instantiate(prefab);
         particleOb.transform.parent = gameObject.transform;

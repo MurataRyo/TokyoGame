@@ -19,6 +19,7 @@ public class GameTask : MonoBehaviour
     [HideInInspector] public GameObject whiteOut;
     [HideInInspector] public Image image;
     [HideInInspector] public float alpha;
+    GameObject player;
 
     private void Start()
     {
@@ -30,6 +31,10 @@ public class GameTask : MonoBehaviour
 
         if (stageData != null)
             Instantiate(stageData);
+
+        StarTask starTask = GameObject.FindGameObjectWithTag("Star").GetComponent<StarTask>();
+        player = GameObject.FindGameObjectWithTag("Player");
+        starTask.playerMove = player.GetComponent<PlayerMove>();
     }
 
     private void Update()
