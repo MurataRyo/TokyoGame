@@ -177,7 +177,7 @@ public class PlayerMove : MonoBehaviour
             runFlag = false;
         /*----------------------------------------------------------------------------*/
 
-        if (lightJump && (!controller.ChangeButton() || !lightFlag || velocity.y < 0f))
+        if (lightJump && changeCount >= 0.04f && (!controller.ChangeButton() || !lightFlag || velocity.y < 0f))
             lightJump = false;
 
         if (!stopPlayer)
