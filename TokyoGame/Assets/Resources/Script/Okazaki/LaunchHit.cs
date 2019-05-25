@@ -53,9 +53,6 @@ public class LaunchHit : MonoBehaviour
                 select = m_hitObjects.Count - 1;
 
             target = m_hitObjects[select];                  // 選択されているオブジェクトの取り出し
-
-            if (playerMove.launchControl)
-                target.GetComponent<LaunchControl>().Select();  // 選択した光源の向きを変えられるようにする
         }
         else    // それ以外のとき
         {
@@ -63,6 +60,16 @@ public class LaunchHit : MonoBehaviour
                 playerMove.launchControl = false;
 
             select = 0;
+        }
+    }
+
+    void FixedUpdate()
+    {
+        // 自機の近くに光源があり、かつ接地しているとき
+        if (playerMove.isGround && m_hitObjects.Count > 0)
+        {
+            if (playerMove.launchControl)
+                target.GetComponent<LaunchControl>().Select();  // 選択した光源の向きを変えられるようにする
         }
     }
 

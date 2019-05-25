@@ -337,10 +337,7 @@ public class PlayerMove : MonoBehaviour
                 startCount += Time.fixedDeltaTime;
 
             if (changeCount >= 0.2f)
-            {
                 Model.SetActive(true);
-                changeCount = 0f;
-            }
 
             if (startCount > 1f)
                 playerState = PlayerState.Default;
@@ -357,8 +354,6 @@ public class PlayerMove : MonoBehaviour
             {
                 if (!LightModel.activeSelf)
                     LightModel.SetActive(true);
-
-                changeCount = 0f;
             }
 
             if (lineMove)
@@ -435,8 +430,6 @@ public class PlayerMove : MonoBehaviour
             {
                 if (!Model.activeSelf)
                     Model.SetActive(true);
-
-                changeCount = 0f;
             }
 
             rigidbody.velocity = new Vector2(velocity.x + moveBlockVelocity.x, velocity.y);
