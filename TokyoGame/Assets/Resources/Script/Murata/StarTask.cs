@@ -29,7 +29,7 @@ public class StarTask : MonoBehaviour
     {
         if(collision.tag == GetTag.Player)
         {
-            if (playerMove.playerState == PlayerMove.PlayerState.Light && playerMove.changeCount == 0f)
+            if (playerMove.playerState == PlayerMove.PlayerState.Light && playerMove.changeCount >= 0.2f)
             {
                 playerMove.stopPlayer = true;
                 gameTask.image.color = new Vector4(1f, 1f, 1f, gameTask.alpha);
