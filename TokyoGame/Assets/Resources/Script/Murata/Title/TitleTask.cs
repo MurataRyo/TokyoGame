@@ -13,7 +13,6 @@ public class TitleTask : MonoBehaviour
     TitleMode titleModeLog;
     WorldChoiceTask worldChoiceTask;
     WorldData worldData;
-    GameObject canvas;
     GameObject title;
     public IEnumerator enumerator = null;
 
@@ -21,7 +20,6 @@ public class TitleTask : MonoBehaviour
     void Start()
     {
         Time.timeScale = 1f;
-        canvas = Utility.GetCanvas();
         titleModeLog = titleMode = TitleMode.title;
         AddTasks();
     }

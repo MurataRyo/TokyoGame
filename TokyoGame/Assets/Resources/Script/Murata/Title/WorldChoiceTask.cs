@@ -32,13 +32,6 @@ public class WorldChoiceTask : MonoBehaviour
         titleTask = Utility.GetTaskObject().GetComponent<TitleTask>();
     }
 
-    private void StartUiAdd()
-    {
-        choiceBars.Add(CreateChoiceBar(choiceClass.nowChoice + 1, Vector2.zero));
-        choiceBars.Add(CreateChoiceBar(choiceClass.nowChoice + 2, Vector2.down * ChoiceBar.UpDownRange));
-        choiceBars.Add(CreateChoiceBar(choiceClass.choiceNum, Vector2.up * ChoiceBar.UpDownRange));
-    }
-
     // Update is called once per frame
     void Update()
     {
@@ -66,46 +59,8 @@ public class WorldChoiceTask : MonoBehaviour
         count++;
         choiceClass.ChoiceChange(flag);
         float time = choiceClass.nowChoice >= GameTask.choiceStage ? HIGH_CAMERA_TIME : CAMERA_TIME;
-        StartCoroutine(MoveChoiceBars(flag, time));
         moveCamera = MoveCamera(worlds[choiceClass.nowChoice].cameraPos, worlds[choiceClass.nowChoice].cameraAngle, time, MoveMode.normal);
         StartCoroutine(moveCamera);
-    }
-
-    private IEnumerator MoveChoiceBars(bool flag, float t)
-    {
-        float timer = 0;
-
-        RemoveChoiceBar(flag);
-        foreach (ChoiceBar choiceBar in choiceBars)
-        {
-            choiceBar.nextPos = new Vector2(0f, Utility.BoolToInt(flag) * ChoiceBar.UpDownRange) + new Vector2(choiceBar.go.transform.position.x, choiceBar.go.transform.position.y);
-        }
-
-        while (true)
-        {
-            timer += Time.deltaTime;
-            if (timer > t)
-            {
-                foreach (ChoiceBar choiceBar in choiceBars)
-                {
-                    choiceBar.go.transform.position = choiceBar.nextPos;
-                    choiceBar.ColorChange();
-                }
-                choiceBars.Add(CreateChoiceBar(ChoiceNum(Utility.BoolToInt(flag)) + 1, (flag ? Vector2.down : Vector2.up) * ChoiceBar.UpDownRange));
-
-                if (choiceClass.nowChoice >= GameTask.choiceStage)
-                    NextBar(flag);
-
-                yield break;
-            }
-
-            foreach (ChoiceBar choiceBar in choiceBars)
-            {
-                choiceBar.AddPos(Utility.BoolToInt(flag) * ChoiceBar.UpDownRange / t * Time.deltaTime);
-                choiceBar.ColorChange();
-            }
-            yield return null;
-        }
     }
 
     //boolには上か下かを判定させる
@@ -160,7 +115,6 @@ public class WorldChoiceTask : MonoBehaviour
                 mCamera.transform.eulerAngles = cameraAngle;
 
                 if (moveMode == MoveMode.start)
-                    StartUiAdd();
                 count--;
                 yield break;
             }
