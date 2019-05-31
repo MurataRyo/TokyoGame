@@ -235,6 +235,9 @@ public class PlayerMove : MonoBehaviour
             else
                 se = WalkSe;
         }
+
+        if (aSource2.time > 1.2f)
+            aSource2.time = 0.02f;
     }
 
     void FixedUpdate()

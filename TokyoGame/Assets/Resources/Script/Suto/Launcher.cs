@@ -25,7 +25,7 @@ public class Launcher : MonoBehaviour
         audio.clip = se;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (flagLog != flag && !f)
         {
