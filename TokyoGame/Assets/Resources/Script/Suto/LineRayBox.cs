@@ -6,6 +6,7 @@ using UnityEngine;
 public class LineRayBox : LineRay
 {
     private List<BoxCollider2D> box2d;
+    const float box2DSize = 1.0078125f;
 
     protected override void Start()
     {
@@ -20,10 +21,12 @@ public class LineRayBox : LineRay
         
         if (ChangeLight())
         {
+            //光の線の数だけコライダーを使用させる
             foreach (BoxCollider2D b in box2d.Skip(keepPoints.Count - 1))
             {
                 b.gameObject.SetActive(false);
             }
+            //光の線の数だけコライダーを生成
             for (int i = 0; i < keepPoints.Count - 1; i++)
             {
                 if (box2d.Count <= i)
@@ -41,7 +44,7 @@ public class LineRayBox : LineRay
                 }
                 box2d[i].transform.rotation = Quaternion.FromToRotation(Vector3.left, keepPoints[i] - keepPoints[i + 1]);
                 box2d[i].transform.position = Vector2.Lerp(keepPoints[i], keepPoints[i + 1], 0.5f);
-                box2d[i].size = new Vector2(1.0078125f * (keepPoints[i] - keepPoints[i + 1]).magnitude, 1f);
+                box2d[i].size = new Vector2(box2DSize * (keepPoints[i] - keepPoints[i + 1]).magnitude, 1f);
             }
         }
         keepLinePrevious = keepPoints;

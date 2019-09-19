@@ -24,6 +24,7 @@ public class LaunchHit : MonoBehaviour
         // 自機の近くに光源があり、かつ接地しているとき
         if (playerMove.isGround && m_hitObjects.Count > 0)
         {
+
             // 光源を操作する状態に移行
             if (playerMove.playerState == PlayerMove.PlayerState.Default && controller.ControlButton())
             {

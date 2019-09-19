@@ -31,8 +31,7 @@ public class LineRay : MonoBehaviour
         keepLines = new List<Line>();
         keepLinePrevious = new List<Vector2>();
     }
-
-    // Update is called once per frame
+    
     protected virtual void Update()
     {
         keepPoints = new List<Vector2>();

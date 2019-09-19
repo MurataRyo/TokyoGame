@@ -676,13 +676,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 7560674828496324936}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c62d748ca3c20824ebe34f7b30956d53, type: 3}
+  m_Script: {fileID: 11500000, guid: 0c7bf07b22f4d9c4f8f706364807ad38, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   shapeController: {fileID: 7560674828496324933}
-  range: 5
-  angle: 70
-  vertexCount: 25
+  range: 0
+  angle: 0
+  vertexCount: 0
 --- !u!1971053207 &7560674828496324932
 SpriteShapeRenderer:
   m_ObjectHideFlags: 0
