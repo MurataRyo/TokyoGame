@@ -87,7 +87,7 @@ public class GameTask : MonoBehaviour
         AudioTask.ChangeBgm(GetPath.Bgm + "/OverBgm",1f);
         GameOverAndClear();
         Sprite sprite = Resources.Load<Sprite>(GetPath.Game + "/GameOver");
-        Utility.UiAdd(sprite, Vector2.zero, Utility.GAME_SIZE);
+        Utility.UiAdd(sprite, Vector2.zero, Utility.GAME_SIZE());
     }
 
     private void GameClear()
@@ -99,6 +99,6 @@ public class GameTask : MonoBehaviour
             choiceStage++;
         }
         Sprite sprite = Resources.Load<Sprite>(GetPath.Game + "/GameClear");
-        Utility.UiAdd(sprite, Vector2.zero, Utility.GAME_SIZE);
+        Utility.UiAdd(sprite, Vector2.zero, Utility.GAME_SIZE());
     }
 }

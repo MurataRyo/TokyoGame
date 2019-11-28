@@ -5,15 +5,18 @@ using UnityEngine.UI;
 
 public class Utility : MonoBehaviour
 {
-    
 
-    public static Vector2 GAME_SIZE = new Vector2(1920,1080);
 
-    public static GameObject UiAdd(Sprite image,Vector2 pos,Vector2 size)
+    public static Vector2 GAME_SIZE()
+    {
+        return new Vector2(Screen.width, Screen.height);
+    }
+
+    public static GameObject UiAdd(Sprite image, Vector2 pos, Vector2 size)
     {
         GameObject go = new GameObject();
         RectTransform rectTransform = go.AddComponent<RectTransform>();
-        rectTransform.position = pos + GAME_SIZE / 2;
+        rectTransform.position = pos + GAME_SIZE() / 2;
         rectTransform.sizeDelta = size;
 
         go.AddComponent<Image>().sprite = image;
@@ -131,9 +134,9 @@ public class ChoiceClass
     public void ChoiceChange(bool flag)
     {
         nowChoice += Utility.BoolToInt(flag);
-        if(nowChoice == -1 || nowChoice == choiceNum)
+        if (nowChoice == -1 || nowChoice == choiceNum)
         {
-            if(flag)
+            if (flag)
             {
                 nowChoice = 0;
             }

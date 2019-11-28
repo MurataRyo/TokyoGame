@@ -41,7 +41,7 @@ public class TitleTask : MonoBehaviour
     private void AddTitle()
     {
         Sprite sprite = Resources.Load<Sprite>(GetPath.Title + "/Title");
-        title = Utility.UiAdd(sprite,new Vector2(0,0),Utility.GAME_SIZE);
+        title = Utility.UiAdd(sprite,new Vector2(0,0),Utility.GAME_SIZE());
     }
 
     // Update is called once per frame
