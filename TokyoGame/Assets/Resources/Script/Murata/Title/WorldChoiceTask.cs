@@ -78,7 +78,8 @@ public class WorldChoiceTask : MonoBehaviour
         RemoveChoiceBar(flag);
         foreach (ChoiceBar choiceBar in choiceBars)
         {
-            choiceBar.nextPos = new Vector2(0f, Utility.BoolToInt(flag) * ChoiceBar.UpDownRange) + new Vector2(choiceBar.go.transform.position.x, choiceBar.go.transform.position.y);
+            choiceBar.nextPos = new Vector2(0f, Utility.BoolToInt(flag) * ChoiceBar.UpDownRange2()) + new Vector2(choiceBar.go.transform.position.x, choiceBar.go.transform.position.y);
+            Debug.Log(choiceBar.nextPos);
         }
 
         while (true)
@@ -197,11 +198,16 @@ public class ChoiceBar
     public GameObject go;
     Text stageName;
     public const float UpDownRange = 150f;
+    public static float UpDownRange2()
+    {
+         return 150f / (1920f / Screen.width);
+    }
     Image BackImage;
     public Vector2 nextPos;
     public ChoiceBar(string stagePath, GameObject go)
     {
         this.go = go;
+        this.go.transform.localScale = Vector3.one;
         BackImage = go.GetComponent<Image>();
         BackImage.sprite = Resources.Load<Sprite>(stagePath);
         ColorChange();
@@ -210,7 +216,7 @@ public class ChoiceBar
 
     public void AddPos(float addPos)
     {
-        go.transform.position += new Vector3(0f, addPos, 0f);
+        go.transform.position += new Vector3(0f, addPos/ (1920f / Screen.width), 0f);
     }
 
     public void ColorChange()

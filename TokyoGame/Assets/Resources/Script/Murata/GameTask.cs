@@ -14,7 +14,7 @@ public class GameTask : MonoBehaviour
     public Mode mode;
     private Mode modeLog;
     public static GameObject stageData;
-    public static int choiceStage = 3;      //選択できるステージ数
+    public static int choiceStage = 6;      //選択できるステージ数
     public static int nowStage = 1;         //プレイ中のステージ
     [HideInInspector] public GameObject whiteOut;
     [HideInInspector] public Image image;
